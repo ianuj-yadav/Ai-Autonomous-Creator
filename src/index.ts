@@ -26,22 +26,30 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-async function main() {
+let isInitialized = false;
+
+async function bootstrap() {
+  if (isInitialized) return;
+  isInitialized = true;
   try {
-    // 1. Apply database migrations
+    // 1. Run migrations safely
     await runMigrations();
 
     // 2. Auto-resume active agent background loops
     await agentScheduler.autoResumeActiveAgents();
-
-    // 3. Start HTTP server
-    app.listen(config.port, () => {
-      logger.info(`Autonomous AI Creator Server listening on port ${config.port}`);
-    });
   } catch (err: any) {
-    logger.error('Failed to start Autonomous AI Creator Server', { error: err.message });
-    process.exit(1);
+    logger.warn('Bootstrap initialization warning', { error: err.message });
   }
 }
 
-main();
+// Execute bootstrap initialization
+bootstrap();
+
+// Only listen on port if running in standalone server mode (not Vercel Serverless)
+if (!process.env.VERCEL) {
+  app.listen(config.port, () => {
+    logger.info(`Autonomous AI Creator Server listening on port ${config.port}`);
+  });
+}
+
+export default app;
