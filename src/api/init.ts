@@ -53,6 +53,7 @@ initRouter.post('/', async (req: Request, res: Response): Promise<void> => {
     await agentScheduler.executeCycle(agentId);
 
     res.status(200).json({
+      agentId: agentId,
       id: agentId,
       status: 'active',
       voiceProfile,
