@@ -1361,46 +1361,274 @@
 
   <!-- INLINE JAVASCRIPT LOGIC -->
   <script>
-    function openAuthModal(mode) {
-      const modal = document.getElementById('authModal');
+    let currentAuthMode = 'login';
+    let currentUser = null;
+
+    function switchAuthMode(mode) {
+      currentAuthMode = mode;
+      const loginBtn = document.getElementById('authTabLogin');
+      const signupBtn = document.getElementById('authTabSignup');
+      const nameGroup = document.getElementById('nameGroup');
       const title = document.getElementById('modalTitle');
       const sub = document.getElementById('modalSub');
       const btn = document.getElementById('authSubmitBtn');
+      const errBox = document.getElementById('authErrorBox');
+      errBox.style.display = 'none';
 
       if (mode === 'login') {
-        title.innerText = 'Log In to ASCEND';
-        sub.innerText = 'Access your personal inner-growth dashboard and autonomous AI persona stream.';
+        loginBtn.style.background = '#FFC700';
+        loginBtn.style.color = '#191b1e';
+        signupBtn.style.background = '#FFF';
+        nameGroup.style.display = 'none';
+        title.innerText = 'Welcome Back';
+        sub.innerText = 'Enter your email and password to access your personal AI discovery dashboard.';
         btn.innerText = 'Log In to ASCEND →';
       } else {
-        title.innerText = 'Begin Your Practice';
-        sub.innerText = 'Enter your email to receive daily mindfulness prompts and access the Autonomous AI Creator Studio.';
-        btn.innerText = 'Continue to ASCEND →';
+        signupBtn.style.background = '#FFC700';
+        signupBtn.style.color = '#191b1e';
+        loginBtn.style.background = '#FFF';
+        nameGroup.style.display = 'block';
+        title.innerText = 'Create Account';
+        sub.innerText = 'Sign up to build your daily discovery streak and track research interests.';
+        btn.innerText = 'Create Account & Begin →';
       }
-      modal.style.display = 'flex';
+    }
+
+    function openAuthModal(mode = 'login') {
+      switchAuthMode(mode);
+      document.getElementById('authModal').style.display = 'flex';
     }
 
     function closeAuthModal() {
       document.getElementById('authModal').style.display = 'none';
     }
 
-    function handleAuthSubmit(e) {
+    async function handleAuthSubmit(e) {
       e.preventDefault();
       const btn = document.getElementById('authSubmitBtn');
-      btn.innerText = '⚡ Setting Up Email Automation...';
+      const errBox = document.getElementById('authErrorBox');
+      errBox.style.display = 'none';
 
-      setTimeout(() => {
+      const email = document.getElementById('userEmail').value;
+      const password = document.getElementById('userPassword').value;
+      const name = document.getElementById('userName')?.value;
+
+      btn.innerText = '⚡ Authenticating...';
+
+      const endpoint = currentAuthMode === 'login' ? '/api/user/auth/login' : '/api/user/auth/signup';
+      const payload = currentAuthMode === 'login' ? { email, password } : { email, password, name };
+
+      try {
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+
+        if (!res.ok || data.error) {
+          errBox.innerText = data.error || 'Authentication failed. Please try again.';
+          errBox.style.display = 'block';
+          btn.innerText = currentAuthMode === 'login' ? 'Log In to ASCEND →' : 'Create Account & Begin →';
+          return;
+        }
+
+        currentUser = data.user;
+        localStorage.setItem('ascend_user', JSON.stringify(currentUser));
+        updateNavForUser();
         closeAuthModal();
-        openStudioPanel();
-      }, 900);
+        openUserDashboard();
+      } catch (err) {
+        errBox.innerText = 'Network error connecting to backend API.';
+        errBox.style.display = 'block';
+        btn.innerText = currentAuthMode === 'login' ? 'Log In to ASCEND →' : 'Create Account & Begin →';
+      }
+    }
+
+    function updateNavForUser() {
+      const navActions = document.querySelector('.nav-actions');
+      if (currentUser) {
+        navActions.innerHTML = `
+          <div style="background:#FFF9E6; border:2px solid var(--ink); font-family:var(--font-mono); font-size:0.8rem; font-weight:700; padding:0.4rem 0.8rem; border-radius:999px;">
+            🔥 ${currentUser.streakCount || 1}d Streak
+          </div>
+          <button class="btn-nav-cta" style="padding:9px 18px; font-size:13.5px;" onclick="openUserDashboard()">
+            👤 ${escapeHtml(currentUser.name || 'Dashboard')}
+          </button>
+        `;
+      }
+    }
+
+    async function openUserDashboard() {
+      document.getElementById('userDashboardPanel').style.display = 'block';
+      document.getElementById('studioPanel').style.display = 'none';
+
+      const userId = currentUser ? currentUser.id : 'user-demo-101';
+      try {
+        const res = await fetch(`/api/user/profile?userId=${encodeURIComponent(userId)}`);
+        const data = await res.json();
+        if (data.user) {
+          currentUser = data.user;
+          localStorage.setItem('ascend_user', JSON.stringify(currentUser));
+          renderUserDashboard(currentUser);
+        }
+      } catch (err) {
+        console.error('Failed to load user profile', err);
+      }
+    }
+
+    function renderUserDashboard(user) {
+      document.getElementById('dashStreakCount').innerText = `🔥 ${user.streakCount || 1} Days Active`;
+      document.getElementById('dashLastActive').innerText = `Last Active: ${user.lastActiveDate || 'Today'}`;
+
+      // Interests
+      const interestsList = document.getElementById('dashInterestsList');
+      if (user.interests && user.interests.length > 0) {
+        interestsList.innerHTML = user.interests.map(i => `<span class="stack-pill" style="background:#FFF9E6;">${escapeHtml(i)}</span>`).join('');
+      }
+
+      // Recent Searches
+      const searchesList = document.getElementById('dashRecentSearchesList');
+      if (user.recentSearches && user.recentSearches.length > 0) {
+        searchesList.innerHTML = user.recentSearches.map(s => `<span class="stack-pill" onclick="reRunSearch('${escapeHtml(s.query)}')">${escapeHtml(s.query)}</span>`).join('');
+      }
+
+      // History
+      const historyList = document.getElementById('dashHistoryList');
+      if (user.history && user.history.length > 0) {
+        historyList.innerHTML = user.history.map(h => `
+          <div style="border:2px solid var(--ink); padding:0.8rem 1rem; border-radius:12px; background:#FFF;">
+            <div style="font-family:var(--font-mono); font-size:0.72rem; color:var(--slate-accent);">${escapeHtml(h.category || 'Research')} • ${new Date(h.timestamp).toLocaleTimeString()}</div>
+            <div style="font-weight:600; font-size:0.92rem; margin-top:0.2rem;">${escapeHtml(h.title)}</div>
+            ${h.url ? `<a href="${escapeHtml(h.url)}" target="_blank" style="font-family:var(--font-mono); font-size:0.75rem; color:var(--accent-cyan);">🔗 Open Citation</a>` : ''}
+          </div>
+        `).join('');
+      }
+
+      loadDiscoverFeed();
+    }
+
+    async function claimDailyStreak() {
+      const userId = currentUser ? currentUser.id : 'user-demo-101';
+      try {
+        const res = await fetch('/api/user/streak/claim', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId })
+        });
+        const data = await res.json();
+        if (data.streakCount) {
+          document.getElementById('dashStreakCount').innerText = `🔥 ${data.streakCount} Days Active`;
+          document.getElementById('dashLastActive').innerText = `Last Active: Today`;
+          if (currentUser) currentUser.streakCount = data.streakCount;
+          updateNavForUser();
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function handleUserSearchSubmit(e) {
+      e.preventDefault();
+      const input = document.getElementById('userSearchInput');
+      const query = input.value.trim();
+      if (!query) return;
+
+      const userId = currentUser ? currentUser.id : 'user-demo-101';
+      try {
+        const res = await fetch('/api/user/searches', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId, query })
+        });
+        const data = await res.json();
+        if (data.recentSearches) {
+          document.getElementById('dashRecentSearchesList').innerHTML = data.recentSearches.map(s => `<span class="stack-pill" onclick="reRunSearch('${escapeHtml(s.query)}')">${escapeHtml(s.query)}</span>`).join('');
+        }
+        input.value = '';
+        loadDiscoverFeed(query);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function reRunSearch(query) {
+      document.getElementById('userSearchInput').value = query;
+      loadDiscoverFeed(query);
+    }
+
+    async function handleAddInterestSubmit(e) {
+      e.preventDefault();
+      const input = document.getElementById('newInterestInput');
+      const newTopic = input.value.trim();
+      if (!newTopic) return;
+
+      const userId = currentUser ? currentUser.id : 'user-demo-101';
+      const currentInterests = currentUser ? [...(currentUser.interests || [])] : ['AI Security', 'Autonomous Agents'];
+      currentInterests.push(newTopic);
+
+      try {
+        const res = await fetch('/api/user/interests', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId, interests: currentInterests })
+        });
+        const data = await res.json();
+        if (data.interests) {
+          if (currentUser) currentUser.interests = data.interests;
+          document.getElementById('dashInterestsList').innerHTML = data.interests.map(i => `<span class="stack-pill" style="background:#FFF9E6;">${escapeHtml(i)}</span>`).join('');
+        }
+        input.value = '';
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function loadDiscoverFeed(filterQuery = '') {
+      const container = document.getElementById('dashDiscoverFeed');
+      try {
+        const res = await fetch('/api/agent/feed?agentId=kess-security-bot');
+        const data = await res.json();
+        if (data.posts && data.posts.length > 0) {
+          let posts = data.posts;
+          if (filterQuery) {
+            posts = posts.filter(p => p.text.toLowerCase().includes(filterQuery.toLowerCase()) || p.rationale.toLowerCase().includes(filterQuery.toLowerCase()));
+          }
+          container.innerHTML = posts.map(p => `
+            <div style="border:3px solid var(--ink); border-radius:16px; padding:1.4rem; margin-bottom:1.4rem; background:#FFF; box-shadow:5px 5px 0px var(--ink);">
+              <div style="font-family:var(--font-mono); font-size:0.78rem; font-weight:700; color:var(--slate-accent); margin-bottom:0.6rem;">📅 ${new Date(p.createdAt).toLocaleString()}</div>
+              <div style="font-size:1.02rem; font-weight:500; color:var(--ink); margin-bottom:0.8rem; line-height:1.65;">${escapeHtml(p.text)}</div>
+              <div style="border:2px dashed var(--border-hairline); border-radius:10px; padding:0.8rem; background:#FFF9E6; font-size:0.85rem; color:var(--ink-muted);">${escapeHtml(p.rationale)}</div>
+            </div>
+          `).join('');
+        } else {
+          container.innerHTML = `<p style="color:var(--ink-muted);">No discovery posts match your current search.</p>`;
+        }
+      } catch (err) {
+        container.innerHTML = `<p style="color:red;">Failed to connect to discover feed API.</p>`;
+      }
+    }
+
+    function logoutUser() {
+      currentUser = null;
+      localStorage.removeItem('ascend_user');
+      document.getElementById('userDashboardPanel').style.display = 'none';
+      const navActions = document.querySelector('.nav-actions');
+      navActions.innerHTML = `
+        <button class="btn-link-login rise" style="animation-delay: 300ms;" onclick="openAuthModal('login')">Log In</button>
+        <button class="btn-nav-cta rise" style="animation-delay: 340ms;" onclick="openAuthModal('signup')">Begin</button>
+      `;
     }
 
     function openStudioPanel() {
       document.getElementById('studioPanel').style.display = 'block';
+      document.getElementById('userDashboardPanel').style.display = 'none';
       fetchStudioFeed();
     }
 
     function showLanding() {
       document.getElementById('studioPanel').style.display = 'none';
+      document.getElementById('userDashboardPanel').style.display = 'none';
     }
 
     function applyPreset(val) {
@@ -1534,6 +1762,17 @@
     function escapeHtml(str) {
       return str ? str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") : '';
     }
+
+    // Auto-restore session on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      const saved = localStorage.getItem('ascend_user');
+      if (saved) {
+        try {
+          currentUser = JSON.parse(saved);
+          updateNavForUser();
+        } catch (e) {}
+      }
+    });
   </script>
 </body>
 </html>
