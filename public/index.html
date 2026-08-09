@@ -1072,6 +1072,13 @@
           allFeedPosts = data.posts;
           document.getElementById('statCount').innerText = allFeedPosts.length;
 
+          // If empty, auto-trigger first autonomous discovery cycle
+          if (allFeedPosts.length === 0 && !window._hasAutoInitialized) {
+            window._hasAutoInitialized = true;
+            await handleInitSubmit(null);
+            return;
+          }
+
           renderPaginatedFeed();
 
           if (allFeedPosts.length > lastKnownPostCount) {
