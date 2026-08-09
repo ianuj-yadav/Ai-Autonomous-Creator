@@ -8,6 +8,7 @@ import { runMigrations } from './db/migrate';
 import { agentScheduler } from './modules/scheduler';
 import { initRouter } from './api/init';
 import { feedRouter } from './api/feed';
+import { userRouter } from './api/user';
 
 const app = express();
 
@@ -25,6 +26,9 @@ app.use('/init', initRouter);
 app.use('/api/agent/feed', feedRouter);
 app.use('/api/feed', feedRouter);
 app.use('/feed', feedRouter);
+
+// User Auth & User Dashboard Endpoints
+app.use('/api/user', userRouter);
 
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
