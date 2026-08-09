@@ -13,8 +13,13 @@ export const config = {
     database: process.env.DB_NAME || 'autonomous_ai_creator',
   },
   cadence: {
-    minMinutes: parseFloat(process.env.CADENCE_MIN || '0.2'), // Default fast cadence for test, configurable
-    maxMinutes: parseFloat(process.env.CADENCE_MAX || '0.5'),
+    minMinutes: parseFloat(process.env.CADENCE_MIN || '0.1'), // Fast real-time cycle cadence (~6s - 12s)
+    maxMinutes: parseFloat(process.env.CADENCE_MAX || '0.2'),
+  },
+  nvidia: {
+    apiKey: process.env.NVIDIA_API_KEY || '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',
+    url: 'https://integrate.api.nvidia.com/v1/chat/completions',
+    model: process.env.NVIDIA_MODEL || 'google/diffusiongemma-26b-a4b-it',
   },
   llm: {
     anthropicApiKey: process.env.ANTHROPIC_API_KEY || '',
