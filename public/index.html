@@ -3,41 +3,39 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Autonomous AI Creator — Modern Light Studio</title>
+  <title>Autonomous AI Creator — Immersive Bento Studio</title>
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   
-  <!-- Three.js 3D WebGL -->
+  <!-- Three.js 3D Engine -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
   <style>
     :root {
-      --bg-body: #F8FAFC;
-      --bg-surface: #FFFFFF;
-      --bg-subtle: #F1F5F9;
-      --border-light: #E2E8F0;
-      --border-accent: #C7D2FE;
+      --bg-dark: #080C16;
+      --bento-bg: rgba(17, 24, 39, 0.65);
+      --bento-bg-hover: rgba(31, 41, 55, 0.75);
+      --bento-border: rgba(255, 255, 255, 0.1);
+      --bento-border-hover: rgba(99, 102, 241, 0.4);
       
-      --primary: #4F46E5;
-      --primary-hover: #4338CA;
-      --primary-subtle: #EEF2FF;
+      --primary: #6366F1;
+      --primary-hover: #4F46E5;
+      --primary-glow: rgba(99, 102, 241, 0.4);
       
-      --accent-emerald: #059669;
-      --accent-emerald-subtle: #ECFDF5;
-      --accent-pink: #DB2777;
-      --accent-cyan: #0284C7;
-      --accent-cyan-subtle: #F0F9FF;
+      --accent-violet: #8B5CF6;
+      --accent-emerald: #10B981;
+      --accent-pink: #EC4899;
+      --accent-cyan: #06B6D4;
+      --accent-amber: #F59E0B;
 
-      --text-main: #0F172A;
-      --text-muted: #475569;
+      --text-main: #F8FAFC;
+      --text-muted: #94A3B8;
       --text-dim: #64748B;
       
-      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
-      --shadow-md: 0 4px 20px -2px rgba(15, 23, 42, 0.06);
-      --shadow-lg: 0 12px 32px -4px rgba(15, 23, 42, 0.1);
+      --glass-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
     }
 
     * {
@@ -48,14 +46,18 @@
 
     body {
       font-family: 'Inter', sans-serif;
-      background-color: var(--bg-body);
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(236, 72, 153, 0.12) 0%, transparent 40%),
+        radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.08) 0%, transparent 60%);
       color: var(--text-main);
       min-height: 100vh;
       line-height: 1.6;
       overflow-x: hidden;
     }
 
-    /* 3D Background Canvas */
+    /* 3D WebGL Canvas Background */
     #canvas3d {
       position: fixed;
       top: 0;
@@ -64,24 +66,22 @@
       height: 100vh;
       z-index: 0;
       pointer-events: none;
-      opacity: 0.65;
     }
 
-    .app-container {
+    .app-wrapper {
       position: relative;
       z-index: 10;
     }
 
-    /* Header */
+    /* Header Navbar */
     header {
-      background: rgba(255, 255, 255, 0.85);
-      backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--border-light);
+      background: rgba(8, 12, 22, 0.75);
+      backdrop-filter: blur(24px);
+      border-bottom: 1px solid var(--bento-border);
       position: sticky;
       top: 0;
       z-index: 100;
       padding: 1rem 2rem;
-      box-shadow: var(--shadow-sm);
     }
 
     .header-container {
@@ -95,43 +95,46 @@
     .brand {
       display: flex;
       align-items: center;
-      gap: 0.9rem;
+      gap: 1rem;
     }
 
     .brand-logo {
       width: 44px;
       height: 44px;
-      background: linear-gradient(135deg, var(--primary), #7C3AED);
-      border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary), var(--accent-pink));
+      border-radius: 14px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-family: 'Outfit', sans-serif;
       font-weight: 900;
-      font-size: 1.3rem;
+      font-size: 1.35rem;
       color: #FFF;
-      box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3);
+      box-shadow: 0 0 24px var(--primary-glow);
     }
 
     .brand-title {
       font-family: 'Outfit', sans-serif;
       font-size: 1.5rem;
       font-weight: 800;
-      color: var(--text-main);
+      background: linear-gradient(135deg, #FFF 40%, var(--text-muted));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
       letter-spacing: -0.02em;
     }
 
     .status-badge {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      background: var(--accent-emerald-subtle);
-      border: 1px solid #A7F3D0;
+      gap: 0.6rem;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.35);
       color: var(--accent-emerald);
-      padding: 0.4rem 0.95rem;
+      padding: 0.45rem 1rem;
       border-radius: 9999px;
       font-size: 0.85rem;
       font-weight: 600;
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.15);
     }
 
     .status-dot {
@@ -139,7 +142,7 @@
       height: 8px;
       background-color: var(--accent-emerald);
       border-radius: 50%;
-      box-shadow: 0 0 8px var(--accent-emerald);
+      box-shadow: 0 0 10px var(--accent-emerald);
       animation: pulse 2s infinite;
     }
 
@@ -149,94 +152,68 @@
       100% { opacity: 1; transform: scale(1); }
     }
 
-    /* KPI Stats Bar */
-    .stats-banner {
+    /* Bento Grid Layout */
+    .bento-grid {
       max-width: 1440px;
-      margin: 1.5rem auto 0;
+      margin: 2rem auto 3rem;
       padding: 0 1.5rem;
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1.2rem;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 1.5rem;
     }
 
-    @media (max-width: 900px) {
-      .stats-banner { grid-template-columns: repeat(2, 1fr); }
-    }
-
-    .stat-card {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-light);
-      border-radius: 16px;
-      padding: 1.2rem 1.4rem;
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      box-shadow: var(--shadow-md);
-    }
-
-    .stat-icon {
-      width: 46px;
-      height: 46px;
-      border-radius: 12px;
-      background: var(--primary-subtle);
-      border: 1px solid var(--border-accent);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.3rem;
-    }
-
-    .stat-val {
-      font-family: 'Outfit', sans-serif;
-      font-weight: 800;
-      font-size: 1.45rem;
-      color: var(--text-main);
-    }
-
-    .stat-lbl {
-      font-size: 0.78rem;
-      color: var(--text-dim);
-      text-transform: uppercase;
-      font-weight: 600;
-      letter-spacing: 0.05em;
-    }
-
-    /* Main Bento Layout */
-    main {
-      max-width: 1440px;
-      margin: 1.5rem auto 3rem;
-      padding: 0 1.5rem;
-      display: grid;
-      grid-template-columns: 410px 1fr;
-      gap: 2rem;
-    }
-
-    @media (max-width: 1080px) {
-      main { grid-template-columns: 1fr; }
-    }
-
-    /* Modern Light Cards */
+    /* Bento Card Base */
     .bento-card {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-light);
-      border-radius: 20px;
-      padding: 1.6rem;
-      box-shadow: var(--shadow-md);
-      margin-bottom: 1.5rem;
-      transition: all 0.25s ease;
+      background: var(--bento-bg);
+      backdrop-filter: blur(24px);
+      border: 1px solid var(--bento-border);
+      border-radius: 24px;
+      padding: 1.8rem;
+      box-shadow: var(--glass-shadow);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      overflow: hidden;
     }
 
     .bento-card:hover {
-      border-color: #CBD5E1;
-      box-shadow: var(--shadow-lg);
+      border-color: var(--bento-border-hover);
+      transform: translateY(-4px);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
     }
 
+    .bento-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    }
+
+    /* Column Spans */
+    .span-12 { grid-column: span 12; }
+    .span-8 { grid-column: span 8; }
+    .span-6 { grid-column: span 6; }
+    .span-4 { grid-column: span 4; }
+    .span-3 { grid-column: span 3; }
+
+    @media (max-width: 1080px) {
+      .span-8, .span-6, .span-4, .span-3 { grid-column: span 12; }
+    }
+
+    /* Card Header & Title */
     .card-title {
       font-family: 'Outfit', sans-serif;
-      font-size: 1.2rem;
+      font-size: 1.25rem;
       font-weight: 700;
-      color: var(--text-main);
       margin-bottom: 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-title-left {
       display: flex;
       align-items: center;
       gap: 0.6rem;
@@ -257,10 +234,10 @@
 
     input, select {
       width: 100%;
-      background: var(--bg-subtle);
-      border: 1px solid var(--border-light);
-      border-radius: 12px;
-      padding: 0.85rem 1rem;
+      background: rgba(11, 16, 28, 0.85);
+      border: 1px solid var(--bento-border);
+      border-radius: 14px;
+      padding: 0.85rem 1.1rem;
       color: var(--text-main);
       font-family: inherit;
       font-size: 0.95rem;
@@ -269,100 +246,100 @@
     }
 
     input:focus, select:focus {
-      background: #FFF;
       border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+      box-shadow: 0 0 20px var(--primary-glow);
     }
 
+    /* Buttons */
     .btn {
       width: 100%;
       border: none;
-      border-radius: 12px;
+      border-radius: 14px;
       padding: 0.95rem;
       font-weight: 700;
       font-size: 0.95rem;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 0.5rem;
+      gap: 0.6rem;
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+      background: linear-gradient(135deg, var(--primary), var(--accent-violet));
       color: #FFF;
-      box-shadow: 0 4px 16px rgba(79, 70, 229, 0.3);
+      box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
       margin-bottom: 0.8rem;
     }
 
     .btn-primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(79, 70, 229, 0.4);
+      box-shadow: 0 8px 30px rgba(99, 102, 241, 0.6);
     }
 
     .btn-secondary {
-      background: var(--accent-emerald-subtle);
+      background: rgba(16, 185, 129, 0.15);
       color: var(--accent-emerald);
-      border: 1px solid #A7F3D0;
+      border: 1px solid rgba(16, 185, 129, 0.35);
     }
 
     .btn-secondary:hover {
-      background: #D1FAE5;
+      background: rgba(16, 185, 129, 0.25);
       transform: translateY(-1px);
     }
 
-    /* Voice Profile Box */
+    /* Profile Display Box */
     .profile-box {
       margin-top: 1.2rem;
       padding-top: 1.2rem;
-      border-top: 1px solid var(--border-light);
+      border-top: 1px solid var(--bento-border);
     }
 
     .tag-container {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.4rem;
+      gap: 0.45rem;
       margin-top: 0.5rem;
     }
 
     .tag {
-      background: var(--primary-subtle);
-      color: var(--primary);
-      border: 1px solid var(--border-accent);
-      padding: 0.25rem 0.65rem;
-      border-radius: 8px;
+      background: rgba(99, 102, 241, 0.18);
+      color: #A5B4FC;
+      border: 1px solid rgba(99, 102, 241, 0.35);
+      padding: 0.3rem 0.75rem;
+      border-radius: 10px;
       font-size: 0.78rem;
       font-weight: 600;
     }
 
     .stance-item {
-      font-size: 0.85rem;
+      font-size: 0.83rem;
       color: var(--text-muted);
       margin-top: 0.5rem;
-      padding-left: 0.85rem;
+      padding-left: 0.9rem;
       border-left: 3px solid var(--primary);
     }
 
-    /* Tabs Navigation */
+    /* Tabs */
     .nav-tabs {
       display: flex;
       gap: 0.6rem;
       margin-bottom: 1.5rem;
-      border-bottom: 1px solid var(--border-light);
+      border-bottom: 1px solid var(--bento-border);
       padding-bottom: 0.6rem;
     }
 
     .tab-btn {
       background: transparent;
       border: none;
-      color: var(--text-dim);
+      color: var(--text-muted);
       padding: 0.75rem 1.3rem;
       font-family: 'Outfit', sans-serif;
       font-size: 0.98rem;
       font-weight: 700;
       cursor: pointer;
-      border-radius: 12px;
+      border-radius: 14px;
       transition: all 0.2s ease;
       display: flex;
       align-items: center;
@@ -371,23 +348,24 @@
 
     .tab-btn:hover {
       color: var(--text-main);
-      background: rgba(241, 245, 249, 0.8);
+      background: rgba(255, 255, 255, 0.06);
     }
 
     .tab-btn.active {
-      color: var(--primary);
-      background: var(--primary-subtle);
-      border: 1px solid var(--border-accent);
+      color: #FFF;
+      background: rgba(99, 102, 241, 0.25);
+      border: 1px solid var(--bento-border-hover);
+      box-shadow: 0 0 20px rgba(99, 102, 241, 0.25);
     }
 
-    /* Stream Feed Cards */
+    /* Feed Stream Cards */
     .post-card {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-light);
+      background: rgba(13, 18, 32, 0.75);
+      border: 1px solid var(--bento-border);
       border-radius: 20px;
       padding: 1.8rem;
-      margin-bottom: 1.8rem;
-      box-shadow: var(--shadow-md);
+      margin-bottom: 1.6rem;
+      box-shadow: var(--glass-shadow);
       animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
@@ -400,24 +378,22 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 1.1rem;
+      margin-bottom: 1.2rem;
     }
 
     .post-time {
       font-size: 0.82rem;
       color: var(--text-dim);
-      font-weight: 500;
     }
 
     .post-id {
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.78rem;
       color: var(--accent-cyan);
-      background: var(--accent-cyan-subtle);
-      border: 1px solid #BAE6FD;
-      padding: 0.2rem 0.6rem;
-      border-radius: 6px;
-      font-weight: 600;
+      background: rgba(6, 182, 212, 0.12);
+      border: 1px solid rgba(6, 182, 212, 0.3);
+      padding: 0.2rem 0.65rem;
+      border-radius: 8px;
     }
 
     .post-text {
@@ -428,7 +404,7 @@
       white-space: pre-wrap;
     }
 
-    /* Score Bar Indicator */
+    /* 4-Axis Score Grid */
     .score-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -441,8 +417,8 @@
     }
 
     .score-pill {
-      background: var(--bg-subtle);
-      border: 1px solid var(--border-light);
+      background: rgba(8, 12, 22, 0.85);
+      border: 1px solid var(--bento-border);
       padding: 0.6rem 0.8rem;
       border-radius: 12px;
       text-align: center;
@@ -464,10 +440,10 @@
     }
 
     .rationale-box {
-      background: var(--primary-subtle);
-      border: 1px solid var(--border-accent);
-      border-radius: 14px;
-      padding: 1.2rem;
+      background: rgba(99, 102, 241, 0.08);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      border-radius: 16px;
+      padding: 1.3rem;
       margin-top: 1rem;
     }
 
@@ -475,7 +451,7 @@
       font-family: 'Outfit', sans-serif;
       font-size: 0.88rem;
       font-weight: 800;
-      color: var(--primary);
+      color: #A5B4FC;
       text-transform: uppercase;
       letter-spacing: 0.05em;
       margin-bottom: 0.5rem;
@@ -501,8 +477,8 @@
       font-size: 0.8rem;
       color: var(--accent-emerald);
       text-decoration: none;
-      background: var(--accent-emerald-subtle);
-      border: 1px solid #A7F3D0;
+      background: rgba(16, 185, 129, 0.14);
+      border: 1px solid rgba(16, 185, 129, 0.3);
       padding: 0.3rem 0.75rem;
       border-radius: 8px;
       font-weight: 600;
@@ -510,12 +486,12 @@
     }
 
     .source-link:hover {
-      background: #D1FAE5;
+      background: rgba(16, 185, 129, 0.25);
     }
 
     .copy-btn {
-      background: var(--bg-subtle);
-      border: 1px solid var(--border-light);
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--bento-border);
       color: var(--text-muted);
       padding: 0.35rem 0.75rem;
       border-radius: 8px;
@@ -526,20 +502,19 @@
     }
 
     .copy-btn:hover {
-      background: #E2E8F0;
-      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.14);
+      color: #FFF;
     }
 
     .empty-feed {
       text-align: center;
-      padding: 3.5rem;
+      padding: 4rem;
       color: var(--text-dim);
-      background: var(--bg-surface);
-      border: 2px dashed var(--border-light);
+      border: 2px dashed var(--bento-border);
       border-radius: 20px;
     }
 
-    /* Decision Log Table */
+    /* Specs Table */
     .log-table {
       width: 100%;
       border-collapse: collapse;
@@ -547,9 +522,9 @@
     }
 
     .log-table th, .log-table td {
-      padding: 0.9rem 1.1rem;
+      padding: 0.95rem 1.1rem;
       text-align: left;
-      border-bottom: 1px solid var(--border-light);
+      border-bottom: 1px solid var(--bento-border);
     }
 
     .log-table th {
@@ -557,15 +532,14 @@
       font-weight: 700;
       text-transform: uppercase;
       font-size: 0.75rem;
-      letter-spacing: 0.05em;
     }
 
     .badge-accepted {
-      background: var(--accent-emerald-subtle);
+      background: rgba(16, 185, 129, 0.15);
       color: var(--accent-emerald);
-      border: 1px solid #A7F3D0;
-      padding: 0.2rem 0.6rem;
-      border-radius: 6px;
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      padding: 0.2rem 0.65rem;
+      border-radius: 8px;
       font-size: 0.75rem;
       font-weight: 700;
     }
@@ -575,14 +549,14 @@
       position: fixed;
       bottom: 24px;
       right: 24px;
-      background: #0F172A;
+      background: rgba(17, 24, 39, 0.95);
       border: 1px solid var(--primary);
       color: #FFF;
       padding: 0.9rem 1.4rem;
-      border-radius: 12px;
+      border-radius: 14px;
       font-size: 0.9rem;
       font-weight: 500;
-      box-shadow: var(--shadow-lg);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.6);
       z-index: 1000;
       display: none;
       animation: fadeIn 0.3s ease;
@@ -594,7 +568,7 @@
     }
 
     .spinner {
-      border: 2px solid rgba(255,255,255,0.3);
+      border: 2px solid rgba(255,255,255,0.2);
       border-left-color: #FFF;
       border-radius: 50%;
       width: 16px;
@@ -610,137 +584,141 @@
   <!-- WebGL 3D Background Canvas -->
   <canvas id="canvas3d"></canvas>
 
-  <div class="app-container">
+  <div class="app-wrapper">
     <header>
       <div class="header-container">
         <div class="brand">
           <div class="brand-logo">AI</div>
           <div class="brand-title">Autonomous AI Creator</div>
         </div>
-        <div class="status-group">
-          <div class="status-badge">
-            <div class="status-dot"></div>
-            NVIDIA AI & PostgreSQL 18 Live
-          </div>
+        <div class="status-badge">
+          <div class="status-dot"></div>
+          NVIDIA AI & PostgreSQL 18 Online
         </div>
       </div>
     </header>
 
-    <!-- Top System Metrics Banner -->
-    <div class="stats-banner">
-      <div class="stat-card">
-        <div class="stat-icon">🤖</div>
-        <div>
-          <div class="stat-val" id="statAgent">Kess</div>
-          <div class="stat-lbl">Active Persona</div>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon">✨</div>
-        <div>
-          <div class="stat-val" id="statCount">0</div>
-          <div class="stat-lbl">Total Posts Published</div>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon">⚡</div>
-        <div>
-          <div class="stat-val">3s Stream</div>
-          <div class="stat-lbl">Real-Time Poll Cadence</div>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon">📦</div>
-        <div>
-          <div class="stat-val">10s Auto</div>
-          <div class="stat-lbl">GitHub Sync Status</div>
-        </div>
-      </div>
-    </div>
+    <!-- Bento Grid Container -->
+    <div class="bento-grid">
 
-    <main>
-      <!-- Left Column: Controls & Profile -->
-      <aside>
-        <div class="bento-card">
-          <div class="card-title">
-            <span>⚡</span> Topic & Persona Controls
+      <!-- Bento 1: Persona Hero Card (Span 6) -->
+      <div class="bento-card span-6">
+        <div class="card-title">
+          <div class="card-title-left">
+            <span>🤖</span> Active Persona Studio
           </div>
-          <form id="initForm" onsubmit="handleInitSubmit(event)">
-            <div class="form-group">
-              <label for="presetSelect">Quick Topic Preset</label>
-              <select id="presetSelect" onchange="handlePresetChange(this)">
-                <option value="AI Security">AI Security & Vulnerability Research</option>
-                <option value="Blockchain & Cryptography">Blockchain & Cryptography</option>
-                <option value="Fintech & Banking Security">Fintech & Banking Security</option>
-                <option value="Quantum Computing">Quantum Computing</option>
-                <option value="Autonomous Robotics">Autonomous Robotics & Control</option>
-                <option value="Cloud Native Infrastructure">Cloud Native Infrastructure</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="domainInput">Active Domain / Topic</label>
-              <input type="text" id="domainInput" value="AI Security" required onchange="handleDomainChange()">
-            </div>
-            <div class="form-group">
-              <label for="nameInput">Persona Name</label>
-              <input type="text" id="nameInput" value="Kess" required>
-            </div>
-            <div class="form-group">
-              <label for="agentIdInput">Agent ID</label>
-              <input type="text" id="agentIdInput" value="kess-security-bot" required onchange="handleAgentIdChange()">
-            </div>
+          <span style="font-size:0.75rem; color:var(--accent-cyan);" id="statDomainBadge">AI Security</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:1.2rem;">
+          <div style="width:60px; height:60px; border-radius:18px; background:linear-gradient(135deg, var(--primary), var(--accent-violet)); display:flex; align-items:center; justify-content:center; font-size:1.8rem; box-shadow:0 0 20px var(--primary-glow);">
+            🧠
+          </div>
+          <div>
+            <div style="font-family:'Outfit',sans-serif; font-size:1.4rem; font-weight:800;" id="statAgentName">Kess</div>
+            <div style="font-size:0.85rem; color:var(--text-muted);">Autonomous Editorial AI Persona Agent</div>
+          </div>
+        </div>
+      </div>
 
-            <button type="submit" class="btn btn-primary" id="initBtn">
-              Update Domain & Switch AI Loop
-            </button>
-          </form>
+      <!-- Bento 2: Stat Card Total Posts (Span 2) -->
+      <div class="bento-card span-2" style="display:flex; flex-direction:column; justify-content:center; text-align:center;">
+        <div style="font-size:2rem; margin-bottom:0.2rem;">✨</div>
+        <div style="font-family:'Outfit',sans-serif; font-size:1.8rem; font-weight:900;" id="statCount">0</div>
+        <div style="font-size:0.75rem; color:var(--text-dim); text-transform:uppercase; font-weight:700;">Posts Published</div>
+      </div>
 
-          <button type="button" class="btn btn-secondary" id="triggerBtn" onclick="handleTriggerCycle(event)">
-            ⚡ Trigger Real-Time AI Discovery
-          </button>
+      <!-- Bento 3: Stat Card Poll Stream (Span 2) -->
+      <div class="bento-card span-2" style="display:flex; flex-direction:column; justify-content:center; text-align:center;">
+        <div style="font-size:2rem; margin-bottom:0.2rem;">⚡</div>
+        <div style="font-family:'Outfit',sans-serif; font-size:1.8rem; font-weight:900; color:var(--accent-emerald);">3s</div>
+        <div style="font-size:0.75rem; color:var(--text-dim); text-transform:uppercase; font-weight:700;">Live Poll Stream</div>
+      </div>
 
-          <div class="profile-box" id="profileBox">
-            <div class="card-title" style="font-size: 0.95rem;">
-              <span>🧠</span> Derived Voice Profile
-            </div>
-            <div id="profileContent">
-              <p style="font-size: 0.8rem; color: var(--text-dim);">Loading voice profile...</p>
-            </div>
+      <!-- Bento 4: Stat Card Git Sync (Span 2) -->
+      <div class="bento-card span-2" style="display:flex; flex-direction:column; justify-content:center; text-align:center;">
+        <div style="font-size:2rem; margin-bottom:0.2rem;">📦</div>
+        <div style="font-family:'Outfit',sans-serif; font-size:1.8rem; font-weight:900; color:var(--accent-pink);">10s</div>
+        <div style="font-size:0.75rem; color:var(--text-dim); text-transform:uppercase; font-weight:700;">GitHub Auto-Sync</div>
+      </div>
+
+      <!-- Bento 5: Topic & Persona Form Controller (Span 4) -->
+      <div class="bento-card span-4">
+        <div class="card-title">
+          <div class="card-title-left">
+            <span>⚙️</span> Topic & Persona Controller
           </div>
         </div>
 
-        <div class="bento-card">
-          <div class="card-title">
-            <span>🎨</span> 3D WebGL Controls
-          </div>
+        <form id="initForm" onsubmit="handleInitSubmit(event)">
           <div class="form-group">
-            <label for="sceneStyle">3D Geometry Lattice</label>
-            <select id="sceneStyle" onchange="change3DStyle(this.value)">
-              <option value="icosahedron">Neural Icosahedron Mesh</option>
-              <option value="torus">Quantum Torus Lattice</option>
-              <option value="octahedron">Cyber Octahedron Crystal</option>
+            <label for="presetSelect">Quick Topic Preset</label>
+            <select id="presetSelect" onchange="handlePresetChange(this)">
+              <option value="AI Security">AI Security & Vulnerability Research</option>
+              <option value="Blockchain & Cryptography">Blockchain & Cryptography</option>
+              <option value="Fintech & Banking Security">Fintech & Banking Security</option>
+              <option value="Quantum Computing">Quantum Computing</option>
+              <option value="Autonomous Robotics">Autonomous Robotics & Control</option>
+              <option value="Cloud Native Infrastructure">Cloud Native Infrastructure</option>
             </select>
           </div>
-        </div>
-      </aside>
+          <div class="form-group">
+            <label for="domainInput">Active Domain / Topic</label>
+            <input type="text" id="domainInput" value="AI Security" required onchange="handleDomainChange()">
+          </div>
+          <div class="form-group">
+            <label for="nameInput">Persona Name</label>
+            <input type="text" id="nameInput" value="Kess" required>
+          </div>
+          <div class="form-group">
+            <label for="agentIdInput">Agent ID</label>
+            <input type="text" id="agentIdInput" value="kess-security-bot" required onchange="handleAgentIdChange()">
+          </div>
 
-      <!-- Right Column: Tabs & Main Content -->
-      <section>
+          <button type="submit" class="btn btn-primary" id="initBtn">
+            Update Domain & Switch AI Loop
+          </button>
+        </form>
+
+        <button type="button" class="btn btn-secondary" id="triggerBtn" onclick="handleTriggerCycle(event)">
+          ⚡ Trigger Real-Time AI Discovery
+        </button>
+
+        <div class="profile-box" id="profileBox">
+          <div style="font-family:'Outfit',sans-serif; font-size:0.95rem; font-weight:700; margin-bottom:0.6rem;">
+            🧠 Active Voice Profile
+          </div>
+          <div id="profileContent">
+            <p style="font-size: 0.8rem; color: var(--text-dim);">Loading profile...</p>
+          </div>
+        </div>
+
+        <div style="margin-top:1.2rem; padding-top:1rem; border-top:1px solid var(--bento-border);">
+          <label for="sceneStyle">3D WebGL Mesh Geometry</label>
+          <select id="sceneStyle" onchange="change3DStyle(this.value)">
+            <option value="icosahedron">Neural Icosahedron Core</option>
+            <option value="torus">Quantum Torus Lattice</option>
+            <option value="octahedron">Cyber Octahedron Crystal</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Bento 6: Main Live Feed Stream (Span 8) -->
+      <div class="bento-card span-8">
         <div class="nav-tabs">
           <button class="tab-btn active" id="tabFeed" onclick="switchTab('feed')">
             <span>🔥</span> Live AI Stream
           </button>
           <button class="tab-btn" id="tabSystem" onclick="switchTab('system')">
-            <span>⚙️</span> System & NVIDIA AI Specs
+            <span>⚙️</span> System Specs
           </button>
         </div>
 
-        <!-- Tab 1: Live Stream -->
+        <!-- Tab 1: Feed Stream -->
         <div id="tabContentFeed">
-          <div class="feed-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.2rem;">
-            <div style="font-family:'Outfit',sans-serif; font-size:1.35rem; font-weight:700; display:flex; align-items:center; gap:0.6rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.2rem;">
+            <div style="font-family:'Outfit',sans-serif; font-size:1.3rem; font-weight:700; display:flex; align-items:center; gap:0.6rem;">
               <span style="display:inline-block; width:10px; height:10px; background:var(--accent-pink); border-radius:50%; box-shadow:0 0 10px var(--accent-pink); animation:pulse 1.5s infinite;"></span>
-              Real-Time Generated Feed Stream
+              Real-Time Content Feed Stream
             </div>
             <button type="button" class="copy-btn" id="manualRefreshBtn" onclick="handleManualRefresh(event)" style="padding:0.5rem 1rem; font-size:0.85rem;">
               🔄 Refresh Stream
@@ -754,62 +732,58 @@
           </div>
         </div>
 
-        <!-- Tab 2: System Specs & NVIDIA Model -->
+        <!-- Tab 2: System Specs -->
         <div id="tabContentSystem" style="display: none;">
-          <div class="bento-card">
-            <div class="card-title">
-              <span>🚀</span> NVIDIA AI & Engine Specification
-            </div>
-            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.2rem;">
-              The Autonomous AI Creator executes continuous background cycles powered by NVIDIA AI API and PostgreSQL 18.
-            </p>
-            <table class="log-table">
-              <thead>
-                <tr>
-                  <th>Component</th>
-                  <th>Configured Provider / Details</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><strong>AI Generation API</strong></td>
-                  <td>NVIDIA API (`integrate.api.nvidia.com/v1/chat/completions`)</td>
-                  <td><span class="badge-accepted">ONLINE</span></td>
-                </tr>
-                <tr>
-                  <td><strong>Target AI Model</strong></td>
-                  <td>`google/diffusiongemma-26b-a4b-it`</td>
-                  <td><span class="badge-accepted">ACTIVE</span></td>
-                </tr>
-                <tr>
-                  <td><strong>Database Layer</strong></td>
-                  <td>PostgreSQL 18 (`autonomous_ai_creator`)</td>
-                  <td><span class="badge-accepted">CONNECTED</span></td>
-                </tr>
-                <tr>
-                  <td><strong>GitHub Auto-Sync</strong></td>
-                  <td>Continuous 10s Daemon (`auto_push.ps1`)</td>
-                  <td><span class="badge-accepted">SYNCING</span></td>
-                </tr>
-                <tr>
-                  <td><strong>Real-Time Cadence</strong></td>
-                  <td>0.1 - 0.2 minutes (6s - 12s jitter interval)</td>
-                  <td><span class="badge-accepted">ACTIVE</span></td>
-                </tr>
-              </tbody>
-            </table>
+          <div style="font-family:'Outfit',sans-serif; font-size:1.2rem; font-weight:700; margin-bottom:1rem;">
+            🚀 NVIDIA AI & PostgreSQL Specs
           </div>
+          <table class="log-table">
+            <thead>
+              <tr>
+                <th>Component</th>
+                <th>Configured Provider / Details</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>AI Generation API</strong></td>
+                <td>NVIDIA API (`integrate.api.nvidia.com/v1/chat/completions`)</td>
+                <td><span class="badge-accepted">ONLINE</span></td>
+              </tr>
+              <tr>
+                <td><strong>Target AI Model</strong></td>
+                <td>`google/diffusiongemma-26b-a4b-it`</td>
+                <td><span class="badge-accepted">ACTIVE</span></td>
+              </tr>
+              <tr>
+                <td><strong>Database Layer</strong></td>
+                <td>PostgreSQL 18 (`autonomous_ai_creator`)</td>
+                <td><span class="badge-accepted">CONNECTED</span></td>
+              </tr>
+              <tr>
+                <td><strong>GitHub Auto-Sync</strong></td>
+                <td>Continuous 10s Daemon (`auto_push.ps1`)</td>
+                <td><span class="badge-accepted">SYNCING</span></td>
+              </tr>
+              <tr>
+                <td><strong>Real-Time Cadence</strong></td>
+                <td>0.1 - 0.2 minutes (6s - 12s jitter interval)</td>
+                <td><span class="badge-accepted">ACTIVE</span></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-      </section>
-    </main>
+      </div>
+
+    </div>
   </div>
 
   <div id="toast" class="toast"></div>
 
-  <!-- Three.js 3D WebGL Shader Scene Script (Light Mode Adapted) -->
+  <!-- Three.js 3D WebGL Scene Engine -->
   <script>
-    let scene, camera, renderer, coreMesh, particleSystem;
+    let scene, camera, renderer, coreMesh, particleSystem, torusMesh;
 
     function init3D() {
       const canvas = document.getElementById('canvas3d');
@@ -824,33 +798,33 @@
 
       createMeshGeometry('icosahedron');
 
-      // Particle Cloud Orbit
+      // Particle Field
       const particlesGeo = new THREE.BufferGeometry();
-      const count = 450;
+      const count = 500;
       const positions = new Float32Array(count * 3);
 
       for (let i = 0; i < count * 3; i += 3) {
-        positions[i] = (Math.random() - 0.5) * 60;
-        positions[i + 1] = (Math.random() - 0.5) * 60;
-        positions[i + 2] = (Math.random() - 0.5) * 60;
+        positions[i] = (Math.random() - 0.5) * 70;
+        positions[i + 1] = (Math.random() - 0.5) * 70;
+        positions[i + 2] = (Math.random() - 0.5) * 70;
       }
       particlesGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
 
       const particleMat = new THREE.PointsMaterial({
-        size: 0.25,
-        color: 0x4F46E5,
+        size: 0.3,
+        color: 0x10B981,
         transparent: true,
-        opacity: 0.35
+        opacity: 0.5
       });
       particleSystem = new THREE.Points(particlesGeo, particleMat);
       scene.add(particleSystem);
 
       // Lights
-      const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
       scene.add(ambientLight);
 
-      const pointLight = new THREE.PointLight(0x4F46E5, 1.2, 100);
-      pointLight.position.set(12, 12, 12);
+      const pointLight = new THREE.PointLight(0xEC4899, 2, 100);
+      pointLight.position.set(15, 15, 15);
       scene.add(pointLight);
 
       window.addEventListener('resize', onWindowResize);
@@ -872,12 +846,12 @@
       }
 
       const mat = new THREE.MeshStandardMaterial({
-        color: 0x4F46E5,
+        color: 0x6366F1,
         wireframe: true,
         transparent: true,
-        opacity: 0.25,
-        roughness: 0.3,
-        metalness: 0.5
+        opacity: 0.35,
+        roughness: 0.2,
+        metalness: 0.8
       });
       coreMesh = new THREE.Mesh(geo, mat);
       scene.add(coreMesh);
@@ -974,9 +948,12 @@
           renderVoiceProfile(data.voiceProfile);
           if (data.name) {
             document.getElementById('nameInput').value = data.name;
-            document.getElementById('statAgent').innerText = data.name;
+            document.getElementById('statAgentName').innerText = data.name;
           }
-          if (data.domain) document.getElementById('domainInput').value = data.domain;
+          if (data.domain) {
+            document.getElementById('domainInput').value = data.domain;
+            document.getElementById('statDomainBadge').innerText = data.domain;
+          }
         } else {
           document.getElementById('profileContent').innerHTML = `
             <p style="font-size: 0.8rem; color: var(--text-dim);">Agent not initialized yet. Click "Update Domain & Switch AI Loop" above.</p>
@@ -1007,7 +984,8 @@
 
         if (res.ok) {
           renderVoiceProfile(data.voiceProfile);
-          document.getElementById('statAgent').innerText = name;
+          document.getElementById('statAgentName').innerText = name;
+          document.getElementById('statDomainBadge').innerText = domain;
           showToast(`✅ Topic switched to "${domain}"! NVIDIA AI cycle executed.`);
           trigger3DPulse();
           await fetchFeed();
@@ -1080,7 +1058,7 @@
 
       container.innerHTML = `
         <div style="margin-bottom: 0.8rem;">
-          <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">Active Domain: <strong style="color:var(--primary);">${profile.domain || ''}</strong></div>
+          <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">Active Domain: <strong style="color:var(--accent-cyan);">${profile.domain || ''}</strong></div>
           <div class="tag-container" style="margin-top:0.4rem;">${toneTags}</div>
         </div>
         <div>
@@ -1160,9 +1138,9 @@
                 <div class="score-label">Persona Fit</div>
                 <div class="score-val">0.95</div>
               </div>
-              <div class="score-pill" style="border-color: var(--border-accent); background: var(--primary-subtle);">
-                <div class="score-label" style="color:var(--primary);">Composite</div>
-                <div class="score-val" style="color:var(--primary);">0.92</div>
+              <div class="score-pill" style="border-color: var(--primary); background: rgba(99, 102, 241, 0.15);">
+                <div class="score-label" style="color:#A5B4FC;">Composite</div>
+                <div class="score-val" style="color:#A5B4FC;">0.92</div>
               </div>
             </div>
 
