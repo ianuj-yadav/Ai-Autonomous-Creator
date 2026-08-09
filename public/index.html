@@ -3,40 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Autonomous AI Creator — Neobrutalist Bento Studio</title>
+  <title>ASCEND — A Daily Practice for Inner Growth & Autonomous Mind</title>
 
-  <!-- Google Fonts: Space Grotesk, Outfit, Inter & JetBrains Mono -->
+  <!-- Google Fonts: Manrope (display/headings), Inter (body/nav), IBM Plex Mono (kicker/captions) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800;900&family=Space+Grotesk:wght@500;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700;800&display=swap" rel="stylesheet">
 
   <style>
+    /* ── DESIGN SYSTEM TOKENS ───────────────────────────────────────── */
     :root {
-      --bg-cream: #FDFBF7;
-      --card-white: #FFFFFF;
-      --border-black: #111827;
+      --bg-paper-top: #f4f3ef;
+      --bg-paper-bottom: #eceae3;
+      --ink: #191b1e;
+      --ink-muted: rgba(25, 27, 30, 0.62);
+      --ink-dim: rgba(25, 27, 30, 0.42);
+      --border-hairline: rgba(25, 27, 30, 0.12);
+      --slate-accent: #5c6b78;
       
-      --accent-orange: #FF5722;
-      --accent-orange-light: #FFEBE5;
-      --accent-yellow: #FFC700;
-      --accent-yellow-light: #FFF9E6;
-      --accent-green: #00E676;
-      --accent-green-light: #E6FDF0;
-      --accent-pink: #FF3366;
-      --accent-pink-light: #FFE6EC;
-      --accent-cyan: #00B0FF;
-      --accent-cyan-light: #E6F7FF;
+      --font-display: 'Manrope', sans-serif;
+      --font-body: 'Inter', sans-serif;
+      --font-mono: 'IBM Plex Mono', monospace;
 
-      --text-black: #111827;
-      --text-muted: #4B5563;
-      --text-dim: #6B7280;
-
-      --brutal-shadow: 6px 6px 0px #111827;
-      --brutal-shadow-lg: 10px 10px 0px #111827;
-      --brutal-shadow-orange: 8px 8px 0px #FF5722;
-      --brutal-shadow-yellow: 6px 6px 0px #FFC700;
-      --brutal-shadow-green: 6px 6px 0px #00E676;
-      --brutal-shadow-pink: 6px 6px 0px #FF3366;
+      --brutal-border: 3.5px solid #111827;
+      --brutal-shadow: 5px 5px 0px #111827;
     }
 
     * {
@@ -45,1188 +35,802 @@
       padding: 0;
     }
 
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: var(--bg-cream);
-      background-image: radial-gradient(#111827 1.2px, transparent 1.2px);
-      background-size: 24px 24px;
-      color: var(--text-black);
-      min-height: 100vh;
-      line-height: 1.6;
-      overflow-x: hidden;
+    html, body {
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+      background: var(--bg-paper-top);
+      font-family: var(--font-body);
+      color: var(--ink);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
-    .app-wrapper {
+    /* ── FIXED BACKDROP & GRAIN LAYER ────────────────────────────────── */
+    .fixed-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background: linear-gradient(180deg, var(--bg-paper-top) 0%, var(--bg-paper-bottom) 100%);
+    }
+
+    .fixed-backdrop::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(120% 90% at 50% 40%, rgba(92, 107, 120, 0.09), transparent 52%),
+                  linear-gradient(180deg, transparent 80%, rgba(25, 27, 30, 0.04) 100%);
+    }
+
+    .fixed-grain {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      opacity: 0.35;
+      background-image: radial-gradient(rgba(25, 27, 30, 0.05) 1px, transparent 0);
+      background-size: 4px 4px;
+      mask-image: radial-gradient(circle at 50% 50%, black 30%, transparent 80%);
+      -webkit-mask-image: radial-gradient(circle at 50% 50%, black 30%, transparent 80%);
+    }
+
+    /* ── HALFTONE ARTWORK (CENTERPIECE BEHIND TEXT) ─────────────────── */
+    .center-art {
+      position: fixed;
+      left: 50%;
+      top: 52%;
+      width: min(1180px, 96vw);
+      height: auto;
+      z-index: 2;
+      pointer-events: none;
+      mix-blend-mode: multiply;
+      opacity: 0.92;
+      transform: translate(-50%, -50%);
+      will-change: transform, opacity;
+      animation: kenburns 22s infinite alternate cubic-bezier(0.4, 0, 0.2, 1),
+                 softIn 1.6s ease-out forwards;
+      transform-origin: 50% 48%;
+    }
+
+    @keyframes kenburns {
+      from { transform: translate(-50%, -50%) scale(1); }
+      to { transform: translate(-50%, -50%) scale(1.04); }
+    }
+
+    @keyframes softIn {
+      from { opacity: 0; }
+      to { opacity: 0.92; }
+    }
+
+    /* ── LEGIBILITY BLOOM (LIFTS HEADLINE OFF ARTWORK) ──────────────── */
+    .art-glow {
+      position: fixed;
+      left: 50%;
+      top: 52%;
+      transform: translate(-50%, -50%);
+      width: min(760px, 80vw);
+      aspect-ratio: 1.5;
+      z-index: 3;
+      pointer-events: none;
+      background: radial-gradient(ellipse at center, rgba(244,243,239,0.94) 0%, rgba(244,243,239,0.65) 34%, transparent 68%);
+    }
+
+    /* ── MAIN LAYOUT SHELL ───────────────────────────────────────────── */
+    .app-shell {
       position: relative;
       z-index: 10;
-    }
-
-    /* Neobrutalist Header */
-    header {
-      background: var(--card-white);
-      border-bottom: 3.5px solid var(--border-black);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      padding: 1rem 2rem;
-    }
-
-    .header-container {
-      max-width: 1440px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-
-    .brand-logo {
-      width: 48px;
-      height: 48px;
-      background: var(--accent-orange);
-      border: 3.5px solid var(--border-black);
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: 'Space Grotesk', sans-serif;
-      font-weight: 800;
-      font-size: 1.4rem;
-      color: #FFF;
-      box-shadow: 4px 4px 0px var(--border-black);
-    }
-
-    .brand-title {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.6rem;
-      font-weight: 800;
-      color: var(--text-black);
-      letter-spacing: -0.03em;
-    }
-
-    .status-badge {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      background: var(--accent-green-light);
-      border: 3.5px solid var(--border-black);
-      color: var(--text-black);
-      padding: 0.45rem 1.1rem;
-      border-radius: 9999px;
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.9rem;
-      font-weight: 700;
-      box-shadow: 4px 4px 0px var(--border-black);
-    }
-
-    .status-dot {
-      width: 10px;
-      height: 10px;
-      background-color: var(--accent-green);
-      border: 2px solid var(--border-black);
-      border-radius: 50%;
-      animation: pulse 1.8s infinite;
-    }
-
-    @keyframes pulse {
-      0% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.4; transform: scale(0.85); }
-      100% { opacity: 1; transform: scale(1); }
-    }
-
-    /* Bento Grid Container */
-    .bento-grid {
-      max-width: 1440px;
-      margin: 2rem auto 3rem;
-      padding: 0 1.5rem;
-      display: grid;
-      grid-template-columns: repeat(12, 1fr);
-      gap: 1.6rem;
-    }
-
-    /* Bento Card Base */
-    .bento-card {
-      background: var(--card-white);
-      border: 3.5px solid var(--border-black);
-      border-radius: 20px;
-      padding: 1.8rem;
-      box-shadow: var(--brutal-shadow);
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-      position: relative;
-    }
-
-    .bento-card:hover {
-      transform: translate(-3px, -3px);
-      box-shadow: var(--brutal-shadow-lg);
-    }
-
-    .span-12 { grid-column: span 12; }
-    .span-8 { grid-column: span 8; }
-    .span-6 { grid-column: span 6; }
-    .span-4 { grid-column: span 4; }
-    .span-2 { grid-column: span 2; }
-
-    @media (max-width: 1080px) {
-      .span-8, .span-6, .span-4, .span-2 { grid-column: span 12; }
-    }
-
-    .card-title {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.3rem;
-      font-weight: 800;
-      color: var(--text-black);
-      margin-bottom: 1.2rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    /* Form Controls */
-    .form-group {
-      margin-bottom: 1.2rem;
-    }
-
-    label {
-      display: block;
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.88rem;
-      font-weight: 700;
-      color: var(--text-black);
-      margin-bottom: 0.45rem;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-
-    input, select {
       width: 100%;
-      background: #FFF;
-      border: 3.5px solid var(--border-black);
-      border-radius: 12px;
-      padding: 0.85rem 1.1rem;
-      color: var(--text-black);
-      font-family: 'Inter', sans-serif;
-      font-weight: 600;
-      font-size: 0.98rem;
-      outline: none;
-      box-shadow: 3px 3px 0px var(--border-black);
-      transition: all 0.15s ease;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
 
-    input:focus, select:focus {
-      background: var(--accent-yellow-light);
-      transform: translate(-2px, -2px);
-      box-shadow: 5px 5px 0px var(--border-black);
+    /* ── STAGGERED ENTRANCE MOTION ───────────────────────────────────── */
+    @keyframes blurFadeUp {
+      from {
+        opacity: 0;
+        filter: blur(20px);
+        transform: translateY(38px);
+      }
+      to {
+        opacity: 1;
+        filter: blur(0);
+        transform: translateY(0);
+      }
     }
 
-    /* Neobrutalist Buttons */
-    .btn {
+    .rise {
+      opacity: 0;
+      animation: blurFadeUp 1s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+    }
+
+    /* ── TOP NAVIGATION ──────────────────────────────────────────────── */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 30px 56px;
       width: 100%;
-      border: 3.5px solid var(--border-black);
-      border-radius: 14px;
-      padding: 1rem;
-      font-family: 'Space Grotesk', sans-serif;
-      font-weight: 800;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: all 0.15s ease;
+    }
+
+    .wordmark-group {
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 0.6rem;
-      text-transform: uppercase;
-      letter-spacing: 0.02em;
-    }
-
-    .btn-primary {
-      background: var(--accent-orange);
-      color: #FFF;
-      box-shadow: 5px 5px 0px var(--border-black);
-      margin-bottom: 0.9rem;
-    }
-
-    .btn-primary:hover {
-      transform: translate(-3px, -3px);
-      box-shadow: 8px 8px 0px var(--border-black);
-    }
-
-    .btn-primary:active {
-      transform: translate(2px, 2px);
-      box-shadow: 2px 2px 0px var(--border-black);
-    }
-
-    .btn-secondary {
-      background: var(--accent-yellow);
-      color: var(--text-black);
-      box-shadow: 5px 5px 0px var(--border-black);
-    }
-
-    .btn-secondary:hover {
-      transform: translate(-3px, -3px);
-      box-shadow: 8px 8px 0px var(--border-black);
-    }
-
-    .btn-secondary:active {
-      transform: translate(2px, 2px);
-      box-shadow: 2px 2px 0px var(--border-black);
-    }
-
-    /* Voice Profile Box */
-    .profile-box {
-      margin-top: 1.4rem;
-      padding-top: 1.2rem;
-      border-top: 3.5px dashed var(--border-black);
-    }
-
-    .tag-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-top: 0.6rem;
-    }
-
-    .tag {
-      background: var(--accent-cyan-light);
-      color: var(--text-black);
-      border: 2.5px solid var(--border-black);
-      padding: 0.35rem 0.8rem;
-      border-radius: 10px;
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.82rem;
-      font-weight: 700;
-      box-shadow: 3px 3px 0px var(--border-black);
-    }
-
-    .stance-item {
-      font-size: 0.88rem;
-      font-weight: 500;
-      color: var(--text-black);
-      margin-top: 0.6rem;
-      padding: 0.6rem 0.9rem;
-      background: var(--accent-yellow-light);
-      border: 2.5px solid var(--border-black);
-      border-radius: 10px;
-      box-shadow: 3px 3px 0px var(--border-black);
-    }
-
-    /* Tabs */
-    .nav-tabs {
-      display: flex;
-      gap: 0.8rem;
-      margin-bottom: 1.6rem;
-    }
-
-    .tab-btn {
-      background: #FFF;
-      border: 3.5px solid var(--border-black);
-      color: var(--text-black);
-      padding: 0.8rem 1.4rem;
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 1rem;
-      font-weight: 800;
-      cursor: pointer;
-      border-radius: 14px;
-      box-shadow: 4px 4px 0px var(--border-black);
-      transition: all 0.15s ease;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .tab-btn:hover {
-      transform: translate(-2px, -2px);
-      box-shadow: 6px 6px 0px var(--border-black);
-    }
-
-    .tab-btn.active {
-      background: var(--accent-orange);
-      color: #FFF;
-      transform: translate(-2px, -2px);
-      box-shadow: 6px 6px 0px var(--border-black);
-    }
-
-    /* Feed Stream Cards */
-    .post-card {
-      background: #FFF;
-      border: 3.5px solid var(--border-black);
-      border-radius: 20px;
-      padding: 1.8rem;
-      margin-bottom: 1.6rem;
-      box-shadow: 6px 6px 0px var(--border-black);
-      animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    @keyframes slideUp {
-      from { opacity: 0; transform: translateY(16px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .post-meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1.2rem;
-    }
-
-    .post-time {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: var(--text-muted);
-    }
-
-    .post-id {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.8rem;
-      font-weight: 700;
-      color: var(--text-black);
-      background: var(--accent-cyan-light);
-      border: 2px solid var(--border-black);
-      padding: 0.25rem 0.65rem;
-      border-radius: 8px;
-      box-shadow: 2px 2px 0px var(--border-black);
-    }
-
-    .post-text {
-      font-size: 1.05rem;
-      color: var(--text-black);
-      font-weight: 500;
-      line-height: 1.75;
-      margin-bottom: 1.4rem;
-      white-space: pre-wrap;
-    }
-
-    /* 4-Axis Score Grid */
-    .score-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 0.8rem;
-      margin-bottom: 1.2rem;
-    }
-
-    @media (max-width: 640px) {
-      .score-grid { grid-template-columns: repeat(2, 1fr); }
-    }
-
-    .score-pill {
-      background: var(--accent-yellow-light);
-      border: 2.5px solid var(--border-black);
-      padding: 0.6rem 0.8rem;
-      border-radius: 12px;
-      text-align: center;
-      box-shadow: 3px 3px 0px var(--border-black);
-    }
-
-    .score-label {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.72rem;
-      color: var(--text-black);
-      text-transform: uppercase;
-      font-weight: 800;
-      letter-spacing: 0.05em;
-    }
-
-    .score-val {
-      font-family: 'Outfit', sans-serif;
-      font-weight: 900;
-      font-size: 1.1rem;
-      color: var(--accent-orange);
-    }
-
-    .rationale-box {
-      background: var(--accent-orange-light);
-      border: 3px solid var(--border-black);
-      border-radius: 16px;
-      padding: 1.3rem;
-      margin-top: 1.1rem;
-      box-shadow: 4px 4px 0px var(--border-black);
-    }
-
-    .rationale-header {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.9rem;
-      font-weight: 800;
-      color: var(--text-black);
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      margin-bottom: 0.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .rationale-text {
-      font-size: 0.9rem;
-      color: var(--text-black);
-      line-height: 1.6;
-      font-weight: 500;
-    }
-
-    .sources-box {
-      margin-top: 0.9rem;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.6rem;
-    }
-
-    .source-link {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.82rem;
-      color: var(--text-black);
+      gap: 11px;
       text-decoration: none;
-      background: var(--accent-green-light);
-      border: 2px solid var(--border-black);
-      padding: 0.35rem 0.8rem;
-      border-radius: 8px;
-      font-weight: 700;
-      box-shadow: 2px 2px 0px var(--border-black);
-      transition: all 0.15s ease;
-      word-break: break-all;
-      max-width: 100%;
-      display: inline-block;
-    }
-
-    .source-link:hover {
-      transform: translate(-1px, -1px);
-      box-shadow: 4px 4px 0px var(--border-black);
-    }
-
-    .copy-btn {
-      background: var(--accent-yellow);
-      border: 2px solid var(--border-black);
-      color: var(--text-black);
-      padding: 0.4rem 0.85rem;
-      border-radius: 8px;
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.8rem;
-      font-weight: 800;
+      color: var(--ink);
       cursor: pointer;
-      box-shadow: 2px 2px 0px var(--border-black);
-      transition: all 0.15s ease;
     }
 
-    .copy-btn:hover {
-      transform: translate(-1px, -1px);
-      box-shadow: 4px 4px 0px var(--border-black);
+    .brand-chevron-svg {
+      width: 17px;
+      height: 17px;
+      color: var(--slate-accent);
+      flex-shrink: 0;
     }
 
-    /* Neobrutalist Sliding Pagination Controls */
-    .pagination-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 0.8rem;
-      margin-top: 2rem;
-      padding: 1rem 1.2rem;
-      background: var(--accent-yellow-light);
-      border: 3.5px solid var(--border-black);
-      border-radius: 20px;
-      box-shadow: 6px 6px 0px var(--border-black);
-      max-width: 100%;
-      overflow: hidden;
-    }
-
-    .page-info {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.88rem;
+    .wordmark-text {
+      font-family: var(--font-display);
       font-weight: 800;
-      color: var(--text-black);
-      background: #FFF;
-      border: 2.5px solid var(--border-black);
-      padding: 0.4rem 0.8rem;
-      border-radius: 10px;
-      box-shadow: 2px 2px 0px var(--border-black);
-      white-space: nowrap;
-    }
-
-    .page-btn {
-      background: var(--accent-orange);
-      border: 3px solid var(--border-black);
-      color: #FFF;
-      padding: 0.55rem 1.1rem;
-      border-radius: 12px;
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.88rem;
-      font-weight: 800;
-      cursor: pointer;
-      box-shadow: 3px 3px 0px var(--border-black);
-      transition: all 0.15s ease;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
+      font-size: 20px;
+      letter-spacing: 0.05em;
+      color: var(--ink);
       text-transform: uppercase;
-      white-space: nowrap;
     }
 
-    .page-btn:hover:not(:disabled) {
-      transform: translate(-2px, -2px);
-      box-shadow: 5px 5px 0px var(--border-black);
-    }
-
-    .page-btn:disabled {
-      opacity: 0.45;
-      cursor: not-allowed;
-      box-shadow: none;
-      transform: none;
-      background: #E5E7EB;
-      color: var(--text-muted);
-    }
-
-    .page-numbers {
+    .nav-center-links {
       display: flex;
       align-items: center;
-      flex-wrap: wrap;
-      gap: 0.4rem;
-      max-width: 100%;
+      gap: 36px;
+      list-style: none;
     }
 
-    .page-num-pill {
-      min-width: 36px;
-      height: 36px;
-      padding: 0 0.4rem;
-      border: 2.5px solid var(--border-black);
-      border-radius: 10px;
-      background: #FFF;
-      color: var(--text-black);
-      font-family: 'Space Grotesk', sans-serif;
-      font-weight: 800;
-      font-size: 0.9rem;
+    .nav-link {
+      font-family: var(--font-body);
+      font-weight: 500;
+      font-size: 14.5px;
+      color: var(--ink-muted);
+      text-decoration: none;
+      transition: color 0.25s ease;
       cursor: pointer;
+    }
+
+    .nav-link:hover, .nav-link.active {
+      color: var(--ink);
+    }
+
+    .nav-actions {
       display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .btn-link-login {
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: 14.5px;
+      color: var(--ink-muted);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 8px 12px;
+      transition: color 0.2s ease;
+    }
+
+    .btn-link-login:hover {
+      color: var(--ink);
+    }
+
+    .btn-nav-cta {
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 14.5px;
+      color: var(--bg-paper-top);
+      background: var(--ink);
+      border: none;
+      padding: 11px 24px;
+      border-radius: 9999px;
+      cursor: pointer;
+      box-shadow: 0 10px 26px -12px rgba(25, 27, 30, 0.5);
+      transition: all 0.2s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-nav-cta:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 30px -10px rgba(25, 27, 30, 0.65);
+    }
+
+    /* ── CENTERED HERO SECTION ───────────────────────────────────────── */
+    .hero-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      box-shadow: 2px 2px 0px var(--border-black);
-      transition: all 0.15s ease;
-    }
-
-    .page-num-pill:hover {
-      transform: translate(-2px, -2px);
-      box-shadow: 5px 5px 0px var(--border-black);
-      background: var(--accent-yellow);
-    }
-
-    .page-num-pill.active {
-      background: var(--accent-orange);
-      color: #FFF;
-      transform: translate(-2px, -2px);
-      box-shadow: 5px 5px 0px var(--border-black);
-    }
-
-    .empty-feed {
       text-align: center;
-      padding: 4rem;
-      font-family: 'Space Grotesk', sans-serif;
-      font-weight: 700;
-      color: var(--text-muted);
-      background: #FFF;
-      border: 3.5px dashed var(--border-black);
-      border-radius: 20px;
+      padding: 0 24px 20px;
+      max-width: 1080px;
+      margin: 0 auto;
     }
 
-    .log-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.9rem;
+    .hero-kicker-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 30px;
     }
 
-    .log-table th, .log-table td {
-      padding: 1rem 1.1rem;
-      text-align: left;
-      border-bottom: 2.5px solid var(--border-black);
+    .kicker-rule {
+      width: 28px;
+      height: 1px;
+      background-color: var(--slate-accent);
+      opacity: 0.6;
     }
 
-    .log-table th {
-      font-family: 'Space Grotesk', sans-serif;
-      color: var(--text-black);
-      font-weight: 800;
+    .kicker-text {
+      font-family: var(--font-mono);
+      font-weight: 500;
+      font-size: 12px;
+      letter-spacing: 0.4em;
       text-transform: uppercase;
-      font-size: 0.8rem;
+      color: var(--slate-accent);
     }
 
-    .badge-accepted {
-      background: var(--accent-green-light);
-      color: var(--text-black);
-      border: 2px solid var(--border-black);
-      padding: 0.25rem 0.7rem;
-      border-radius: 8px;
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.78rem;
+    .hero-h1 {
+      font-family: var(--font-display);
+      font-size: clamp(44px, 5.8vw, 84px);
+      line-height: 1.02;
+      letter-spacing: -0.04em;
+      color: var(--ink);
+      margin-bottom: 28px;
+    }
+
+    .hero-h1-line1 {
+      display: block;
+      font-weight: 400;
+      color: rgba(25, 27, 30, 0.82);
+    }
+
+    .hero-h1-line2 {
+      display: block;
       font-weight: 800;
-      box-shadow: 2px 2px 0px var(--border-black);
+      color: var(--ink);
     }
 
-    /* Toast Notification */
-    .toast {
+    .hero-sub {
+      font-family: var(--font-body);
+      font-weight: 400;
+      font-size: clamp(16px, 1.35vw, 19px);
+      color: var(--ink-muted);
+      max-width: 500px;
+      line-height: 1.55;
+      margin-bottom: 40px;
+    }
+
+    .btn-hero-primary {
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 15.5px;
+      color: var(--bg-paper-top);
+      background: var(--ink);
+      border: none;
+      padding: 16px 36px;
+      border-radius: 9999px;
+      cursor: pointer;
+      box-shadow: 0 14px 34px -12px rgba(25, 27, 30, 0.45);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .btn-hero-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 40px -10px rgba(25, 27, 30, 0.65);
+      background: #000;
+    }
+
+    .arrow-icon-svg {
+      width: 16px;
+      height: 16px;
+      stroke-width: 2.2;
+      transition: transform 0.2s ease;
+    }
+
+    .btn-hero-primary:hover .arrow-icon-svg {
+      transform: translateX(3px);
+    }
+
+    /* ── CORNER CAPTIONS ────────────────────────────────────────────── */
+    .caption-left {
       position: fixed;
-      bottom: 24px;
-      right: 24px;
-      background: var(--accent-orange);
-      border: 3.5px solid var(--border-black);
-      color: #FFF;
-      padding: 1rem 1.5rem;
-      border-radius: 14px;
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.95rem;
-      font-weight: 800;
-      box-shadow: 6px 6px 0px var(--border-black);
+      left: 56px;
+      bottom: 30px;
+      z-index: 11;
+      font-family: var(--font-mono);
+      font-weight: 500;
+      font-size: 11.5px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-dim);
+    }
+
+    .caption-right {
+      position: fixed;
+      right: 56px;
+      bottom: 30px;
+      z-index: 11;
+      font-family: var(--font-mono);
+      font-weight: 500;
+      font-size: 11.5px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-dim);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ── SAAS EMAIL SIGNUP & STUDIO MODAL OVERLAY ──────────────────── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
       z-index: 1000;
+      background: rgba(25, 27, 30, 0.45);
+      backdrop-filter: blur(10px);
       display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
       animation: fadeIn 0.25s ease;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(12px); }
-      to { opacity: 1; transform: translateY(0); }
+    .modal-card {
+      background: var(--bg-paper-top);
+      border: 3.5px solid var(--ink);
+      border-radius: 24px;
+      padding: 2.4rem;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: 12px 12px 0px var(--ink);
+      position: relative;
     }
 
-    .spinner {
-      border: 3px solid rgba(255,255,255,0.4);
-      border-left-color: #FFF;
+    .modal-close-btn {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      background: transparent;
+      border: 2px solid var(--ink);
       border-radius: 50%;
-      width: 18px;
-      height: 18px;
-      animation: spin 0.8s linear infinite;
+      width: 32px;
+      height: 32px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    @keyframes spin { 100% { transform: rotate(360deg); } }
+    .modal-title {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 1.6rem;
+      margin-bottom: 0.4rem;
+      color: var(--ink);
+    }
+
+    .modal-sub {
+      font-size: 0.92rem;
+      color: var(--ink-muted);
+      margin-bottom: 1.6rem;
+      line-height: 1.5;
+    }
+
+    .form-group-modal {
+      margin-bottom: 1.2rem;
+    }
+
+    .form-label-modal {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.4rem;
+      color: var(--ink);
+    }
+
+    .input-modal {
+      width: 100%;
+      background: #FFF;
+      border: 3px solid var(--ink);
+      border-radius: 14px;
+      padding: 0.85rem 1.1rem;
+      font-family: var(--font-body);
+      font-size: 0.98rem;
+      color: var(--ink);
+      outline: none;
+      box-shadow: 3px 3px 0px var(--ink);
+      transition: all 0.15s ease;
+    }
+
+    .input-modal:focus {
+      background: #FFF9E6;
+      box-shadow: 5px 5px 0px var(--ink);
+    }
+
+    .btn-modal-submit {
+      width: 100%;
+      background: var(--ink);
+      color: var(--bg-paper-top);
+      border: 3px solid var(--ink);
+      border-radius: 14px;
+      padding: 0.95rem;
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: 4px 4px 0px var(--slate-accent);
+      transition: all 0.15s ease;
+      margin-top: 0.8rem;
+    }
+
+    .btn-modal-submit:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0px var(--ink);
+    }
+
+    .automation-badge {
+      margin-top: 1.2rem;
+      padding: 0.8rem;
+      background: rgba(92, 107, 120, 0.1);
+      border: 2px dashed var(--slate-accent);
+      border-radius: 12px;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--slate-accent);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ── AUTONOMOUS AI CREATOR STUDIO WORKSPACE PANEL ──────────────── */
+    .studio-panel {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 500;
+      background: var(--bg-paper-top);
+      overflow-y: auto;
+      padding: 2rem;
+    }
+
+    .studio-header {
+      max-width: 1320px;
+      margin: 0 auto 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 3px solid var(--ink);
+      padding-bottom: 1.2rem;
+    }
+
+    .studio-grid {
+      max-width: 1320px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 2rem;
+    }
+
+    @media (max-width: 960px) {
+      .studio-grid { grid-template-columns: 1fr; }
+    }
+
+    .bento-card {
+      background: #FFF;
+      border: 3.5px solid var(--ink);
+      border-radius: 20px;
+      padding: 1.6rem;
+      box-shadow: 6px 6px 0px var(--ink);
+    }
+
+    /* ── REDUCED MOTION ──────────────────────────────────────────────── */
+    @media (prefers-reduced-motion: reduce) {
+      .rise {
+        opacity: 1 !important;
+        animation: none !important;
+        filter: none !important;
+        transform: none !important;
+      }
+
+      .center-art {
+        animation: none !important;
+        opacity: 0.92 !important;
+        transform: translate(-50%, -50%) scale(1) !important;
+      }
+    }
+
+    /* ── RESPONSIVE BREAKPOINTS ─────────────────────────────────────── */
+    @media (max-width: 960px) {
+      nav { padding: 20px 24px; }
+      .nav-center-links, .caption-left, .caption-right { display: none !important; }
+      .center-art { width: 150vw; }
+      .hero-h1 { font-size: 42px; }
+    }
   </style>
 </head>
 <body>
 
-  <div class="app-wrapper">
-    <header>
-      <div class="header-container">
-        <div class="brand">
-          <div class="brand-logo">AI</div>
-          <div class="brand-title">Autonomous AI Creator</div>
-        </div>
-        <div class="status-badge">
-          <div class="status-dot"></div>
-          NVIDIA AI & PostgreSQL 18 Online
-        </div>
-      </div>
-    </header>
+  <!-- FIXED BACKDROP & PAPER GRAIN -->
+  <div class="fixed-backdrop"></div>
+  <div class="fixed-grain"></div>
 
-    <!-- Neobrutalist Bento Grid -->
-    <div class="bento-grid">
+  <!-- CENTERED HALFTONE ARTWORK (CREATION-OF-ADAM HANDS) -->
+  <img 
+    src="ascend.png" 
+    alt="ASCEND Reaching Hands Halftone Illustration" 
+    class="center-art"
+    onerror="this.onerror=null; this.src='https://zxdefgavgwfxastwmmjm.supabase.co/storage/v1/object/public/assets/ascend.png';"
+  />
 
-      <!-- Bento 1: Hero Persona Card (Span 6) -->
-      <div class="bento-card span-6" style="box-shadow: var(--brutal-shadow-orange);">
-        <div class="card-title">
-          <div style="display:flex; align-items:center; gap:0.6rem;">
-            <span>🤖</span> Active Persona Studio
-          </div>
-          <span style="font-size:0.8rem; background:var(--accent-yellow); border:2px solid var(--border-black); padding:0.25rem 0.75rem; border-radius:8px; box-shadow:2px 2px 0px var(--border-black);" id="statDomainBadge">AI Security</span>
-        </div>
-        <div style="display:flex; align-items:center; gap:1.2rem;">
-          <div style="width:64px; height:64px; border-radius:16px; background:var(--accent-orange); border:3.5px solid var(--border-black); display:flex; align-items:center; justify-content:center; font-size:2rem; box-shadow:4px 4px 0px var(--border-black);">
-            🧠
-          </div>
-          <div>
-            <div style="font-family:'Space Grotesk',sans-serif; font-size:1.6rem; font-weight:800;" id="statAgentName">Kess</div>
-            <div style="font-size:0.9rem; color:var(--text-muted); font-weight:600;">Autonomous Editorial AI Persona Agent</div>
-          </div>
-        </div>
-      </div>
+  <!-- LEGIBILITY BLOOM -->
+  <div class="art-glow"></div>
 
-      <!-- Bento 2: Stat Card Total Posts (Span 2) -->
-      <div class="bento-card span-2" style="box-shadow: var(--brutal-shadow-yellow); text-align:center; display:flex; flex-direction:column; justify-content:center;">
-        <div style="font-size:2rem; margin-bottom:0.2rem;">✨</div>
-        <div style="font-family:'Outfit',sans-serif; font-size:2.2rem; font-weight:900;" id="statCount">0</div>
-        <div style="font-family:'Space Grotesk',sans-serif; font-size:0.78rem; font-weight:800; text-transform:uppercase;">Posts Published</div>
-      </div>
+  <!-- MAIN APP SHELL -->
+  <div class="app-shell" id="landingShell">
+    
+    <!-- TOP NAVIGATION -->
+    <nav>
+      <a class="wordmark-group rise" style="animation-delay: 0ms;" onclick="showLanding()">
+        <svg class="brand-chevron-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="18 15 12 9 6 15"></polyline>
+          <polyline points="18 9 12 3 6 9"></polyline>
+        </svg>
+        <span class="wordmark-text">ASCEND</span>
+      </a>
 
-      <!-- Bento 3: Stat Card Poll Stream (Span 2) -->
-      <div class="bento-card span-2" style="box-shadow: var(--brutal-shadow-green); text-align:center; display:flex; flex-direction:column; justify-content:center;">
-        <div style="font-size:2rem; margin-bottom:0.2rem;">⚡</div>
-        <div style="font-family:'Outfit',sans-serif; font-size:2.2rem; font-weight:900; color:var(--text-black);">3s</div>
-        <div style="font-family:'Space Grotesk',sans-serif; font-size:0.78rem; font-weight:800; text-transform:uppercase;">Live Stream</div>
-      </div>
+      <ul class="nav-center-links">
+        <li><a class="nav-link rise" style="animation-delay: 90ms;" onclick="showLanding()">Home</a></li>
+        <li><a class="nav-link rise" style="animation-delay: 140ms;" onclick="openAuthModal('signup')">Practice</a></li>
+        <li><a class="nav-link rise" style="animation-delay: 190ms;" onclick="openStudioPanel()">Studio</a></li>
+        <li><a class="nav-link rise" style="animation-delay: 240ms;" onclick="openAuthModal('login')">Help</a></li>
+      </ul>
 
-      <!-- Bento 4: Stat Card Git Sync (Span 2) -->
-      <div class="bento-card span-2" style="box-shadow: var(--brutal-shadow-pink); text-align:center; display:flex; flex-direction:column; justify-content:center;">
-        <div style="font-size:2rem; margin-bottom:0.2rem;">📦</div>
-        <div style="font-family:'Outfit',sans-serif; font-size:2.2rem; font-weight:900; color:var(--accent-pink);">10s</div>
-        <div style="font-family:'Space Grotesk',sans-serif; font-size:0.78rem; font-weight:800; text-transform:uppercase;">GitHub Sync</div>
-      </div>
-
-      <!-- Bento 5: Topic & Persona Form Controller (Span 4) -->
-      <div class="bento-card span-4" style="box-shadow: var(--brutal-shadow-lg);">
-        <div class="card-title">
-          <div style="display:flex; align-items:center; gap:0.6rem;">
-            <span>⚙️</span> Persona Controller
-          </div>
-        </div>
-
-        <form id="initForm" onsubmit="handleInitSubmit(event)">
-          <div class="form-group">
-            <label for="presetSelect">Quick Topic Preset</label>
-            <select id="presetSelect" onchange="handlePresetChange(this)">
-              <option value="AI Security">AI Security & Vulnerability Research</option>
-              <option value="Blockchain & Cryptography">Blockchain & Cryptography</option>
-              <option value="Fintech & Banking Security">Fintech & Banking Security</option>
-              <option value="Quantum Computing">Quantum Computing</option>
-              <option value="Autonomous Robotics">Autonomous Robotics & Control</option>
-              <option value="Cloud Native Infrastructure">Cloud Native Infrastructure</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="domainInput">Active Domain / Topic</label>
-            <input type="text" id="domainInput" value="AI Security" required onchange="handleDomainChange()">
-          </div>
-          <div class="form-group">
-            <label for="nameInput">Persona Name</label>
-            <input type="text" id="nameInput" value="Kess" required>
-          </div>
-          <div class="form-group">
-            <label for="agentIdInput">Agent ID</label>
-            <input type="text" id="agentIdInput" value="kess-security-bot" required onchange="handleAgentIdChange()">
-          </div>
-
-          <button type="submit" class="btn btn-primary" id="initBtn">
-            Update Domain & Switch AI Loop
-          </button>
-        </form>
-
-        <button type="button" class="btn btn-secondary" id="triggerBtn" onclick="handleTriggerCycle(event)">
-          ⚡ Trigger Real-Time AI Discovery
+      <div class="nav-actions">
+        <button class="btn-link-login rise" style="animation-delay: 280ms;" onclick="openAuthModal('login')">Log In</button>
+        <button class="btn-nav-cta rise" style="animation-delay: 320ms;" onclick="openAuthModal('signup')">
+          Begin
         </button>
+      </div>
+    </nav>
 
-        <div class="profile-box" id="profileBox">
-          <div style="font-family:'Space Grotesk',sans-serif; font-size:1rem; font-weight:800; margin-bottom:0.6rem;">
-            🧠 Derived Voice Profile
-          </div>
-          <div id="profileContent">
-            <p style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500;">Loading profile...</p>
-          </div>
-        </div>
+    <!-- CENTERED HERO CONTENT BLOCK -->
+    <main class="hero-container">
+      
+      <!-- KICKER -->
+      <div class="hero-kicker-group rise" style="animation-delay: 480ms;">
+        <span class="kicker-rule"></span>
+        <span class="kicker-text">INNER GROWTH & AI PERSONA</span>
+        <span class="kicker-rule"></span>
       </div>
 
-      <!-- Bento 6: Main Live Feed Stream (Span 8) -->
-      <div class="bento-card span-8" style="box-shadow: var(--brutal-shadow-orange);">
-        <div class="nav-tabs">
-          <button class="tab-btn active" id="tabFeed" onclick="switchTab('feed')">
-            <span>🔥</span> Live Content Stream
-          </button>
-          <button class="tab-btn" id="tabSystem" onclick="switchTab('system')">
-            <span>⚙️</span> System Specs
-          </button>
-        </div>
+      <!-- H1 HEADLINE -->
+      <h1 class="hero-h1 rise" style="animation-delay: 600ms;">
+        <span class="hero-h1-line1">Reach toward something higher,</span>
+        <span class="hero-h1-line2">and grow into what’s next.</span>
+      </h1>
 
-        <!-- Tab 1: Feed Stream -->
-        <div id="tabContentFeed">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.4rem;">
-            <div style="font-family:'Space Grotesk',sans-serif; font-size:1.4rem; font-weight:800; display:flex; align-items:center; gap:0.6rem;">
-              <span style="display:inline-block; width:12px; height:12px; background:var(--accent-orange); border:2px solid var(--border-black); border-radius:50%; box-shadow:2px 2px 0px var(--border-black); animation:pulse 1.5s infinite;"></span>
-              Real-Time Content Feed Stream
-            </div>
-            <button type="button" class="copy-btn" id="manualRefreshBtn" onclick="handleManualRefresh(event)" style="padding:0.5rem 1.1rem; font-size:0.85rem;">
-              🔄 Refresh Stream
-            </button>
-          </div>
+      <!-- SUB-LINE -->
+      <p class="hero-sub rise" style="animation-delay: 760ms;">
+        A daily practice for a steadier mind — breathe, reflect, and return to center, one quiet moment at a time.
+      </p>
 
-          <!-- Feed Posts Stream Window (Max 5 items per page) -->
-          <div id="feedStream">
-            <div class="empty-feed">
-              <p>No posts published yet for this topic.</p>
-            </div>
-          </div>
-
-          <!-- Sliding Pagination Controls (5 posts per page) -->
-          <div class="pagination-bar" id="paginationBar" style="display:none;">
-            <button type="button" class="page-btn" id="prevPageBtn" onclick="changePage(-1)">
-              ◄ Prev
-            </button>
-            <div class="page-info" id="pageInfo">Page 1 of 1</div>
-            <div class="page-numbers" id="pageNumbers"></div>
-            <button type="button" class="page-btn" id="nextPageBtn" onclick="changePage(1)">
-              Next ►
-            </button>
-          </div>
-        </div>
-
-        <!-- Tab 2: System Specs -->
-        <div id="tabContentSystem" style="display: none;">
-          <div style="font-family:'Space Grotesk',sans-serif; font-size:1.3rem; font-weight:800; margin-bottom:1.2rem;">
-            🚀 NVIDIA AI & PostgreSQL Specs
-          </div>
-          <table class="log-table">
-            <thead>
-              <tr>
-                <th>Component</th>
-                <th>Configured Provider / Details</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>AI Generation API</strong></td>
-                <td>NVIDIA API (`integrate.api.nvidia.com/v1/chat/completions`)</td>
-                <td><span class="badge-accepted">ONLINE</span></td>
-              </tr>
-              <tr>
-                <td><strong>Target AI Model</strong></td>
-                <td>`google/diffusiongemma-26b-a4b-it`</td>
-                <td><span class="badge-accepted">ACTIVE</span></td>
-              </tr>
-              <tr>
-                <td><strong>Database Layer</strong></td>
-                <td>PostgreSQL 18 (`autonomous_ai_creator`)</td>
-                <td><span class="badge-accepted">CONNECTED</span></td>
-              </tr>
-              <tr>
-                <td><strong>GitHub Auto-Sync</strong></td>
-                <td>Continuous 10s Daemon (`auto_push.ps1`)</td>
-                <td><span class="badge-accepted">SYNCING</span></td>
-              </tr>
-              <tr>
-                <td><strong>Real-Time Cadence</strong></td>
-                <td>0.1 - 0.2 minutes (6s - 12s jitter interval)</td>
-                <td><span class="badge-accepted">ACTIVE</span></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+      <!-- PRIMARY CTA -->
+      <div class="rise" style="animation-delay: 880ms;">
+        <button class="btn-hero-primary" onclick="openAuthModal('signup')">
+          Enter the space
+          <svg class="arrow-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </button>
       </div>
 
+    </main>
+
+    <!-- CORNER CAPTIONS -->
+    <div class="caption-left rise" style="animation-delay: 1040ms;">
+      Stillness starts within.
+    </div>
+
+    <div class="caption-right rise" style="animation-delay: 1040ms;" onclick="openStudioPanel()" style="cursor:pointer;">
+      <span>Autonomous AI Operating</span>
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.7;">
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <polyline points="19 12 12 19 5 12"></polyline>
+      </svg>
+    </div>
+
+  </div>
+
+  <!-- SAAS EMAIL AUTH & AUTOMATION MODAL -->
+  <div class="modal-overlay" id="authModal">
+    <div class="modal-card">
+      <button class="modal-close-btn" onclick="closeAuthModal()">✕</button>
+
+      <div class="modal-title" id="modalTitle">Begin Your Practice</div>
+      <div class="modal-sub" id="modalSub">Enter your email to receive daily mindfulness prompts and access the Autonomous AI Creator Studio.</div>
+
+      <form id="authForm" onsubmit="handleAuthSubmit(event)">
+        <div class="form-group-modal">
+          <label class="form-label-modal">Your Email Address</label>
+          <input type="email" id="userEmail" class="input-modal" placeholder="name@domain.com" required>
+        </div>
+
+        <div class="form-group-modal" id="passwordGroup">
+          <label class="form-label-modal">Password / Magic Token</label>
+          <input type="password" id="userPassword" class="input-modal" placeholder="••••••••" required>
+        </div>
+
+        <button type="submit" class="btn-modal-submit" id="authSubmitBtn">
+          Continue to ASCEND →
+        </button>
+      </form>
+
+      <div class="automation-badge">
+        <span>⚡</span>
+        <span>Automated Daily Email Onboarding & Persona Sync active</span>
+      </div>
     </div>
   </div>
 
-  <div id="toast" class="toast"></div>
+  <!-- AUTONOMOUS STUDIO PANELS (INTEGRATED FROM BACKEND) -->
+  <div class="studio-panel" id="studioPanel">
+    <div class="studio-header">
+      <div class="wordmark-group" onclick="showLanding()">
+        <svg class="brand-chevron-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="18 15 12 9 6 15"></polyline>
+          <polyline points="18 9 12 3 6 9"></polyline>
+        </svg>
+        <span class="wordmark-text">ASCEND STUDIO</span>
+      </div>
+      <div style="display:flex; gap:12px;">
+        <button class="btn-nav-cta" style="padding:8px 18px; font-size:13px;" onclick="showLanding()">← Return to Hero</button>
+      </div>
+    </div>
 
-  <!-- Application Logic & Sliding Pagination (5 Posts Per Page) -->
+    <div class="studio-grid">
+      <!-- LEFT CONTROLLER -->
+      <div class="bento-card">
+        <h3 style="font-family:var(--font-display); font-size:1.2rem; margin-bottom:1rem;">🤖 Active Persona Controller</h3>
+        <form onsubmit="handleStudioInit(event)">
+          <div style="margin-bottom:1rem;">
+            <label style="font-family:var(--font-mono); font-size:0.75rem; display:block; margin-bottom:0.3rem;">Topic Domain</label>
+            <input type="text" id="studioDomain" class="input-modal" value="AI Security" required>
+          </div>
+          <div style="margin-bottom:1rem;">
+            <label style="font-family:var(--font-mono); font-size:0.75rem; display:block; margin-bottom:0.3rem;">Persona Name</label>
+            <input type="text" id="studioName" class="input-modal" value="Kess" required>
+          </div>
+          <div style="margin-bottom:1rem;">
+            <label style="font-family:var(--font-mono); font-size:0.75rem; display:block; margin-bottom:0.3rem;">Agent ID</label>
+            <input type="text" id="studioAgentId" class="input-modal" value="kess-security-bot" required>
+          </div>
+          <button type="submit" class="btn-modal-submit" style="margin-top:0;">Update & Run Cycle</button>
+        </form>
+      </div>
+
+      <!-- RIGHT FEED STREAM -->
+      <div class="bento-card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.2rem;">
+          <h3 style="font-family:var(--font-display); font-size:1.3rem;">🔥 Live Content Feed Stream</h3>
+          <button class="btn-nav-cta" style="padding:6px 14px; font-size:12px;" onclick="fetchStudioFeed()">Refresh Feed</button>
+        </div>
+        <div id="studioFeedStream">
+          <p style="color:var(--ink-muted); font-size:0.9rem;">Loading live autonomous feed stream...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INLINE JAVASCRIPT LOGIC -->
   <script>
-    const ITEMS_PER_PAGE = 5;
-    let currentPage = 1;
-    let allFeedPosts = [];
+    function openAuthModal(mode) {
+      const modal = document.getElementById('authModal');
+      const title = document.getElementById('modalTitle');
+      const sub = document.getElementById('modalSub');
+      const btn = document.getElementById('authSubmitBtn');
 
-    function showToast(message) {
-      const toast = document.getElementById('toast');
-      toast.innerText = message;
-      toast.style.display = 'block';
-      setTimeout(() => { toast.style.display = 'none'; }, 3500);
+      if (mode === 'login') {
+        title.innerText = 'Log In to ASCEND';
+        sub.innerText = 'Access your personal inner-growth dashboard and autonomous AI persona stream.';
+        btn.innerText = 'Log In to ASCEND →';
+      } else {
+        title.innerText = 'Begin Your Practice';
+        sub.innerText = 'Enter your email to receive daily mindfulness prompts and access the Autonomous AI Creator Studio.';
+        btn.innerText = 'Continue to ASCEND →';
+      }
+      modal.style.display = 'flex';
     }
 
-    const currentAgentId = () => document.getElementById('agentIdInput').value.trim() || 'kess-security-bot';
-
-    function switchTab(tab) {
-      document.getElementById('tabFeed').classList.toggle('active', tab === 'feed');
-      document.getElementById('tabSystem').classList.toggle('active', tab === 'system');
-
-      document.getElementById('tabContentFeed').style.display = tab === 'feed' ? 'block' : 'none';
-      document.getElementById('tabContentSystem').style.display = tab === 'system' ? 'block' : 'none';
+    function closeAuthModal() {
+      document.getElementById('authModal').style.display = 'none';
     }
 
-    function handlePresetChange(selectElem) {
-      document.getElementById('domainInput').value = selectElem.value;
-      handleDomainChange();
+    function handleAuthSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById('userEmail').value;
+      const btn = document.getElementById('authSubmitBtn');
+      btn.innerText = '⚡ Setting Up Email Automation...';
+
+      setTimeout(() => {
+        closeAuthModal();
+        openStudioPanel();
+      }, 1000);
     }
 
-    async function handleDomainChange() {
-      await handleInitSubmit(null);
+    function openStudioPanel() {
+      document.getElementById('studioPanel').style.display = 'block';
+      fetchStudioFeed();
     }
 
-    async function fetchProfile() {
-      const agentId = currentAgentId();
+    function showLanding() {
+      document.getElementById('studioPanel').style.display = 'none';
+    }
+
+    async function fetchStudioFeed() {
+      const stream = document.getElementById('studioFeedStream');
       try {
-        const res = await fetch(`/api/agent/init/profile?agentId=${encodeURIComponent(agentId)}&_t=${Date.now()}`);
-        if (res.ok) {
-          const data = await res.json();
-          renderVoiceProfile(data.voiceProfile);
-          if (data.name) {
-            document.getElementById('nameInput').value = data.name;
-            document.getElementById('statAgentName').innerText = data.name;
-          }
-          if (data.domain) {
-            document.getElementById('domainInput').value = data.domain;
-            document.getElementById('statDomainBadge').innerText = data.domain;
-          }
+        const res = await fetch('/api/agent/feed?agentId=kess-security-bot');
+        const data = await res.json();
+        if (data.posts && data.posts.length > 0) {
+          stream.innerHTML = data.posts.map(p => `
+            <div style="border:2px solid var(--ink); border-radius:14px; padding:1.2rem; margin-bottom:1rem; background:#FFF9E6;">
+              <div style="font-family:var(--font-mono); font-size:0.75rem; color:var(--slate-accent); margin-bottom:0.4rem;">${new Date(p.createdAt).toLocaleString()}</div>
+              <div style="font-size:0.98rem; font-weight:500; margin-bottom:0.8rem; line-height:1.6;">${escapeHtml(p.text)}</div>
+              <div style="font-size:0.82rem; color:var(--ink-muted); background:rgba(25,27,30,0.05); padding:0.6rem; border-radius:8px;">${escapeHtml(p.rationale)}</div>
+            </div>
+          `).join('');
         } else {
-          document.getElementById('profileContent').innerHTML = `
-            <p style="font-size: 0.85rem; color: var(--text-muted);">Agent not initialized yet. Click "Update Domain & Switch AI Loop" above.</p>
-          `;
+          stream.innerHTML = `<p style="color:var(--ink-muted);">No posts available yet. Run a cycle above.</p>`;
         }
       } catch (err) {
-        console.error('Error fetching profile:', err);
+        stream.innerHTML = `<p style="color:red;">Failed to connect to backend feed API.</p>`;
       }
     }
 
-    async function handleInitSubmit(e) {
-      if (e) e.preventDefault();
-      const initBtn = document.getElementById('initBtn');
-      initBtn.disabled = true;
-      initBtn.innerHTML = `<div class="spinner"></div> Deriving NVIDIA AI Voice...`;
-
-      const id = currentAgentId();
-      const name = document.getElementById('nameInput').value.trim();
-      const domain = document.getElementById('domainInput').value.trim();
+    async function handleStudioInit(e) {
+      e.preventDefault();
+      const id = document.getElementById('studioAgentId').value;
+      const name = document.getElementById('studioName').value;
+      const domain = document.getElementById('studioDomain').value;
 
       try {
-        const res = await fetch('/api/agent/init', {
+        await fetch('/api/agent/init', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ id, persona: { name, domain } })
         });
-        const data = await res.json();
-
-        if (res.ok) {
-          renderVoiceProfile(data.voiceProfile);
-          document.getElementById('statAgentName').innerText = name;
-          document.getElementById('statDomainBadge').innerText = domain;
-          showToast(`✅ Topic switched to "${domain}"! NVIDIA AI cycle executed.`);
-          currentPage = 1;
-          await fetchFeed();
-        } else {
-          showToast('❌ Error: ' + (data.message || 'Initialization failed'));
-        }
+        fetchStudioFeed();
       } catch (err) {
-        showToast('❌ Network error during update');
-        console.error('Init error:', err);
-      } finally {
-        initBtn.disabled = false;
-        initBtn.innerHTML = `Update Domain & Switch AI Loop`;
+        console.error(err);
       }
-    }
-
-    async function handleTriggerCycle(e) {
-      if (e) e.preventDefault();
-      const triggerBtn = document.getElementById('triggerBtn');
-      triggerBtn.disabled = true;
-      triggerBtn.innerHTML = `<div class="spinner"></div> Running NVIDIA AI Cycle...`;
-
-      const agentId = currentAgentId();
-
-      try {
-        const res = await fetch('/api/agent/init/trigger-cycle', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ agentId })
-        });
-        const data = await res.json();
-
-        if (res.ok) {
-          showToast('⚡ NVIDIA AI Discovery & Scoring cycle executed!');
-          await fetchFeed();
-        } else {
-          showToast('⚠️ ' + (data.message || 'Trigger cycle failed'));
-        }
-      } catch (err) {
-        showToast('❌ Failed to trigger cycle');
-        console.error('Trigger error:', err);
-      } finally {
-        triggerBtn.disabled = false;
-        triggerBtn.innerHTML = `⚡ Trigger Real-Time AI Discovery`;
-      }
-    }
-
-    async function handleManualRefresh(e) {
-      if (e) e.preventDefault();
-      showToast('🔄 Refreshing stream...');
-      await fetchFeed();
-    }
-
-    function handleAgentIdChange() {
-      currentPage = 1;
-      fetchProfile();
-      fetchFeed();
-    }
-
-    function copyPostText(text) {
-      navigator.clipboard.writeText(text);
-      showToast('📋 Post text copied to clipboard!');
-    }
-
-    function renderVoiceProfile(profile) {
-      if (!profile) return;
-      const container = document.getElementById('profileContent');
-
-      const toneTags = profile.tone ? profile.tone.map(t => `<span class="tag">${t}</span>`).join('') : '';
-      const stances = profile.stances ? profile.stances.map(s => `<div class="stance-item">${s}</div>`).join('') : '';
-
-      container.innerHTML = `
-        <div style="margin-bottom: 0.8rem;">
-          <div style="font-size: 0.85rem; color: var(--text-muted); font-weight: 700; font-family:'Space Grotesk',sans-serif;">Active Domain: <strong style="color:var(--accent-orange);">${profile.domain || ''}</strong></div>
-          <div class="tag-container" style="margin-top:0.4rem;">${toneTags}</div>
-        </div>
-        <div>
-          <div style="font-size: 0.85rem; color: var(--text-muted); font-weight: 700; font-family:'Space Grotesk',sans-serif;">Key Editorial Stances:</div>
-          ${stances}
-        </div>
-      `;
-    }
-
-    let lastKnownPostCount = 0;
-
-    async function fetchFeed() {
-      const agentId = currentAgentId();
-      try {
-        const res = await fetch(`/api/agent/feed?agentId=${encodeURIComponent(agentId)}&_t=${Date.now()}`);
-        const data = await res.json();
-
-        if (res.ok && data.posts) {
-          allFeedPosts = data.posts;
-          document.getElementById('statCount').innerText = allFeedPosts.length;
-
-          // If empty, auto-trigger first autonomous discovery cycle
-          if (allFeedPosts.length === 0 && !window._hasAutoInitialized) {
-            window._hasAutoInitialized = true;
-            await handleInitSubmit(null);
-            return;
-          }
-
-          renderPaginatedFeed();
-
-          if (allFeedPosts.length > lastKnownPostCount) {
-            if (lastKnownPostCount > 0) {
-              showToast('✨ New AI post published live!');
-            }
-            lastKnownPostCount = allFeedPosts.length;
-          }
-        } else if (res.status === 404) {
-          document.getElementById('feedStream').innerHTML = `
-            <div class="empty-feed">
-              <p>Agent "${agentId}" not initialized yet.</p>
-              <p style="font-size: 0.85rem; margin-top: 0.5rem;">Select a topic above to initialize real-time publishing.</p>
-            </div>
-          `;
-          document.getElementById('paginationBar').style.display = 'none';
-        }
-      } catch (err) {
-        console.error('Fetch feed error:', err);
-      }
-    }
-
-    function renderPaginatedFeed() {
-      const stream = document.getElementById('feedStream');
-      const paginationBar = document.getElementById('paginationBar');
-
-      if (!allFeedPosts || allFeedPosts.length === 0) {
-        stream.innerHTML = `
-          <div class="empty-feed">
-            <p>No posts published yet for this topic.</p>
-          </div>
-        `;
-        paginationBar.style.display = 'none';
-        return;
-      }
-
-      const totalPages = Math.ceil(allFeedPosts.length / ITEMS_PER_PAGE);
-      if (currentPage > totalPages) currentPage = totalPages;
-      if (currentPage < 1) currentPage = 1;
-
-      const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-      const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, allFeedPosts.length);
-      const visiblePosts = allFeedPosts.slice(startIndex, endIndex);
-
-      stream.innerHTML = visiblePosts.map(post => {
-        const formattedTime = new Date(post.createdAt).toLocaleString();
-        const sourcesHtml = post.sources ? post.sources.map(s => `<a href="${s}" target="_blank" rel="noopener" class="source-link">🔗 ${s}</a>`).join('') : '';
-
-        return `
-          <article class="post-card">
-            <div class="post-meta">
-              <span class="post-time">🕒 ${formattedTime}</span>
-              <div>
-                <button type="button" class="copy-btn" onclick="copyPostText(\`${escapeHtml(post.text).replace(/`/g, '\\`')}\`)">📋 Copy Text</button>
-                <span class="post-id">ID: ${post.id.substring(0, 8)}...</span>
-              </div>
-            </div>
-
-            <div class="score-grid">
-              <div class="score-pill">
-                <div class="score-label">Relevance</div>
-                <div class="score-val">0.85</div>
-              </div>
-              <div class="score-pill">
-                <div class="score-label">Timeliness</div>
-                <div class="score-val">0.99</div>
-              </div>
-              <div class="score-pill">
-                <div class="score-label">Persona Fit</div>
-                <div class="score-val">0.95</div>
-              </div>
-              <div class="score-pill" style="background: var(--accent-orange); color: #FFF;">
-                <div class="score-label" style="color:#FFF;">Composite</div>
-                <div class="score-val" style="color:#FFF;">0.92</div>
-              </div>
-            </div>
-
-            <div class="post-text">${escapeHtml(post.text)}</div>
-
-            <div class="rationale-box">
-              <div class="rationale-header">
-                <span>🎯 Editorial Rationale & Judgment Breakdown</span>
-                <span class="badge-accepted">ACCEPTED & VERIFIED</span>
-              </div>
-              <div class="rationale-text">${escapeHtml(post.rationale)}</div>
-              ${sourcesHtml ? `<div class="sources-box">${sourcesHtml}</div>` : ''}
-            </div>
-          </article>
-        `;
-      }).join('');
-
-      // Update Pagination Bar
-      paginationBar.style.display = 'flex';
-      document.getElementById('prevPageBtn').disabled = currentPage === 1;
-      document.getElementById('nextPageBtn').disabled = currentPage === totalPages;
-
-      document.getElementById('pageInfo').innerText = `Showing ${startIndex + 1}–${endIndex} of ${allFeedPosts.length} Posts (Page ${currentPage} of ${totalPages})`;
-
-      let pageBtnsHtml = '';
-      const maxVisiblePills = 5;
-      let startPage = Math.max(1, currentPage - 2);
-      let endPage = Math.min(totalPages, startPage + maxVisiblePills - 1);
-
-      if (endPage - startPage + 1 < maxVisiblePills) {
-        startPage = Math.max(1, endPage - maxVisiblePills + 1);
-      }
-
-      if (startPage > 1) {
-        pageBtnsHtml += `<button type="button" class="page-num-pill" onclick="goToPage(1)">1</button>`;
-        if (startPage > 2) {
-          pageBtnsHtml += `<span style="font-family:'Space Grotesk'; font-weight:800; padding:0 0.2rem; color:var(--text-black);">...</span>`;
-        }
-      }
-
-      for (let i = startPage; i <= endPage; i++) {
-        pageBtnsHtml += `<button type="button" class="page-num-pill ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
-      }
-
-      if (endPage < totalPages) {
-        if (endPage < totalPages - 1) {
-          pageBtnsHtml += `<span style="font-family:'Space Grotesk'; font-weight:800; padding:0 0.2rem; color:var(--text-black);">...</span>`;
-        }
-        pageBtnsHtml += `<button type="button" class="page-num-pill" onclick="goToPage(${totalPages})">${totalPages}</button>`;
-      }
-
-      document.getElementById('pageNumbers').innerHTML = pageBtnsHtml;
-    }
-
-    function changePage(delta) {
-      currentPage += delta;
-      renderPaginatedFeed();
-      window.scrollTo({ top: 300, behavior: 'smooth' });
-    }
-
-    function goToPage(pageNum) {
-      currentPage = pageNum;
-      renderPaginatedFeed();
-      window.scrollTo({ top: 300, behavior: 'smooth' });
     }
 
     function escapeHtml(str) {
-      if (!str) return '';
-      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      return str ? str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") : '';
     }
-
-    // Initial load - Data only updates when user manually refreshes or triggers a cycle
-    fetchProfile();
-    fetchFeed();
   </script>
 </body>
 </html>
