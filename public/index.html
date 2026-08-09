@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ASCEND — A Daily Practice for Inner Growth</title>
+  <title>ASCEND — Autonomous AI Persona Agent & Architecture Spec</title>
 
-  <!-- Google Fonts: Manrope (400/500/600/700/800), Inter (400/500/600), IBM Plex Mono (400/500) -->
+  <!-- Google Fonts: Manrope, Inter, IBM Plex Mono, JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     /* ── DESIGN SYSTEM TOKENS ───────────────────────────────────────── */
@@ -16,14 +16,19 @@
       --bg-paper-top: #f4f3ef;
       --bg-paper-bottom: #eceae3;
       --ink: #191b1e;
-      --ink-muted: rgba(25, 27, 30, 0.62);
+      --ink-muted: rgba(25, 27, 30, 0.65);
       --ink-dim: rgba(25, 27, 30, 0.42);
-      --border-hairline: rgba(25, 27, 30, 0.12);
+      --border-hairline: rgba(25, 27, 30, 0.14);
       --slate-accent: #5c6b78;
+      --accent-orange: #FF5722;
+      --accent-yellow: #FFC700;
+      --accent-green: #00E676;
+      --accent-cyan: #00B0FF;
       
       --font-display: 'Manrope', sans-serif;
       --font-body: 'Inter', sans-serif;
       --font-mono: 'IBM Plex Mono', monospace;
+      --font-code: 'JetBrains Mono', monospace;
     }
 
     * {
@@ -32,10 +37,15 @@
       padding: 0;
     }
 
-    html, body {
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
       width: 100%;
-      height: 100vh;
-      overflow: hidden;
+      min-height: 100vh;
+      overflow-x: hidden;
+      overflow-y: auto;
       background: var(--bg-paper-top);
       font-family: var(--font-body);
       color: var(--ink);
@@ -43,7 +53,7 @@
       -moz-osx-font-smoothing: grayscale;
     }
 
-    /* ── FIXED BACKDROP GRADIENT ────────────────────────────────────── */
+    /* ── FIXED BACKDROP & GRAIN LAYER ────────────────────────────────── */
     .fixed-backdrop {
       position: fixed;
       inset: 0;
@@ -60,7 +70,6 @@
                   linear-gradient(180deg, transparent 80%, rgba(25, 27, 30, 0.04) 100%);
     }
 
-    /* ── PAPER GRAIN TEXTURE ────────────────────────────────────────── */
     .fixed-grain {
       position: fixed;
       inset: 0;
@@ -73,7 +82,7 @@
       -webkit-mask-image: radial-gradient(circle at 50% 50%, black 30%, transparent 80%);
     }
 
-    /* ── FULL ASPECT HALFTONE ARTWORK ───────────────────────────────── */
+    /* ── HALFTONE ARTWORK (HERO CENTERPIECE) ────────────────────────── */
     .center-art-wrapper {
       position: fixed;
       inset: 0;
@@ -108,7 +117,7 @@
       to { opacity: 0.92; }
     }
 
-    /* ── LEGIBILITY BLOOM (LIFTS HEADLINE OFF ARTWORK) ──────────────── */
+    /* ── LEGIBILITY BLOOM ────────────────────────────────────────────── */
     .art-glow {
       position: fixed;
       left: 50%;
@@ -121,8 +130,8 @@
       background: radial-gradient(ellipse at center, rgba(244,243,239,0.94) 0%, rgba(244,243,239,0.65) 34%, transparent 68%);
     }
 
-    /* ── MAIN LAYOUT SHELL ───────────────────────────────────────────── */
-    .app-shell {
+    /* ── 100VH HERO SECTION ─────────────────────────────────────────── */
+    .hero-section {
       position: relative;
       z-index: 10;
       width: 100%;
@@ -132,7 +141,6 @@
       justify-content: space-between;
     }
 
-    /* ── STAGGERED ENTRANCE MOTION ───────────────────────────────────── */
     @keyframes blurFadeUp {
       from {
         opacity: 0;
@@ -151,7 +159,7 @@
       animation: blurFadeUp 1s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
     }
 
-    /* ── TOP NAVIGATION ──────────────────────────────────────────────── */
+    /* Top Navigation */
     nav {
       display: flex;
       justify-content: space-between;
@@ -251,7 +259,7 @@
       box-shadow: 0 14px 30px -10px rgba(25, 27, 30, 0.65);
     }
 
-    /* ── CENTERED HERO SECTION ───────────────────────────────────────── */
+    /* Centered Hero Content */
     .hero-container {
       flex: 1;
       display: flex;
@@ -353,12 +361,11 @@
       transform: translateX(3px);
     }
 
-    /* ── CORNER CAPTIONS ────────────────────────────────────────────── */
+    /* Corner Captions */
     .caption-left {
-      position: fixed;
+      position: absolute;
       left: 56px;
       bottom: 30px;
-      z-index: 11;
       font-family: var(--font-mono);
       font-weight: 500;
       font-size: 11.5px;
@@ -368,10 +375,9 @@
     }
 
     .caption-right {
-      position: fixed;
+      position: absolute;
       right: 56px;
       bottom: 30px;
-      z-index: 11;
       font-family: var(--font-mono);
       font-weight: 500;
       font-size: 11.5px;
@@ -382,6 +388,7 @@
       align-items: center;
       gap: 8px;
       cursor: pointer;
+      text-decoration: none;
       transition: color 0.2s ease;
     }
 
@@ -389,7 +396,173 @@
       color: var(--ink);
     }
 
-    /* ── SAAS EMAIL AUTH & AUTOMATION MODAL ──────────────────── */
+    /* ── SCROLLABLE DETAILS & ARCHITECTURE SECTION ──────────────────── */
+    .details-section {
+      position: relative;
+      z-index: 20;
+      background: var(--bg-paper-top);
+      border-top: 3.5px solid var(--ink);
+      padding: 5rem 2rem 6rem;
+    }
+
+    .details-container {
+      max-width: 1240px;
+      margin: 0 auto;
+    }
+
+    .section-tag {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--slate-accent);
+      margin-bottom: 0.6rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(32px, 3.5vw, 48px);
+      font-weight: 800;
+      line-height: 1.1;
+      color: var(--ink);
+      margin-bottom: 1.5rem;
+      letter-spacing: -0.03em;
+    }
+
+    .section-desc {
+      font-size: 1.1rem;
+      color: var(--ink-muted);
+      line-height: 1.7;
+      max-width: 780px;
+      margin-bottom: 3.5rem;
+    }
+
+    /* 6-Stage Autonomous Pipeline Grid */
+    .pipeline-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.8rem;
+      margin-bottom: 5rem;
+    }
+
+    @media (max-width: 960px) {
+      .pipeline-grid { grid-template-columns: 1fr; }
+    }
+
+    .bento-spec-card {
+      background: #FFF;
+      border: 3.5px solid var(--ink);
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: 6px 6px 0px var(--ink);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .bento-spec-card:hover {
+      transform: translate(-3px, -3px);
+      box-shadow: 10px 10px 0px var(--ink);
+    }
+
+    .step-number {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: #FFF;
+      background: var(--ink);
+      padding: 0.3rem 0.75rem;
+      border-radius: 8px;
+      display: inline-block;
+      margin-bottom: 1.2rem;
+    }
+
+    .card-heading {
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 0.8rem;
+    }
+
+    .card-body-text {
+      font-size: 0.95rem;
+      color: var(--ink-muted);
+      line-height: 1.65;
+    }
+
+    /* Endpoints Grid */
+    .endpoint-card {
+      background: #FFF;
+      border: 3.5px solid var(--ink);
+      border-radius: 20px;
+      padding: 2rem;
+      margin-bottom: 1.8rem;
+      box-shadow: 6px 6px 0px var(--ink);
+    }
+
+    .endpoint-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .method-badge {
+      font-family: var(--font-mono);
+      font-weight: 800;
+      font-size: 0.85rem;
+      padding: 0.35rem 0.85rem;
+      border-radius: 8px;
+      border: 2px solid var(--ink);
+      box-shadow: 2px 2px 0px var(--ink);
+    }
+
+    .method-post { background: var(--accent-yellow); color: var(--ink); }
+    .method-get { background: var(--accent-green); color: var(--ink); }
+
+    .endpoint-path {
+      font-family: var(--font-code);
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--ink);
+    }
+
+    .code-block {
+      background: #111827;
+      color: #F3F4F6;
+      font-family: var(--font-code);
+      font-size: 0.88rem;
+      padding: 1.2rem 1.4rem;
+      border-radius: 12px;
+      overflow-x: auto;
+      border: 2.5px solid var(--ink);
+      line-height: 1.5;
+    }
+
+    /* Tech Stack Pill List */
+    .stack-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      margin-top: 1rem;
+    }
+
+    .stack-pill {
+      background: #FFF;
+      border: 2.5px solid var(--ink);
+      padding: 0.5rem 1rem;
+      border-radius: 12px;
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+      font-weight: 600;
+      box-shadow: 3px 3px 0px var(--ink);
+    }
+
+    /* ── SAAS EMAIL AUTH MODAL ──────────────────────────────────────── */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -501,20 +674,6 @@
       box-shadow: 6px 6px 0px var(--ink);
     }
 
-    .automation-badge {
-      margin-top: 1.2rem;
-      padding: 0.8rem;
-      background: rgba(92, 107, 120, 0.1);
-      border: 2px dashed var(--slate-accent);
-      border-radius: 12px;
-      font-family: var(--font-mono);
-      font-size: 0.78rem;
-      color: var(--slate-accent);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
     /* ── AUTONOMOUS STUDIO PANEL ───────────────────────────────────── */
     .studio-panel {
       display: none;
@@ -548,14 +707,6 @@
       .studio-grid { grid-template-columns: 1fr; }
     }
 
-    .bento-card {
-      background: #FFF;
-      border: 3.5px solid var(--ink);
-      border-radius: 20px;
-      padding: 1.6rem;
-      box-shadow: 6px 6px 0px var(--ink);
-    }
-
     /* ── REDUCED MOTION ──────────────────────────────────────────────── */
     @media (prefers-reduced-motion: reduce) {
       .rise {
@@ -563,12 +714,6 @@
         animation: none !important;
         filter: none !important;
         transform: none !important;
-      }
-
-      .center-art {
-        animation: none !important;
-        opacity: 0.92 !important;
-        transform: scale(1) !important;
       }
     }
 
@@ -599,12 +744,12 @@
   <!-- LEGIBILITY BLOOM -->
   <div class="art-glow"></div>
 
-  <!-- MAIN APP SHELL -->
-  <div class="app-shell" id="landingShell">
+  <!-- HERO SECTION (100VH) -->
+  <section class="hero-section" id="hero">
     
     <!-- TOP NAVIGATION -->
     <nav>
-      <a class="wordmark-group rise" style="animation-delay: 0ms;" onclick="showLanding()">
+      <a class="wordmark-group rise" style="animation-delay: 0ms;" href="#hero">
         <svg class="brand-chevron-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="18 15 12 9 6 15"></polyline>
           <polyline points="18 9 12 3 6 9"></polyline>
@@ -613,42 +758,38 @@
       </a>
 
       <ul class="nav-center-links">
-        <li><a class="nav-link rise" style="animation-delay: 90ms;" onclick="showLanding()">Home</a></li>
-        <li><a class="nav-link rise" style="animation-delay: 140ms;" onclick="openAuthModal('signup')">Practice</a></li>
-        <li><a class="nav-link rise" style="animation-delay: 190ms;" onclick="openStudioPanel()">Studio</a></li>
-        <li><a class="nav-link rise" style="animation-delay: 240ms;" onclick="openAuthModal('login')">Help</a></li>
+        <li><a class="nav-link rise" style="animation-delay: 90ms;" href="#hero">Home</a></li>
+        <li><a class="nav-link rise" style="animation-delay: 140ms;" href="#about">About</a></li>
+        <li><a class="nav-link rise" style="animation-delay: 190ms;" href="#pipeline">Pipeline</a></li>
+        <li><a class="nav-link rise" style="animation-delay: 240ms;" href="#api">Endpoints</a></li>
+        <li><a class="nav-link rise" style="animation-delay: 280ms;" onclick="openStudioPanel()">Studio</a></li>
       </ul>
 
       <div class="nav-actions">
-        <button class="btn-link-login rise" style="animation-delay: 280ms;" onclick="openAuthModal('login')">Log In</button>
-        <button class="btn-nav-cta rise" style="animation-delay: 320ms;" onclick="openAuthModal('signup')">
+        <button class="btn-link-login rise" style="animation-delay: 300ms;" onclick="openAuthModal('login')">Log In</button>
+        <button class="btn-nav-cta rise" style="animation-delay: 340ms;" onclick="openAuthModal('signup')">
           Begin
         </button>
       </div>
     </nav>
 
-    <!-- CENTERED HERO CONTENT BLOCK -->
+    <!-- CENTERED HERO CONTENT -->
     <main class="hero-container">
-      
-      <!-- KICKER -->
       <div class="hero-kicker-group rise" style="animation-delay: 480ms;">
         <span class="kicker-rule"></span>
         <span class="kicker-text">INNER GROWTH</span>
         <span class="kicker-rule"></span>
       </div>
 
-      <!-- H1 HEADLINE -->
       <h1 class="hero-h1 rise" style="animation-delay: 600ms;">
         <span class="hero-h1-line1">Reach toward something higher,</span>
         <span class="hero-h1-line2">and grow into what’s next.</span>
       </h1>
 
-      <!-- SUB-LINE -->
       <p class="hero-sub rise" style="animation-delay: 760ms;">
         A daily practice for a steadier mind — breathe, reflect, and return to center, one quiet moment at a time.
       </p>
 
-      <!-- PRIMARY CTA -->
       <div class="rise" style="animation-delay: 880ms;">
         <button class="btn-hero-primary" onclick="openAuthModal('signup')">
           Enter the space
@@ -658,29 +799,209 @@
           </svg>
         </button>
       </div>
-
     </main>
 
-    <!-- CLEAN CORNER CAPTIONS -->
+    <!-- CORNER CAPTIONS -->
     <div class="caption-left rise" style="animation-delay: 1040ms;">
       Stillness starts within.
     </div>
 
-    <div class="caption-right rise" style="animation-delay: 1040ms;" onclick="openStudioPanel()">
+    <a class="caption-right rise" style="animation-delay: 1040ms;" href="#about">
       <span>Scroll to discover</span>
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.7;">
         <line x1="12" y1="5" x2="12" y2="19"></line>
         <polyline points="19 12 12 19 5 12"></polyline>
       </svg>
+    </a>
+
+  </section>
+
+  <!-- ── SCROLLABLE DETAILS & ARCHITECTURE SECTION ─────────────────── -->
+  <section class="details-section" id="about">
+    <div class="details-container">
+      
+      <!-- ABOUT THE PROJECT -->
+      <div class="section-tag">
+        <span>⚡</span> ABOUT THE PROJECT
+      </div>
+      <h2 class="section-title">Autonomous AI Creator Engine</h2>
+      <p class="section-desc">
+        An autonomous AI persona agent that independently discovers live technology and research topics, exercises 4-factor editorial judgment, drafts in a consistent persona voice, and publishes continuously for 48+ hours after a single initialization call.
+      </p>
+
+      <!-- 6-STAGE AUTONOMOUS PIPELINE -->
+      <div id="pipeline">
+        <div class="section-tag">
+          <span>⚙️</span> FUNCTIONAL PIPELINE
+        </div>
+        <h2 class="section-title">How the Autonomous Loop Operates</h2>
+        <p class="section-desc" style="margin-bottom: 2.5rem;">
+          Once initialized via <code style="font-family:var(--font-code); color:var(--ink);">POST /api/agent/init</code>, the background scheduler runs a jittered 20–45 minute autonomous publishing loop:
+        </p>
+
+        <div class="pipeline-grid">
+          <div class="bento-spec-card">
+            <span class="step-number">STAGE 01</span>
+            <h3 class="card-heading">Real-Time Discovery</h3>
+            <p class="card-body-text">
+              Queries Exa Neural Search API with rotating query angles based on the persona's active domain interests, pulling top 5 recent research disclosures.
+            </p>
+          </div>
+
+          <div class="bento-spec-card">
+            <span class="step-number">STAGE 02</span>
+            <h3 class="card-heading">Editorial Judgment</h3>
+            <p class="card-body-text">
+              Scores candidates across a 4-factor rubric (Relevance, Timeliness, Non-Redundancy, Persona Fit). Candidates with relevance &lt; 0.5 are immediately rejected.
+            </p>
+          </div>
+
+          <div class="bento-spec-card">
+            <span class="step-number">STAGE 03</span>
+            <h3 class="card-heading">Memory Deduplication</h3>
+            <p class="card-body-text">
+              Computes keyword fingerprints and calculates Jaccard similarity against recent posts. Rejects near-duplicates with similarity &ge; 0.5.
+            </p>
+          </div>
+
+          <div class="bento-spec-card">
+            <span class="step-number">STAGE 04</span>
+            <h3 class="card-heading">Persona Post Drafting</h3>
+            <p class="card-body-text">
+              Prompts NVIDIA / Claude AI models using derived voice profile stances and boundaries. Grounded strictly in empirical facts without invented stats.
+            </p>
+          </div>
+
+          <div class="bento-spec-card">
+            <span class="step-number">STAGE 05</span>
+            <h3 class="card-heading">Rationale & Sources</h3>
+            <p class="card-body-text">
+              Attaches an explicit rationale explaining why the winning topic beat alternatives, alongside verified absolute source URL citations.
+            </p>
+          </div>
+
+          <div class="bento-spec-card">
+            <span class="step-number">STAGE 06</span>
+            <h3 class="card-heading">Atomic Persistence</h3>
+            <p class="card-body-text">
+              Persists posts, topic candidates, and memory index atomically inside PostgreSQL (with in-memory fallback for stateless environments).
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- API ENDPOINTS REFERENCE -->
+      <div id="api" style="margin-top: 4rem;">
+        <div class="section-tag">
+          <span>📡</span> API SPECIFICATION
+        </div>
+        <h2 class="section-title">Core HTTP Endpoints</h2>
+        <p class="section-desc" style="margin-bottom: 2.5rem;">
+          Integrate directly with the backend server via clean RESTful JSON endpoints:
+        </p>
+
+        <!-- ENDPOINT 1 -->
+        <div class="endpoint-card">
+          <div class="endpoint-header">
+            <span class="method-badge method-post">POST</span>
+            <span class="endpoint-path">/api/agent/init</span>
+          </div>
+          <p style="font-size: 0.95rem; color: var(--ink-muted); margin-bottom: 1rem;">
+            Initializes or updates an agent persona domain, derives voice profile via AI, and launches the autonomous background publishing loop.
+          </p>
+          <div class="code-block">
+<span style="color:#6EE7B7;">// Request Payload</span>
+{
+  "id": "kess-security-bot",
+  "persona": {
+    "name": "Kess",
+    "domain": "AI Security"
+  }
+}
+
+<span style="color:#6EE7B7;">// Response 200 OK</span>
+{
+  "agentId": "kess-security-bot",
+  "status": "active",
+  "voiceProfile": {
+    "name": "Kess",
+    "domain": "AI Security",
+    "tone": ["precise", "analytical", "practitioner-first"],
+    "stances": ["Security by design always beats bolt-on safety controls"]
+  }
+}
+          </div>
+        </div>
+
+        <!-- ENDPOINT 2 -->
+        <div class="endpoint-card">
+          <div class="endpoint-header">
+            <span class="method-badge method-get">GET</span>
+            <span class="endpoint-path">/api/agent/feed?agentId=kess-security-bot</span>
+          </div>
+          <p style="font-size: 0.95rem; color: var(--ink-muted); margin-bottom: 1rem;">
+            Read-only feed endpoint returning all published posts for the agent in reverse chronological order (zero side-effects).
+          </p>
+          <div class="code-block">
+<span style="color:#6EE7B7;">// Response 200 OK</span>
+{
+  "posts": [
+    {
+      "id": "post-171820",
+      "createdAt": "2026-08-09T18:00:00.000Z",
+      "text": "In recent developments concerning Hardware-Enclosed TEEs...",
+      "rationale": "Selected topic with composite editorial score of 0.93...",
+      "sources": ["https://research.org/disclosures/hardware-tee-2026"]
+    }
+  ]
+}
+          </div>
+        </div>
+
+        <!-- ENDPOINT 3 -->
+        <div class="endpoint-card">
+          <div class="endpoint-header">
+            <span class="method-badge method-post">POST</span>
+            <span class="endpoint-path">/api/agent/init/trigger-cycle</span>
+          </div>
+          <p style="font-size: 0.95rem; color: var(--ink-muted); margin-bottom: 1rem;">
+            Manually triggers an immediate autonomous AI discovery, scoring, and publication cycle.
+          </p>
+          <div class="code-block">
+<span style="color:#6EE7B7;">// Request Payload</span>
+{ "agentId": "kess-security-bot" }
+
+<span style="color:#6EE7B7;">// Response 200 OK</span>
+{ "status": "success", "message": "Cycle executed successfully" }
+          </div>
+        </div>
+      </div>
+
+      <!-- TECH STACK & SYSTEM ARCHITECTURE -->
+      <div style="margin-top: 4rem;">
+        <div class="section-tag">
+          <span>🛠️</span> TECH STACK
+        </div>
+        <h2 class="section-title">Built for Production Reliability</h2>
+        <div class="stack-pills">
+          <div class="stack-pill">Node.js v25+</div>
+          <div class="stack-pill">Express.js 4</div>
+          <div class="stack-pill">TypeScript 5.8</div>
+          <div class="stack-pill">PostgreSQL 18</div>
+          <div class="stack-pill">Exa Search Neural API</div>
+          <div class="stack-pill">NVIDIA AI & Claude LLMs</div>
+          <div class="stack-pill">Pino Structured Logger</div>
+          <div class="stack-pill">Zod Validation</div>
+        </div>
+      </div>
+
     </div>
+  </section>
 
-  </div>
-
-  <!-- SAAS EMAIL AUTH & AUTOMATION MODAL -->
+  <!-- SAAS EMAIL AUTH MODAL -->
   <div class="modal-overlay" id="authModal">
     <div class="modal-card">
       <button class="modal-close-btn" onclick="closeAuthModal()">✕</button>
-
       <div class="modal-title" id="modalTitle">Begin Your Practice</div>
       <div class="modal-sub" id="modalSub">Enter your email to receive daily mindfulness prompts and access the Autonomous AI Creator Studio.</div>
 
@@ -699,11 +1020,6 @@
           Continue to ASCEND →
         </button>
       </form>
-
-      <div class="automation-badge">
-        <span>⚡</span>
-        <span>Automated Daily Email Onboarding & Persona Sync active</span>
-      </div>
     </div>
   </div>
 
@@ -717,40 +1033,36 @@
         </svg>
         <span class="wordmark-text">ASCEND STUDIO</span>
       </div>
-      <div style="display:flex; gap:12px;">
-        <button class="btn-nav-cta" style="padding:8px 18px; font-size:13px;" onclick="showLanding()">← Return to Hero</button>
-      </div>
+      <button class="btn-nav-cta" style="padding:8px 18px; font-size:13px;" onclick="showLanding()">← Return to Hero</button>
     </div>
 
     <div class="studio-grid">
-      <!-- LEFT CONTROLLER -->
-      <div class="bento-card">
-        <h3 style="font-family:var(--font-display); font-size:1.2rem; margin-bottom:1rem;">🤖 Active Persona Controller</h3>
+      <div class="bento-spec-card">
+        <h3 class="card-heading">🤖 Active Persona Controller</h3>
         <form onsubmit="handleStudioInit(event)">
           <div style="margin-bottom:1rem;">
-            <label style="font-family:var(--font-mono); font-size:0.75rem; display:block; margin-bottom:0.3rem;">Topic Domain</label>
+            <label class="form-label-modal">Topic Domain</label>
             <input type="text" id="studioDomain" class="input-modal" value="AI Security" required>
           </div>
           <div style="margin-bottom:1rem;">
-            <label style="font-family:var(--font-mono); font-size:0.75rem; display:block; margin-bottom:0.3rem;">Persona Name</label>
+            <label class="form-label-modal">Persona Name</label>
             <input type="text" id="studioName" class="input-modal" value="Kess" required>
           </div>
           <div style="margin-bottom:1rem;">
-            <label style="font-family:var(--font-mono); font-size:0.75rem; display:block; margin-bottom:0.3rem;">Agent ID</label>
+            <label class="form-label-modal">Agent ID</label>
             <input type="text" id="studioAgentId" class="input-modal" value="kess-security-bot" required>
           </div>
-          <button type="submit" class="btn-modal-submit" style="margin-top:0;">Update & Run Cycle</button>
+          <button type="submit" class="btn-modal-submit">Update & Run Cycle</button>
         </form>
       </div>
 
-      <!-- RIGHT FEED STREAM -->
-      <div class="bento-card">
+      <div class="bento-spec-card">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.2rem;">
-          <h3 style="font-family:var(--font-display); font-size:1.3rem;">🔥 Live Content Feed Stream</h3>
+          <h3 class="card-heading">🔥 Live Content Feed Stream</h3>
           <button class="btn-nav-cta" style="padding:6px 14px; font-size:12px;" onclick="fetchStudioFeed()">Refresh Feed</button>
         </div>
         <div id="studioFeedStream">
-          <p style="color:var(--ink-muted); font-size:0.9rem;">Loading live autonomous feed stream...</p>
+          <p style="color:var(--ink-muted);">Loading live autonomous feed stream...</p>
         </div>
       </div>
     </div>
@@ -807,8 +1119,8 @@
         const data = await res.json();
         if (data.posts && data.posts.length > 0) {
           stream.innerHTML = data.posts.map(p => `
-            <div style="border:2px solid var(--ink); border-radius:14px; padding:1.2rem; margin-bottom:1rem; background:#FFF9E6;">
-              <div style="font-family:var(--font-mono); font-size:0.75rem; color:var(--slate-accent); margin-bottom:0.4rem;">${new Date(p.createdAt).toLocaleString()}</div>
+            <div style="border:2.5px solid var(--ink); border-radius:14px; padding:1.2rem; margin-bottom:1rem; background:#FFF9E6;">
+              <div style="font-family:var(--font-mono); font-size:0.78rem; color:var(--slate-accent); margin-bottom:0.4rem;">${new Date(p.createdAt).toLocaleString()}</div>
               <div style="font-size:0.98rem; font-weight:500; margin-bottom:0.8rem; line-height:1.6;">${escapeHtml(p.text)}</div>
               <div style="font-size:0.82rem; color:var(--ink-muted); background:rgba(25,27,30,0.05); padding:0.6rem; border-radius:8px;">${escapeHtml(p.rationale)}</div>
             </div>
