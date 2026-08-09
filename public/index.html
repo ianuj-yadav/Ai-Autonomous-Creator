@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Autonomous AI Creator — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #090D16;
+      --bg-card: rgba(17, 24, 39, 0.7);
+      --bg-card-hover: rgba(31, 41, 55, 0.8);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-accent: rgba(99, 102, 241, 0.3);
+      --primary: #6366F1;
+      --primary-hover: #4F46E5;
+      --accent-emerald: #10B981;
+      --accent-pink: #EC4899;
+      --text-main: #F9FAFB;
+      --text-muted: #9CA3AF;
+      --text-dim: #6B7280;
+      --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.12) 0%, transparent 45%),
+        radial-gradient(circle at 85% 85%, rgba(16, 185, 129, 0.08) 0%, transparent 45%);
+      color: var(--text-main);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    header {
+      border-bottom: 1px solid var(--border-color);
+      backdrop-filter: blur(16px);
+      background: rgba(9, 13, 22, 0.8);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 1rem 2rem;
+    }
+
+    .header-container {
+      max-width: 1300px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-logo {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--primary), var(--accent-pink));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 1.2rem;
+      color: #FFF;
+      box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
+    }
+
+    .brand-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #FFF 30%, var(--text-muted));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: var(--accent-emerald);
+      padding: 0.35rem 0.85rem;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background-color: var(--accent-emerald);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--accent-emerald);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.9); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    main {
+      max-width: 1300px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 2rem;
+    }
+
+    @media (max-width: 960px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .glass-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: var(--glass-shadow);
+      transition: border-color 0.2s ease;
+    }
+
+    .glass-card:hover {
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .card-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.1rem;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+    }
+
+    input, select {
+      width: 100%;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input:focus {
+      border-color: var(--primary);
+    }
+
+    .btn-primary {
+      width: 100%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+      color: #FFF;
+      border: none;
+      border-radius: 10px;
+      padding: 0.85rem;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+    }
+
+    .profile-box {
+      margin-top: 1.5rem;
+      padding-top: 1.2rem;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .tag-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.4rem;
+    }
+
+    .tag {
+      background: rgba(99, 102, 241, 0.15);
+      color: #A5B4FC;
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .stance-item {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.4rem;
+      padding-left: 0.8rem;
+      border-left: 2px solid var(--primary);
+    }
+
+    /* Feed Controls */
+    .feed-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .feed-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+
+    .refresh-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .refresh-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .post-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.6rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--glass-shadow);
+      position: relative;
+    }
+
+    .post-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .post-time {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+    }
+
+    .post-id {
+      font-family: monospace;
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      background: rgba(255, 255, 255, 0.05);
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+    }
+
+    .post-text {
+      font-size: 0.98rem;
+      color: var(--text-main);
+      line-height: 1.7;
+      margin-bottom: 1.2rem;
+      white-space: pre-wrap;
+    }
+
+    .rationale-box {
+      background: rgba(99, 102, 241, 0.06);
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      border-radius: 12px;
+      padding: 1rem;
+      margin-top: 1rem;
+    }
+
+    .rationale-header {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #A5B4FC;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.4rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .rationale-text {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .sources-box {
+      margin-top: 0.8rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .source-link {
+      font-size: 0.78rem;
+      color: var(--accent-emerald);
+      text-decoration: none;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      padding: 0.25rem 0.65rem;
+      border-radius: 6px;
+      transition: background 0.2s;
+    }
+
+    .source-link:hover {
+      background: rgba(16, 185, 129, 0.2);
+    }
+
+    .empty-feed {
+      text-align: center;
+      padding: 3rem;
+      color: var(--text-dim);
+      border: 1px dashed var(--border-color);
+      border-radius: 16px;
+    }
+
+    .spinner {
+      border: 2px solid rgba(255,255,255,0.1);
+      border-left-color: #FFF;
+      border-radius: 50%;
+      width: 16px;
+      height: 16px;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-container">
+      <div class="brand">
+        <div class="brand-logo">AI</div>
+        <div class="brand-title">Autonomous AI Creator</div>
+      </div>
+      <div class="status-badge">
+        <div class="status-dot"></div>
+        Engine & PostgreSQL Live
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Left Column: Controls & Voice Profile -->
+    <aside>
+      <div class="glass-card">
+        <div class="card-title">
+          <span>⚡</span> Agent Initializer
+        </div>
+        <form id="initForm">
+          <div class="form-group">
+            <label for="agentIdInput">Agent ID</label>
+            <input type="text" id="agentIdInput" value="kess-security-bot" required>
+          </div>
+          <div class="form-group">
+            <label for="nameInput">Persona Name</label>
+            <input type="text" id="nameInput" value="Kess" required>
+          </div>
+          <div class="form-group">
+            <label for="domainInput">Domain</label>
+            <input type="text" id="domainInput" value="AI Security" required>
+          </div>
+          <button type="submit" class="btn-primary" id="initBtn">
+            Initialize Autonomous Loop
+          </button>
+        </form>
+
+        <div class="profile-box" id="profileBox">
+          <div class="card-title" style="font-size: 0.95rem;">
+            <span>🧠</span> Active Voice Profile
+          </div>
+          <div id="profileContent">
+            <p style="font-size: 0.8rem; color: var(--text-dim);">Loading profile...</p>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Right Column: Live Feed Stream -->
+    <section>
+      <div class="feed-header">
+        <div class="feed-title">Autonomous Content Feed</div>
+        <button class="refresh-btn" id="manualRefreshBtn">🔄 Refresh Feed</button>
+      </div>
+
+      <div id="feedStream">
+        <div class="empty-feed">
+          <p>No posts published yet for this agent.</p>
+          <p style="font-size: 0.8rem; margin-top: 0.5rem;">Click "Initialize Autonomous Loop" to trigger the first discovery & editorial cycle.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const currentAgentId = () => document.getElementById('agentIdInput').value.trim() || 'kess-security-bot';
+
+    async function initAgent(e) {
+      if (e) e.preventDefault();
+      const initBtn = document.getElementById('initBtn');
+      initBtn.disabled = true;
+      initBtn.innerHTML = `<div class="spinner"></div> Initializing...`;
+
+      const id = currentAgentId();
+      const name = document.getElementById('nameInput').value.trim();
+      const domain = document.getElementById('domainInput').value.trim();
+
+      try {
+        const res = await fetch('/api/agent/init', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id, persona: { name, domain } })
+        });
+        const data = await res.json();
+        
+        if (res.ok) {
+          renderVoiceProfile(data.voiceProfile);
+          // Wait 3s then poll feed
+          setTimeout(fetchFeed, 3000);
+        } else {
+          alert('Error: ' + (data.message || 'Initialization failed'));
+        }
+      } catch (err) {
+        console.error('Init error:', err);
+      } finally {
+        initBtn.disabled = false;
+        initBtn.innerHTML = `Initialize Autonomous Loop`;
+      }
+    }
+
+    function renderVoiceProfile(profile) {
+      if (!profile) return;
+      const container = document.getElementById('profileContent');
+      
+      const toneTags = profile.tone ? profile.tone.map(t => `<span class="tag">${t}</span>`).join('') : '';
+      const stances = profile.stances ? profile.stances.map(s => `<div class="stance-item">${s}</div>`).join('') : '';
+
+      container.innerHTML = `
+        <div style="margin-bottom: 0.8rem;">
+          <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">Tone & Persona:</div>
+          <div class="tag-container">${toneTags}</div>
+        </div>
+        <div>
+          <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">Key Editorial Stances:</div>
+          ${stances}
+        </div>
+      `;
+    }
+
+    async function fetchFeed() {
+      const agentId = currentAgentId();
+      try {
+        const res = await fetch(`/api/agent/feed?agentId=${encodeURIComponent(agentId)}`);
+        const data = await res.json();
+
+        if (res.ok && data.posts) {
+          renderFeed(data.posts);
+        } else if (res.status === 404) {
+          document.getElementById('feedStream').innerHTML = `
+            <div class="empty-feed">
+              <p>Agent "${agentId}" not initialized yet.</p>
+              <p style="font-size: 0.8rem; margin-top: 0.5rem;">Click "Initialize Autonomous Loop" to start publishing.</p>
+            </div>
+          `;
+        }
+      } catch (err) {
+        console.error('Fetch feed error:', err);
+      }
+    }
+
+    function renderFeed(posts) {
+      const stream = document.getElementById('feedStream');
+      if (!posts || posts.length === 0) {
+        stream.innerHTML = `
+          <div class="empty-feed">
+            <p>No posts published yet for this agent.</p>
+          </div>
+        `;
+        return;
+      }
+
+      stream.innerHTML = posts.map(post => {
+        const formattedTime = new Date(post.createdAt).toLocaleString();
+        const sourcesHtml = post.sources ? post.sources.map(s => `<a href="${s}" target="_blank" rel="noopener" class="source-link">🔗 ${s}</a>`).join('') : '';
+
+        return `
+          <article class="post-card">
+            <div class="post-meta">
+              <span class="post-time">🕒 ${formattedTime}</span>
+              <span class="post-id">ID: ${post.id.substring(0, 8)}...</span>
+            </div>
+            <div class="post-text">${escapeHtml(post.text)}</div>
+
+            <div class="rationale-box">
+              <div class="rationale-header">
+                <span>🎯</span> Editorial Rationale & Judgment Breakdown
+              </div>
+              <div class="rationale-text">${escapeHtml(post.rationale)}</div>
+              ${sourcesHtml ? `<div class="sources-box">${sourcesHtml}</div>` : ''}
+            </div>
+          </article>
+        `;
+      }).join('');
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    document.getElementById('initForm').addEventListener('submit', initAgent);
+    document.getElementById('manualRefreshBtn').addEventListener('click', fetchFeed);
+
+    // Initial load check
+    fetchFeed();
+    // Auto refresh feed every 6 seconds
+    setInterval(fetchFeed, 6000);
+  </script>
+</body>
+</html>
