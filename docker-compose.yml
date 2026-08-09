@@ -1,23 +1,33 @@
 version: '3.8'
 
 services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=autonomous_ai_creator
+      - CADENCE_MIN=20
+      - CADENCE_MAX=45
+    depends_on:
+      - postgres
+
   postgres:
     image: postgres:16-alpine
-    container_name: autonomous_ai_pg
+    restart: always
     environment:
-      POSTGRES_USER: ${DB_USER:-aiagent}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-aiagent_secret}
-      POSTGRES_DB: ${DB_NAME:-autonomous_ai}
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: autonomous_ai_creator
     ports:
       - "5432:5432"
     volumes:
-      - pg_data:/var/lib/postgresql/data
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
+      - pgdata:/var/lib/postgresql/data
 
 volumes:
-  pg_data:
+  pgdata:
