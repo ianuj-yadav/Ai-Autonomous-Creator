@@ -1,7 +1,5 @@
 import { logger } from '../logger';
-import { GoogleGenerativeAI } from '@google/generative-ai';
-import Anthropic from '@anthropic-ai/sdk';
-import { config } from '../config';
+import { callNvidiaAi } from '../services/nvidiaAi';
 import { TopicCandidate } from './discovery';
 import { VoiceProfile } from './persona';
 import { Post } from './memory';
@@ -16,9 +14,9 @@ export async function generatePost(
   profile: VoiceProfile,
   recentPosts: Post[] = []
 ): Promise<GeneratedPostContent> {
-  logger.info('Generating post for candidate', { title: candidate.title, persona: profile.name });
+  logger.info('Generating real-time post via NVIDIA AI model', { title: candidate.title, persona: profile.name });
 
-  const systemPrompt = `You are ${profile.name}, an expert voice in ${profile.domain}.
+  const systemPrompt = `You are ${profile.name}, an authoritative expert voice in ${profile.domain}.
 Tone: ${profile.tone.join(', ')}
 Key Stances: ${profile.stances.join('; ')}
 Boundaries: ${profile.boundaries.join('; ')}
@@ -32,7 +30,7 @@ Instructions:
 Summary: ${candidate.summary}
 Source URLs: ${candidate.sourceUrls.join(', ')}
 
-Recent Post Continuity Context:
+Recent Post Context:
 ${recentPosts.map((p) => `- ${p.text.substring(0, 100)}...`).join('\n')}
 
 Generate the post and grounding notes in JSON format:
@@ -41,41 +39,23 @@ Generate the post and grounding notes in JSON format:
   "groundingNotes": "Brief notes on how facts match the source URLs"
 }`;
 
-  // 1. Try Claude API
-  if (config.llm.anthropicApiKey) {
-    try {
-      const anthropic = new Anthropic({ apiKey: config.llm.anthropicApiKey });
-      const response = await anthropic.messages.create({
-        model: 'claude-3-5-sonnet-20241022',
-        max_tokens: 1200,
-        temperature: 0.3,
-        system: systemPrompt,
-        messages: [{ role: 'user', content: userPrompt }],
-      });
-
-      const text = response.content[0].type === 'text' ? response.content[0].text : '';
-      const parsed = JSON.parse(text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1));
-      return { text: parsed.text, groundingNotes: parsed.groundingNotes || 'Grounded in Exa source text.' };
-    } catch (err: any) {
-      logger.warn('Anthropic post generation failed, attempting fallbacks', { error: err.message });
+  try {
+    const rawText = await callNvidiaAi(userPrompt, systemPrompt);
+    const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      const parsed = JSON.parse(jsonMatch[0]);
+      if (parsed.text && parsed.text.length >= 100) {
+        return {
+          text: parsed.text,
+          groundingNotes: parsed.groundingNotes || 'Grounded directly in Exa/NVIDIA AI source disclosures.',
+        };
+      }
     }
+  } catch (err: any) {
+    logger.warn('NVIDIA AI post generation call failed, using fallback synthesis', { error: err.message });
   }
 
-  // 2. Try Gemini API
-  if (config.llm.geminiApiKey) {
-    try {
-      const genAI = new GoogleGenerativeAI(config.llm.geminiApiKey);
-      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' });
-      const result = await model.generateContent(`${systemPrompt}\n\n${userPrompt}`);
-      const text = result.response.text();
-      const parsed = JSON.parse(text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1));
-      return { text: parsed.text, groundingNotes: parsed.groundingNotes || 'Grounded in Gemini synthesis.' };
-    } catch (err: any) {
-      logger.warn('Gemini post generation failed, using fallback synthesis', { error: err.message });
-    }
-  }
-
-  // 3. Fallback Post Generation Engine (Offline/Robustness guarantee)
+  // Fallback synthesis engine
   const stancesFormatted = profile.stances.slice(0, 2).map((s) => `As a core principle, ${s.toLowerCase()}.`).join(' ');
 
   const postText = `In recent developments concerning ${candidate.title.toLowerCase()}, empirical findings demonstrate critical shifts in operational security and architecture. ${candidate.summary}
