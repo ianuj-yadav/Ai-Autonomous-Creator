@@ -1,6 +1,8 @@
 import { Request, Response, Router } from 'express';
 import { query } from '../db';
 import { logger } from '../logger';
+import { deriveVoiceProfile } from '../modules/persona';
+import { agentScheduler } from '../modules/scheduler';
 
 export const feedRouter = Router();
 
@@ -18,19 +20,39 @@ feedRouter.get('/', async (req: Request, res: Response): Promise<void> => {
       }
     }
 
-    const agentRows = await query(`SELECT id FROM agents WHERE id = $1`, [agentId]);
+    let agentRows = await query(`SELECT id FROM agents WHERE id = $1`, [agentId]);
     if (agentRows.length === 0) {
-      res.status(200).json({ posts: [] });
-      return;
+      // Auto-initialize default agent for instant out-of-the-box readiness
+      const voiceProfile = await deriveVoiceProfile('Kess', 'AI Security');
+      await query(
+        `INSERT INTO agents (id, name, domain, voice_profile, status)
+         VALUES ($1, $2, $3, $4, 'active')
+         ON CONFLICT (id) DO UPDATE SET status = 'active'`,
+        [agentId, 'Kess', 'AI Security', JSON.stringify(voiceProfile)]
+      );
+      await agentScheduler.executeCycle(agentId);
+      agentRows = await query(`SELECT id FROM agents WHERE id = $1`, [agentId]);
     }
 
-    const rows = await query(
+    let rows = await query(
       `SELECT id, text, rationale, sources, created_at as "createdAt"
        FROM posts
        WHERE agent_id = $1
        ORDER BY created_at DESC`,
       [agentId]
     );
+
+    // If 0 posts exist, trigger an instant autonomous cycle
+    if (rows.length === 0) {
+      await agentScheduler.executeCycle(agentId);
+      rows = await query(
+        `SELECT id, text, rationale, sources, created_at as "createdAt"
+         FROM posts
+         WHERE agent_id = $1
+         ORDER BY created_at DESC`,
+        [agentId]
+      );
+    }
 
     const formattedPosts = rows.map((row) => ({
       id: row.id,
