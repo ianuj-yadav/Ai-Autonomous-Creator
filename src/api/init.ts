@@ -29,46 +29,37 @@ initRouter.post('/', async (req: Request, res: Response): Promise<void> => {
     const { persona } = parseResult.data;
     const agentId = parseResult.data.id || `agent-${Date.now()}`;
 
-    // Idempotency check: check if agent already exists
-    const existing = await query(`SELECT id, name, domain, voice_profile as "voiceProfile", status FROM agents WHERE id = $1`, [agentId]);
-    if (existing.length > 0) {
-      const agent = existing[0];
-      logger.info('Agent already exists, auto-resuming background loop', { agentId });
-      agentScheduler.startAgentLoop(agentId);
+    logger.info('Initializing or updating agent persona & domain', { agentId, name: persona.name, domain: persona.domain });
 
-      res.status(200).json({
-        id: agent.id,
-        status: agent.status,
-        voiceProfile: typeof agent.voiceProfile === 'string' ? JSON.parse(agent.voiceProfile) : agent.voiceProfile,
-      });
-      return;
-    }
-
-    // Derive Voice Profile
+    // Derive fresh Voice Profile for the target domain
     const voiceProfile = await deriveVoiceProfile(persona.name, persona.domain);
 
-    // Save agent to database
+    // Save or Update agent in PostgreSQL
     await query(
       `INSERT INTO agents (id, name, domain, voice_profile, status)
-       VALUES ($1, $2, $3, $4, $5)`,
-      [agentId, persona.name, persona.domain, JSON.stringify(voiceProfile), 'active']
+       VALUES ($1, $2, $3, $4, 'active')
+       ON CONFLICT (id) DO UPDATE
+       SET name = EXCLUDED.name,
+           domain = EXCLUDED.domain,
+           voice_profile = EXCLUDED.voice_profile,
+           status = 'active'`,
+      [agentId, persona.name, persona.domain, JSON.stringify(voiceProfile)]
     );
 
-    // Start background autonomous loop
+    // Start/resume background loop
     agentScheduler.startAgentLoop(agentId);
 
-    // Execute first cycle immediately so feed populates without waiting for jitter timer
-    agentScheduler.executeCycle(agentId).catch((cycleErr) => {
-      logger.error('Error during initial immediate cycle execution', { error: cycleErr.message });
-    });
+    // Immediately execute a new autonomous discovery & generation cycle for the new topic/domain
+    await agentScheduler.executeCycle(agentId);
 
-    res.status(201).json({
+    res.status(200).json({
       id: agentId,
       status: 'active',
       voiceProfile,
+      message: `Agent initialized/updated for domain "${persona.domain}". Autonomous cycle executed.`,
     });
   } catch (err: any) {
-    logger.error('Failed to initialize agent', { error: err.message });
+    logger.error('Failed to initialize/update agent', { error: err.message });
     res.status(500).json({
       error: 'INTERNAL_SERVER_ERROR',
       message: err.message || 'An unexpected error occurred',
