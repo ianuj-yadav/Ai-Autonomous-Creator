@@ -3,33 +3,36 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Autonomous AI Creator — 3D Neural Experience</title>
+  <title>Autonomous AI Creator — Hyper-Polished 3D Neural Studio</title>
 
   <!-- Typography & Libraries -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Outfit:wght@500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   
-  <!-- Three.js for 3D WebGL Experience -->
+  <!-- Three.js 3D WebGL Engine -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
   <style>
     :root {
-      --bg-dark: #070A12;
-      --bg-card: rgba(15, 23, 42, 0.75);
-      --bg-card-hover: rgba(30, 41, 59, 0.85);
+      --bg-dark: #050811;
+      --bg-card: rgba(13, 20, 36, 0.75);
+      --bg-card-hover: rgba(23, 33, 56, 0.85);
       --border-color: rgba(255, 255, 255, 0.08);
-      --border-accent: rgba(99, 102, 241, 0.3);
+      --border-accent: rgba(99, 102, 241, 0.4);
       --primary: #6366F1;
-      --primary-glow: rgba(99, 102, 241, 0.4);
+      --primary-glow: rgba(99, 102, 241, 0.5);
       --primary-hover: #4F46E5;
       --accent-emerald: #10B981;
+      --accent-emerald-glow: rgba(16, 185, 129, 0.4);
       --accent-pink: #EC4899;
+      --accent-pink-glow: rgba(236, 72, 153, 0.4);
       --accent-cyan: #06B6D4;
+      --accent-amber: #F59E0B;
       --text-main: #F8FAFC;
       --text-muted: #94A3B8;
       --text-dim: #64748B;
-      --glass-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.45);
+      --glass-shadow: 0 16px 48px 0 rgba(0, 0, 0, 0.5);
     }
 
     * {
@@ -47,7 +50,7 @@
       overflow-x: hidden;
     }
 
-    /* 3D Background Canvas */
+    /* 3D WebGL Canvas */
     #canvas3d {
       position: fixed;
       top: 0;
@@ -58,24 +61,25 @@
       pointer-events: none;
     }
 
-    /* Glass Overlay Wrapper */
+    /* Outer Wrapper */
     .app-container {
       position: relative;
       z-index: 10;
     }
 
+    /* Header Navbar */
     header {
       border-bottom: 1px solid var(--border-color);
-      backdrop-filter: blur(20px);
-      background: rgba(7, 10, 18, 0.75);
+      backdrop-filter: blur(24px);
+      background: rgba(5, 8, 17, 0.8);
       position: sticky;
       top: 0;
       z-index: 100;
-      padding: 1rem 2rem;
+      padding: 0.9rem 2rem;
     }
 
     .header-container {
-      max-width: 1400px;
+      max-width: 1440px;
       margin: 0 auto;
       display: flex;
       justify-content: space-between;
@@ -85,29 +89,29 @@
     .brand {
       display: flex;
       align-items: center;
-      gap: 0.85rem;
+      gap: 0.9rem;
     }
 
     .brand-logo {
-      width: 42px;
-      height: 42px;
+      width: 44px;
+      height: 44px;
       background: linear-gradient(135deg, var(--primary), var(--accent-pink));
       border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-family: 'Outfit', sans-serif;
-      font-weight: 800;
-      font-size: 1.3rem;
+      font-weight: 900;
+      font-size: 1.35rem;
       color: #FFF;
-      box-shadow: 0 0 20px var(--primary-glow);
+      box-shadow: 0 0 24px var(--primary-glow);
     }
 
     .brand-title {
       font-family: 'Outfit', sans-serif;
-      font-size: 1.45rem;
-      font-weight: 700;
-      background: linear-gradient(135deg, #FFF 30%, var(--text-muted));
+      font-size: 1.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #FFF 40%, var(--text-muted));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
@@ -115,7 +119,7 @@
     .status-group {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: 0.85rem;
     }
 
     .status-badge {
@@ -125,7 +129,7 @@
       background: rgba(16, 185, 129, 0.1);
       border: 1px solid rgba(16, 185, 129, 0.3);
       color: var(--accent-emerald);
-      padding: 0.4rem 0.9rem;
+      padding: 0.4rem 0.95rem;
       border-radius: 9999px;
       font-size: 0.85rem;
       font-weight: 500;
@@ -146,40 +150,93 @@
       100% { opacity: 1; transform: scale(1); }
     }
 
-    /* Main Grid Layout */
-    main {
-      max-width: 1400px;
-      margin: 2rem auto;
+    /* System Stats Banner */
+    .stats-banner {
+      max-width: 1440px;
+      margin: 1.5rem auto 0;
       padding: 0 1.5rem;
       display: grid;
-      grid-template-columns: 390px 1fr;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.2rem;
+    }
+
+    @media (max-width: 900px) {
+      .stats-banner { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.1rem 1.4rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      box-shadow: var(--glass-shadow);
+    }
+
+    .stat-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: rgba(99, 102, 241, 0.12);
+      border: 1px solid var(--border-accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+    }
+
+    .stat-val {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 1.4rem;
+      color: var(--text-main);
+    }
+
+    .stat-lbl {
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Main Grid Layout */
+    main {
+      max-width: 1440px;
+      margin: 1.5rem auto 3rem;
+      padding: 0 1.5rem;
+      display: grid;
+      grid-template-columns: 400px 1fr;
       gap: 2rem;
     }
 
-    @media (max-width: 1024px) {
+    @media (max-width: 1080px) {
       main { grid-template-columns: 1fr; }
     }
 
-    /* Glass Cards & Panels */
+    /* Glass Cards */
     .glass-card {
       background: var(--bg-card);
-      backdrop-filter: blur(16px);
+      backdrop-filter: blur(20px);
       border: 1px solid var(--border-color);
       border-radius: 20px;
       padding: 1.6rem;
       box-shadow: var(--glass-shadow);
       margin-bottom: 1.5rem;
-      transition: all 0.3s ease;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .glass-card:hover {
-      border-color: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.16);
+      transform: translateY(-2px);
     }
 
     .card-title {
       font-family: 'Outfit', sans-serif;
       font-size: 1.2rem;
-      font-weight: 600;
+      font-weight: 700;
       margin-bottom: 1.2rem;
       display: flex;
       align-items: center;
@@ -196,12 +253,12 @@
       font-size: 0.85rem;
       font-weight: 500;
       color: var(--text-muted);
-      margin-bottom: 0.4rem;
+      margin-bottom: 0.45rem;
     }
 
     input, select {
       width: 100%;
-      background: rgba(15, 23, 42, 0.85);
+      background: rgba(11, 17, 32, 0.85);
       border: 1px solid var(--border-color);
       border-radius: 12px;
       padding: 0.8rem 1rem;
@@ -214,7 +271,7 @@
 
     input:focus, select:focus {
       border-color: var(--primary);
-      box-shadow: 0 0 12px var(--primary-glow);
+      box-shadow: 0 0 16px var(--primary-glow);
     }
 
     .btn {
@@ -225,7 +282,7 @@
       font-weight: 600;
       font-size: 0.95rem;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -235,13 +292,13 @@
     .btn-primary {
       background: linear-gradient(135deg, var(--primary), var(--primary-hover));
       color: #FFF;
-      box-shadow: 0 4px 16px rgba(99, 102, 241, 0.35);
+      box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
       margin-bottom: 0.8rem;
     }
 
     .btn-primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 6px 24px rgba(99, 102, 241, 0.5);
+      box-shadow: 0 8px 28px rgba(99, 102, 241, 0.6);
     }
 
     .btn-secondary {
@@ -272,7 +329,7 @@
     .tag {
       background: rgba(99, 102, 241, 0.15);
       color: #A5B4FC;
-      border: 1px solid rgba(99, 102, 241, 0.25);
+      border: 1px solid rgba(99, 102, 241, 0.3);
       padding: 0.25rem 0.65rem;
       border-radius: 8px;
       font-size: 0.78rem;
@@ -290,22 +347,22 @@
     /* Tabs Navigation */
     .nav-tabs {
       display: flex;
-      gap: 0.5rem;
+      gap: 0.6rem;
       margin-bottom: 1.5rem;
       border-bottom: 1px solid var(--border-color);
-      padding-bottom: 0.5rem;
+      padding-bottom: 0.6rem;
     }
 
     .tab-btn {
       background: transparent;
       border: none;
       color: var(--text-muted);
-      padding: 0.65rem 1.2rem;
+      padding: 0.7rem 1.3rem;
       font-family: 'Outfit', sans-serif;
-      font-size: 0.95rem;
+      font-size: 0.98rem;
       font-weight: 600;
       cursor: pointer;
-      border-radius: 10px;
+      border-radius: 12px;
       transition: all 0.2s ease;
       display: flex;
       align-items: center;
@@ -314,25 +371,27 @@
 
     .tab-btn:hover {
       color: var(--text-main);
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(255, 255, 255, 0.06);
     }
 
     .tab-btn.active {
       color: #FFF;
       background: rgba(99, 102, 241, 0.2);
       border: 1px solid var(--border-accent);
+      box-shadow: 0 0 16px rgba(99, 102, 241, 0.2);
     }
 
     /* Stream Feed Cards */
     .post-card {
       background: var(--bg-card);
-      backdrop-filter: blur(16px);
+      backdrop-filter: blur(20px);
       border: 1px solid var(--border-color);
       border-radius: 20px;
       padding: 1.8rem;
       margin-bottom: 1.8rem;
       box-shadow: var(--glass-shadow);
       animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
     }
 
     @keyframes slideUp {
@@ -383,10 +442,10 @@
     }
 
     .score-pill {
-      background: rgba(15, 23, 42, 0.9);
+      background: rgba(11, 17, 32, 0.9);
       border: 1px solid var(--border-color);
-      padding: 0.5rem 0.75rem;
-      border-radius: 10px;
+      padding: 0.6rem 0.8rem;
+      border-radius: 12px;
       text-align: center;
     }
 
@@ -394,18 +453,19 @@
       font-size: 0.7rem;
       color: var(--text-dim);
       text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
 
     .score-val {
       font-family: 'Outfit', sans-serif;
-      font-weight: 700;
-      font-size: 0.95rem;
+      font-weight: 800;
+      font-size: 1rem;
       color: var(--accent-emerald);
     }
 
     .rationale-box {
-      background: rgba(99, 102, 241, 0.07);
-      border: 1px solid rgba(99, 102, 241, 0.25);
+      background: rgba(99, 102, 241, 0.08);
+      border: 1px solid rgba(99, 102, 241, 0.28);
       border-radius: 14px;
       padding: 1.2rem;
       margin-top: 1rem;
@@ -421,7 +481,7 @@
       margin-bottom: 0.5rem;
       display: flex;
       align-items: center;
-      gap: 0.4rem;
+      justify-content: space-between;
     }
 
     .rationale-text {
@@ -452,6 +512,22 @@
       background: rgba(16, 185, 129, 0.25);
     }
 
+    .copy-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 0.35rem 0.75rem;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .copy-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #FFF;
+    }
+
     .empty-feed {
       text-align: center;
       padding: 3.5rem;
@@ -464,11 +540,11 @@
     .log-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.85rem;
+      font-size: 0.88rem;
     }
 
     .log-table th, .log-table td {
-      padding: 0.85rem 1rem;
+      padding: 0.9rem 1.1rem;
       text-align: left;
       border-bottom: 1px solid var(--border-color);
     }
@@ -478,26 +554,27 @@
       font-weight: 600;
       text-transform: uppercase;
       font-size: 0.75rem;
+      letter-spacing: 0.05em;
     }
 
     .badge-accepted {
       background: rgba(16, 185, 129, 0.15);
       color: var(--accent-emerald);
       border: 1px solid rgba(16, 185, 129, 0.3);
-      padding: 0.2rem 0.55rem;
+      padding: 0.2rem 0.6rem;
       border-radius: 6px;
       font-size: 0.75rem;
-      font-weight: 600;
+      font-weight: 700;
     }
 
     .badge-rejected {
       background: rgba(236, 72, 153, 0.15);
       color: var(--accent-pink);
       border: 1px solid rgba(236, 72, 153, 0.3);
-      padding: 0.2rem 0.55rem;
+      padding: 0.2rem 0.6rem;
       border-radius: 6px;
       font-size: 0.75rem;
-      font-weight: 600;
+      font-weight: 700;
     }
 
     /* Toast */
@@ -555,6 +632,38 @@
       </div>
     </header>
 
+    <!-- Top System Metrics Banner -->
+    <div class="stats-banner">
+      <div class="stat-card">
+        <div class="stat-icon">🤖</div>
+        <div>
+          <div class="stat-val" id="statAgent">Kess</div>
+          <div class="stat-lbl">Active Persona</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">✨</div>
+        <div>
+          <div class="stat-val" id="statCount">0</div>
+          <div class="stat-lbl">Total Posts Generated</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">⚡</div>
+        <div>
+          <div class="stat-val">3s Live</div>
+          <div class="stat-lbl">Real-Time Poll Cadence</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">📦</div>
+        <div>
+          <div class="stat-val">10s Auto</div>
+          <div class="stat-lbl">GitHub Sync Status</div>
+        </div>
+      </div>
+    </div>
+
     <main>
       <!-- Left Column: Controls & Profile -->
       <aside>
@@ -603,6 +712,20 @@
             <div id="profileContent">
               <p style="font-size: 0.8rem; color: var(--text-dim);">Loading voice profile...</p>
             </div>
+          </div>
+        </div>
+
+        <div class="glass-card">
+          <div class="card-title">
+            <span>🎨</span> 3D Scene Controls
+          </div>
+          <div class="form-group">
+            <label for="sceneStyle">3D WebGL Lattice Geometry</label>
+            <select id="sceneStyle" onchange="change3DStyle(this.value)">
+              <option value="icosahedron">Neural Icosahedron Mesh</option>
+              <option value="torus">Quantum Torus Lattice</option>
+              <option value="octahedron">Cyber Octahedron Crystal</option>
+            </select>
           </div>
         </div>
       </aside>
@@ -690,9 +813,9 @@
 
   <div id="toast" class="toast"></div>
 
-  <!-- Three.js 3D WebGL Neural Core Script -->
+  <!-- Three.js 3D WebGL Shader Scene Script -->
   <script>
-    let scene, camera, renderer, coreMesh, particleSystem, pointLight;
+    let scene, camera, renderer, coreMesh, particleSystem;
 
     function init3D() {
       const canvas = document.getElementById('canvas3d');
@@ -705,22 +828,11 @@
       renderer.setSize(window.innerWidth, window.innerHeight);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-      // 3D Neural Icosahedron Core
-      const geometry = new THREE.IcosahedronGeometry(7, 2);
-      const material = new THREE.MeshStandardMaterial({
-        color: 0x6366F1,
-        wireframe: true,
-        transparent: true,
-        opacity: 0.35,
-        roughness: 0.2,
-        metalness: 0.8
-      });
-      coreMesh = new THREE.Mesh(geometry, material);
-      scene.add(coreMesh);
+      createMeshGeometry('icosahedron');
 
       // Particle Cloud Orbit
       const particlesGeo = new THREE.BufferGeometry();
-      const count = 400;
+      const count = 450;
       const positions = new Float32Array(count * 3);
 
       for (let i = 0; i < count * 3; i += 3) {
@@ -739,18 +851,47 @@
       particleSystem = new THREE.Points(particlesGeo, particleMat);
       scene.add(particleSystem);
 
-      // Lighting
-      const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+      // Lights
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
       scene.add(ambientLight);
 
-      pointLight = new THREE.PointLight(0xEC4899, 1.5, 100);
-      pointLight.position.set(10, 10, 10);
+      const pointLight = new THREE.PointLight(0xEC4899, 1.8, 100);
+      pointLight.position.set(12, 12, 12);
       scene.add(pointLight);
 
       window.addEventListener('resize', onWindowResize);
       window.addEventListener('mousemove', onMouseMove);
 
       animate3D();
+    }
+
+    function createMeshGeometry(type) {
+      if (coreMesh) scene.remove(coreMesh);
+
+      let geo;
+      if (type === 'torus') {
+        geo = new THREE.TorusKnotGeometry(5, 1.8, 100, 16);
+      } else if (type === 'octahedron') {
+        geo = new THREE.OctahedronGeometry(6, 2);
+      } else {
+        geo = new THREE.IcosahedronGeometry(7, 2);
+      }
+
+      const mat = new THREE.MeshStandardMaterial({
+        color: 0x6366F1,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.35,
+        roughness: 0.2,
+        metalness: 0.8
+      });
+      coreMesh = new THREE.Mesh(geo, mat);
+      scene.add(coreMesh);
+    }
+
+    function change3DStyle(styleName) {
+      createMeshGeometry(styleName);
+      trigger3DPulse();
     }
 
     let mouseX = 0, mouseY = 0;
@@ -837,7 +978,10 @@
         if (res.ok) {
           const data = await res.json();
           renderVoiceProfile(data.voiceProfile);
-          if (data.name) document.getElementById('nameInput').value = data.name;
+          if (data.name) {
+            document.getElementById('nameInput').value = data.name;
+            document.getElementById('statAgent').innerText = data.name;
+          }
           if (data.domain) document.getElementById('domainInput').value = data.domain;
         } else {
           document.getElementById('profileContent').innerHTML = `
@@ -869,6 +1013,7 @@
 
         if (res.ok) {
           renderVoiceProfile(data.voiceProfile);
+          document.getElementById('statAgent').innerText = name;
           showToast(`✅ Topic switched to "${domain}"! NVIDIA AI cycle executed.`);
           trigger3DPulse();
           await fetchFeed();
@@ -927,6 +1072,11 @@
       fetchFeed();
     }
 
+    function copyPostText(text) {
+      navigator.clipboard.writeText(text);
+      showToast('📋 Post text copied to clipboard!');
+    }
+
     function renderVoiceProfile(profile) {
       if (!profile) return;
       const container = document.getElementById('profileContent');
@@ -956,6 +1106,8 @@
 
         if (res.ok && data.posts) {
           renderFeed(data.posts);
+          document.getElementById('statCount').innerText = data.posts.length;
+
           if (data.posts.length > lastKnownPostCount) {
             if (lastKnownPostCount > 0) {
               showToast('✨ New AI post published live!');
@@ -995,7 +1147,10 @@
           <article class="post-card">
             <div class="post-meta">
               <span class="post-time">🕒 ${formattedTime}</span>
-              <span class="post-id">ID: ${post.id.substring(0, 8)}...</span>
+              <div>
+                <button type="button" class="copy-btn" onclick="copyPostText(\`${escapeHtml(post.text).replace(/`/g, '\\`')}\`)">📋 Copy Text</button>
+                <span class="post-id">ID: ${post.id.substring(0, 8)}...</span>
+              </div>
             </div>
 
             <div class="score-grid">
@@ -1021,7 +1176,8 @@
 
             <div class="rationale-box">
               <div class="rationale-header">
-                <span>🎯</span> Editorial Rationale & Judgment Breakdown
+                <span>🎯 Editorial Rationale & Judgment Breakdown</span>
+                <span style="font-size:0.75rem; color:var(--accent-emerald);">ACCEPTED & VERIFIED</span>
               </div>
               <div class="rationale-text">${escapeHtml(post.rationale)}</div>
               ${sourcesHtml ? `<div class="sources-box">${sourcesHtml}</div>` : ''}
