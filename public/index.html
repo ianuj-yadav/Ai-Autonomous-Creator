@@ -1790,6 +1790,15 @@
       return str ? str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") : '';
     }
 
+    // Interactive 3D Parallax Tilt for Reaching Hands
+    document.addEventListener('mousemove', (e) => {
+      const art = document.querySelector('.center-art');
+      if (!art || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const x = (e.clientX / window.innerWidth - 0.5) * 14;
+      const y = (e.clientY / window.innerHeight - 0.5) * 10;
+      art.style.transform = `scale(1.04) translate3d(${x}px, ${y}px, 25px) rotateY(${x * 0.35}deg) rotateX(${-y * 0.35}deg)`;
+    });
+
     // Auto-restore session on page load
     window.addEventListener('DOMContentLoaded', () => {
       const saved = localStorage.getItem('ascend_user');
