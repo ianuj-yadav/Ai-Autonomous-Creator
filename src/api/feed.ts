@@ -15,6 +15,15 @@ feedRouter.get('/', async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
+    const agentRows = await query(`SELECT id FROM agents WHERE id = $1`, [agentId]);
+    if (agentRows.length === 0) {
+      res.status(404).json({
+        error: 'AGENT_NOT_FOUND',
+        message: `Agent with id "${agentId}" not found.`,
+      });
+      return;
+    }
+
     const rows = await query(
       `SELECT id, text, rationale, sources, created_at as "createdAt"
        FROM posts
