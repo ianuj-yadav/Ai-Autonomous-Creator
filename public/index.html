@@ -1003,24 +1003,156 @@
   <div class="modal-overlay" id="authModal">
     <div class="modal-card">
       <button class="modal-close-btn" onclick="closeAuthModal()">✕</button>
-      <div class="modal-title" id="modalTitle">Begin Your Practice</div>
-      <div class="modal-sub" id="modalSub">Enter your email to receive daily mindfulness prompts and access the Autonomous AI Creator Studio.</div>
+      
+      <!-- MODE SWITCHER TABS -->
+      <div style="display:flex; gap:8px; margin-bottom:1.4rem; border-bottom:2px solid var(--border-hairline); padding-bottom:0.8rem;">
+        <button id="authTabLogin" class="method-badge method-post" onclick="switchAuthMode('login')" style="cursor:pointer; flex:1; text-align:center;">Log In</button>
+        <button id="authTabSignup" class="method-badge" onclick="switchAuthMode('signup')" style="cursor:pointer; flex:1; text-align:center; background:#FFF;">Create Account</button>
+      </div>
+
+      <div class="modal-title" id="modalTitle">Welcome Back</div>
+      <div class="modal-sub" id="modalSub">Enter your email and password to access your personal AI discovery dashboard.</div>
+
+      <div id="authErrorBox" style="display:none; background:#FFEBEB; border:2px solid #FF5722; color:#C62828; padding:0.8rem 1rem; border-radius:10px; font-size:0.88rem; font-weight:600; margin-bottom:1.2rem;"></div>
 
       <form id="authForm" onsubmit="handleAuthSubmit(event)">
+        <div class="form-group-modal" id="nameGroup" style="display:none;">
+          <label class="form-label-modal">Full Name</label>
+          <input type="text" id="userName" class="input-modal" placeholder="Alex Rivera">
+        </div>
+
         <div class="form-group-modal">
           <label class="form-label-modal">Your Email Address</label>
           <input type="email" id="userEmail" class="input-modal" placeholder="name@domain.com" required>
         </div>
 
         <div class="form-group-modal" id="passwordGroup">
-          <label class="form-label-modal">Password / Magic Token</label>
+          <label class="form-label-modal">Password</label>
           <input type="password" id="userPassword" class="input-modal" placeholder="••••••••" required>
         </div>
 
         <button type="submit" class="btn-modal-submit" id="authSubmitBtn">
-          Continue to ASCEND →
+          Log In to ASCEND →
         </button>
       </form>
+    </div>
+  </div>
+
+  <!-- DEDICATED USER DASHBOARD PANEL -->
+  <div class="studio-panel" id="userDashboardPanel">
+    
+    <!-- DASHBOARD HEADER -->
+    <div class="studio-header">
+      <div style="display:flex; align-items:center; gap:16px;">
+        <div class="wordmark-group" onclick="showLanding()">
+          <svg class="brand-chevron-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="18 15 12 9 6 15"></polyline>
+            <polyline points="18 9 12 3 6 9"></polyline>
+          </svg>
+          <span class="wordmark-text" style="font-size:22px;">USER DASHBOARD</span>
+        </div>
+        <div style="background:#00E676; color:#191b1e; font-family:var(--font-mono); font-size:0.78rem; font-weight:700; padding:0.35rem 0.85rem; border-radius:999px; border:2px solid var(--ink); box-shadow:2px 2px 0px var(--ink);">
+          🟢 Account Active
+        </div>
+      </div>
+      
+      <div style="display:flex; gap:10px;">
+        <button class="btn-nav-cta" style="padding:9px 18px; font-size:13px; background:#FFC700; color:var(--ink);" onclick="openStudioPanel()">🤖 Open AI Studio</button>
+        <button class="btn-nav-cta" style="padding:9px 18px; font-size:13px; background:#FFF; color:var(--ink);" onclick="showLanding()">← Return to Hero</button>
+        <button class="btn-nav-cta" style="padding:9px 18px; font-size:13px; background:#FF5722; color:#FFF;" onclick="logoutUser()">Log Out</button>
+      </div>
+    </div>
+
+    <!-- WELCOME BANNER & STREAK STRIP -->
+    <div style="max-width:1320px; margin:0 auto 2rem; display:grid; grid-template-columns:1fr 1fr; gap:1.6rem;">
+      
+      <!-- STREAK WIDGET -->
+      <div class="bento-spec-card" style="background:#FFF9E6;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1rem;">
+          <div>
+            <div style="font-family:var(--font-mono); font-size:0.75rem; color:var(--slate-accent); font-weight:700; text-transform:uppercase; margin-bottom:0.4rem;">🔥 DAILY ACTIVE STREAK</div>
+            <div style="font-family:var(--font-display); font-size:2.2rem; font-weight:800; color:var(--ink);" id="dashStreakCount">🔥 7 Days Active</div>
+            <div style="font-size:0.88rem; color:var(--ink-muted); margin-top:0.3rem;" id="dashLastActive">Last Active: Today</div>
+          </div>
+          <button class="btn-modal-submit" style="width:auto; padding:0.65rem 1.2rem; font-size:0.88rem; margin:0; background:#00E676; color:#191b1e;" onclick="claimDailyStreak()">
+            ⚡ Claim Today's Check-In
+          </button>
+        </div>
+        <div style="font-size:0.85rem; color:var(--ink-muted); background:rgba(25,27,30,0.04); padding:0.7rem 1rem; border-radius:10px;">
+          Keep discovering research daily to build your active streak & earn topic priority.
+        </div>
+      </div>
+
+      <!-- LATEST SEARCH WIDGET -->
+      <div class="bento-spec-card">
+        <div style="font-family:var(--font-mono); font-size:0.75rem; color:var(--slate-accent); font-weight:700; text-transform:uppercase; margin-bottom:0.6rem;">🔍 INSTANT RESEARCH SEARCH</div>
+        <form onsubmit="handleUserSearchSubmit(event)" style="display:flex; gap:8px; margin-bottom:1rem;">
+          <input type="text" id="userSearchInput" class="input-modal" placeholder="Search AI research, TEE, cryptography..." required style="flex:1;">
+          <button type="submit" class="btn-modal-submit" style="width:auto; margin:0; padding:0.7rem 1.4rem;">Search</button>
+        </form>
+        <div style="font-family:var(--font-mono); font-size:0.75rem; font-weight:700; margin-bottom:0.4rem;">RECENT SEARCHES:</div>
+        <div style="display:flex; gap:6px; flex-wrap:wrap;" id="dashRecentSearchesList">
+          <span class="stack-pill">Confidential Computing TEE 2026</span>
+          <span class="stack-pill">Jaccard Deduplication</span>
+          <span class="stack-pill">Exa Neural API</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- MAIN DASHBOARD CONTENT GRID -->
+    <div class="studio-grid">
+      
+      <!-- LEFT COLUMN: INTERESTS & RECENT SEARCHES -->
+      <div style="display:flex; flex-direction:column; gap:1.6rem;">
+        
+        <!-- INTERESTS CARD -->
+        <div class="bento-spec-card">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+            <h3 class="card-heading" style="margin:0; font-size:1.2rem;">💡 Active Topic Interests</h3>
+          </div>
+          <p style="font-size:0.88rem; color:var(--ink-muted); margin-bottom:1rem; line-height:1.5;">
+            Manage topics used to filter your personal discovery stream:
+          </p>
+
+          <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:1.4rem;" id="dashInterestsList">
+            <span class="stack-pill" style="background:#FFF9E6;">AI Security & Vulnerability</span>
+            <span class="stack-pill" style="background:#FFF9E6;">Autonomous Agents</span>
+            <span class="stack-pill" style="background:#FFF9E6;">Neural Search</span>
+            <span class="stack-pill" style="background:#FFF9E6;">Post-Quantum Cryptography</span>
+          </div>
+
+          <form onsubmit="handleAddInterestSubmit(event)" style="display:flex; gap:8px;">
+            <input type="text" id="newInterestInput" class="input-modal" placeholder="e.g. LLM Fine-Tuning" required style="flex:1;">
+            <button type="submit" class="btn-modal-submit" style="width:auto; margin:0; padding:0.6rem 1.1rem; font-size:0.88rem;">+ Add</button>
+          </form>
+        </div>
+
+        <!-- SEARCH HISTORY CARD -->
+        <div class="bento-spec-card">
+          <h3 class="card-heading" style="margin-bottom:1rem; font-size:1.2rem;">📜 Search & Discovery History</h3>
+          <div id="dashHistoryList" style="display:flex; flex-direction:column; gap:0.8rem;">
+            <div style="border:2px solid var(--ink); padding:0.8rem 1rem; border-radius:12px; background:#FFF;">
+              <div style="font-family:var(--font-mono); font-size:0.72rem; color:var(--slate-accent);">AI Security • 3 hours ago</div>
+              <div style="font-weight:600; font-size:0.92rem; margin-top:0.2rem;">Hardware-Enclosed Trusted Execution Environments for AI Inference</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT COLUMN: PERSONALIZED DISCOVER STREAM -->
+      <div class="bento-spec-card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.4rem;">
+          <h3 class="card-heading" style="margin:0;">🌐 Personalized Discover Stream</h3>
+          <button class="btn-nav-cta" style="padding:6px 14px; font-size:12px;" onclick="loadDiscoverFeed()">Refresh Stream</button>
+        </div>
+
+        <div id="dashDiscoverFeed">
+          <p style="color:var(--ink-muted);">Loading personalized AI research discover stream...</p>
+        </div>
+      </div>
+
     </div>
   </div>
 
