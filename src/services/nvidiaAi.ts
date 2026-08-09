@@ -57,11 +57,11 @@ export async function callNvidiaAi(prompt: string, systemPrompt?: string): Promi
         throw new Error(`NVIDIA API HTTP ${fallbackRes.status}: ${await fallbackRes.text()}`);
       }
 
-      const fallbackData = await fallbackRes.json();
+      const fallbackData = (await fallbackRes.json()) as any;
       return fallbackData.choices?.[0]?.message?.content || '';
     }
 
-    const data = await response.json();
+    const data = (await response.json()) as any;
     const resultText = data.choices?.[0]?.message?.content || '';
     logger.info('Successfully received response from NVIDIA AI API', { textLength: resultText.length });
     return resultText;
