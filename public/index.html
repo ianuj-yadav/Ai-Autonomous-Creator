@@ -3,15 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Autonomous AI Creator — Bright Neobrutalist 3D Bento Studio</title>
+  <title>Autonomous AI Creator — Neobrutalist Bento Studio</title>
 
-  <!-- Typography: Space Grotesk, Outfit, Inter & JetBrains Mono -->
+  <!-- Google Fonts: Space Grotesk, Outfit, Inter & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800;900&family=Space+Grotesk:wght@500;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-  
-  <!-- Three.js 3D WebGL Engine -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
   <style>
     :root {
@@ -51,22 +48,12 @@
     body {
       font-family: 'Inter', sans-serif;
       background-color: var(--bg-cream);
+      background-image: radial-gradient(#111827 1.2px, transparent 1.2px);
+      background-size: 24px 24px;
       color: var(--text-black);
       min-height: 100vh;
       line-height: 1.6;
       overflow-x: hidden;
-    }
-
-    /* 3D WebGL Background Canvas */
-    #canvas3d {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: 0;
-      pointer-events: none;
-      opacity: 0.6;
     }
 
     .app-wrapper {
@@ -102,8 +89,8 @@
       width: 48px;
       height: 48px;
       background: var(--accent-orange);
-      border: 3px solid var(--border-black);
-      border-radius: 12px;
+      border: 3.5px solid var(--border-black);
+      border-radius: 14px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -127,7 +114,7 @@
       align-items: center;
       gap: 0.6rem;
       background: var(--accent-green-light);
-      border: 3px solid var(--border-black);
+      border: 3.5px solid var(--border-black);
       color: var(--text-black);
       padding: 0.45rem 1.1rem;
       border-radius: 9999px;
@@ -162,7 +149,7 @@
       gap: 1.6rem;
     }
 
-    /* Neobrutalist 3D Bento Card */
+    /* Bento Card Base */
     .bento-card {
       background: var(--card-white);
       border: 3.5px solid var(--border-black);
@@ -218,7 +205,7 @@
     input, select {
       width: 100%;
       background: #FFF;
-      border: 3px solid var(--border-black);
+      border: 3.5px solid var(--border-black);
       border-radius: 12px;
       padding: 0.85rem 1.1rem;
       color: var(--text-black);
@@ -292,7 +279,7 @@
     .profile-box {
       margin-top: 1.4rem;
       padding-top: 1.2rem;
-      border-top: 3px dashed var(--border-black);
+      border-top: 3.5px dashed var(--border-black);
     }
 
     .tag-container {
@@ -326,7 +313,7 @@
       box-shadow: 3px 3px 0px var(--border-black);
     }
 
-    /* Neobrutalist Tabs */
+    /* Tabs */
     .nav-tabs {
       display: flex;
       gap: 0.8rem;
@@ -368,7 +355,7 @@
       border: 3.5px solid var(--border-black);
       border-radius: 20px;
       padding: 1.8rem;
-      margin-bottom: 1.8rem;
+      margin-bottom: 1.6rem;
       box-shadow: 6px 6px 0px var(--border-black);
       animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     }
@@ -413,7 +400,7 @@
       white-space: pre-wrap;
     }
 
-    /* Score Grid Pills */
+    /* 4-Axis Score Grid */
     .score-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -524,6 +511,82 @@
       box-shadow: 4px 4px 0px var(--border-black);
     }
 
+    /* Neobrutalist Sliding Pagination Controls */
+    .pagination-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 2rem;
+      padding: 1rem 1.2rem;
+      background: var(--card-white);
+      border: 3.5px solid var(--border-black);
+      border-radius: 18px;
+      box-shadow: 5px 5px 0px var(--border-black);
+    }
+
+    .page-btn {
+      background: var(--accent-yellow);
+      border: 3px solid var(--border-black);
+      color: var(--text-black);
+      padding: 0.65rem 1.2rem;
+      border-radius: 12px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 3px 3px 0px var(--border-black);
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .page-btn:hover:not(:disabled) {
+      transform: translate(-2px, -2px);
+      box-shadow: 5px 5px 0px var(--border-black);
+    }
+
+    .page-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .page-numbers {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .page-num-pill {
+      width: 38px;
+      height: 38px;
+      border: 2.5px solid var(--border-black);
+      border-radius: 10px;
+      background: var(--bg-cream);
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 800;
+      font-size: 0.95rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 2px 2px 0px var(--border-black);
+      transition: all 0.15s ease;
+    }
+
+    .page-num-pill:hover {
+      transform: translate(-1px, -1px);
+      box-shadow: 4px 4px 0px var(--border-black);
+    }
+
+    .page-num-pill.active {
+      background: var(--accent-orange);
+      color: #FFF;
+      box-shadow: 3px 3px 0px var(--border-black);
+    }
+
     .empty-feed {
       text-align: center;
       padding: 4rem;
@@ -605,9 +668,6 @@
 </head>
 <body>
 
-  <!-- WebGL 3D Background Canvas -->
-  <canvas id="canvas3d"></canvas>
-
   <div class="app-wrapper">
     <header>
       <div class="header-container">
@@ -622,7 +682,7 @@
       </div>
     </header>
 
-    <!-- Neobrutalist 3D Bento Grid -->
+    <!-- Neobrutalist Bento Grid -->
     <div class="bento-grid">
 
       <!-- Bento 1: Hero Persona Card (Span 6) -->
@@ -634,7 +694,7 @@
           <span style="font-size:0.8rem; background:var(--accent-yellow); border:2px solid var(--border-black); padding:0.25rem 0.75rem; border-radius:8px; box-shadow:2px 2px 0px var(--border-black);" id="statDomainBadge">AI Security</span>
         </div>
         <div style="display:flex; align-items:center; gap:1.2rem;">
-          <div style="width:64px; height:64px; border-radius:16px; background:var(--accent-orange); border:3px solid var(--border-black); display:flex; align-items:center; justify-content:center; font-size:2rem; box-shadow:4px 4px 0px var(--border-black);">
+          <div style="width:64px; height:64px; border-radius:16px; background:var(--accent-orange); border:3.5px solid var(--border-black); display:flex; align-items:center; justify-content:center; font-size:2rem; box-shadow:4px 4px 0px var(--border-black);">
             🧠
           </div>
           <div>
@@ -715,15 +775,6 @@
             <p style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500;">Loading profile...</p>
           </div>
         </div>
-
-        <div style="margin-top:1.4rem; padding-top:1.2rem; border-top:3px dashed var(--border-black);">
-          <label for="sceneStyle">3D WebGL Geometry</label>
-          <select id="sceneStyle" onchange="change3DStyle(this.value)">
-            <option value="icosahedron">Warm Sun Icosahedron Mesh</option>
-            <option value="torus">Quantum Torus Knot</option>
-            <option value="octahedron">Cyber Octahedron Crystal</option>
-          </select>
-        </div>
       </div>
 
       <!-- Bento 6: Main Live Feed Stream (Span 8) -->
@@ -749,10 +800,22 @@
             </button>
           </div>
 
+          <!-- Feed Posts Stream Window (Max 5 items per page) -->
           <div id="feedStream">
             <div class="empty-feed">
               <p>No posts published yet for this topic.</p>
             </div>
+          </div>
+
+          <!-- Sliding Pagination Controls (5 posts per page) -->
+          <div class="pagination-bar" id="paginationBar" style="display:none;">
+            <button type="button" class="page-btn" id="prevPageBtn" onclick="changePage(-1)">
+              ◄ Previous Page
+            </button>
+            <div class="page-numbers" id="pageNumbers"></div>
+            <button type="button" class="page-btn" id="nextPageBtn" onclick="changePage(1)">
+              Next Page ►
+            </button>
           </div>
         </div>
 
@@ -805,138 +868,12 @@
 
   <div id="toast" class="toast"></div>
 
-  <!-- Three.js 3D WebGL Scene Engine (Bright Warm Theme) -->
+  <!-- Application Logic & Sliding Pagination (5 Posts Per Page) -->
   <script>
-    let scene, camera, renderer, coreMesh, particleSystem;
+    const ITEMS_PER_PAGE = 5;
+    let currentPage = 1;
+    let allFeedPosts = [];
 
-    function init3D() {
-      const canvas = document.getElementById('canvas3d');
-      scene = new THREE.Scene();
-      
-      camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-      camera.position.z = 25;
-
-      renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-      createMeshGeometry('icosahedron');
-
-      // Warm Golden Particle Field
-      const particlesGeo = new THREE.BufferGeometry();
-      const count = 450;
-      const positions = new Float32Array(count * 3);
-
-      for (let i = 0; i < count * 3; i += 3) {
-        positions[i] = (Math.random() - 0.5) * 70;
-        positions[i + 1] = (Math.random() - 0.5) * 70;
-        positions[i + 2] = (Math.random() - 0.5) * 70;
-      }
-      particlesGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-
-      const particleMat = new THREE.PointsMaterial({
-        size: 0.35,
-        color: 0xFF5722,
-        transparent: true,
-        opacity: 0.4
-      });
-      particleSystem = new THREE.Points(particlesGeo, particleMat);
-      scene.add(particleSystem);
-
-      // Warm Lighting
-      const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
-      scene.add(ambientLight);
-
-      const pointLight = new THREE.PointLight(0xFFC700, 1.8, 100);
-      pointLight.position.set(15, 15, 15);
-      scene.add(pointLight);
-
-      window.addEventListener('resize', onWindowResize);
-      window.addEventListener('mousemove', onMouseMove);
-
-      animate3D();
-    }
-
-    function createMeshGeometry(type) {
-      if (coreMesh) scene.remove(coreMesh);
-
-      let geo;
-      if (type === 'torus') {
-        geo = new THREE.TorusKnotGeometry(5, 1.8, 100, 16);
-      } else if (type === 'octahedron') {
-        geo = new THREE.OctahedronGeometry(6, 2);
-      } else {
-        geo = new THREE.IcosahedronGeometry(7, 2);
-      }
-
-      const mat = new THREE.MeshStandardMaterial({
-        color: 0xFF5722,
-        wireframe: true,
-        transparent: true,
-        opacity: 0.45,
-        roughness: 0.2,
-        metalness: 0.5
-      });
-      coreMesh = new THREE.Mesh(geo, mat);
-      scene.add(coreMesh);
-    }
-
-    function change3DStyle(styleName) {
-      createMeshGeometry(styleName);
-      trigger3DPulse();
-    }
-
-    let mouseX = 0, mouseY = 0;
-    function onMouseMove(e) {
-      mouseX = (e.clientX - window.innerWidth / 2) * 0.0005;
-      mouseY = (e.clientY - window.innerHeight / 2) * 0.0005;
-    }
-
-    function onWindowResize() {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    }
-
-    function trigger3DPulse() {
-      if (!coreMesh) return;
-      let scale = 1;
-      const interval = setInterval(() => {
-        scale += 0.08;
-        coreMesh.scale.set(scale, scale, scale);
-        if (scale >= 1.4) {
-          clearInterval(interval);
-          const shrink = setInterval(() => {
-            scale -= 0.08;
-            coreMesh.scale.set(scale, scale, scale);
-            if (scale <= 1) {
-              coreMesh.scale.set(1, 1, 1);
-              clearInterval(shrink);
-            }
-          }, 30);
-        }
-      }, 30);
-    }
-
-    function animate3D() {
-      requestAnimationFrame(animate3D);
-
-      if (coreMesh) {
-        coreMesh.rotation.x += 0.003 + mouseY * 0.5;
-        coreMesh.rotation.y += 0.005 + mouseX * 0.5;
-      }
-      if (particleSystem) {
-        particleSystem.rotation.y -= 0.001;
-      }
-
-      renderer.render(scene, camera);
-    }
-
-    window.addEventListener('DOMContentLoaded', init3D);
-  </script>
-
-  <!-- Application Logic -->
-  <script>
     function showToast(message) {
       const toast = document.getElementById('toast');
       toast.innerText = message;
@@ -1011,7 +948,7 @@
           document.getElementById('statAgentName').innerText = name;
           document.getElementById('statDomainBadge').innerText = domain;
           showToast(`✅ Topic switched to "${domain}"! NVIDIA AI cycle executed.`);
-          trigger3DPulse();
+          currentPage = 1;
           await fetchFeed();
         } else {
           showToast('❌ Error: ' + (data.message || 'Initialization failed'));
@@ -1043,7 +980,6 @@
 
         if (res.ok) {
           showToast('⚡ NVIDIA AI Discovery & Scoring cycle executed!');
-          trigger3DPulse();
           await fetchFeed();
         } else {
           showToast('⚠️ ' + (data.message || 'Trigger cycle failed'));
@@ -1064,6 +1000,7 @@
     }
 
     function handleAgentIdChange() {
+      currentPage = 1;
       fetchProfile();
       fetchFeed();
     }
@@ -1101,15 +1038,16 @@
         const data = await res.json();
 
         if (res.ok && data.posts) {
-          renderFeed(data.posts);
-          document.getElementById('statCount').innerText = data.posts.length;
+          allFeedPosts = data.posts;
+          document.getElementById('statCount').innerText = allFeedPosts.length;
 
-          if (data.posts.length > lastKnownPostCount) {
+          renderPaginatedFeed();
+
+          if (allFeedPosts.length > lastKnownPostCount) {
             if (lastKnownPostCount > 0) {
               showToast('✨ New AI post published live!');
-              trigger3DPulse();
             }
-            lastKnownPostCount = data.posts.length;
+            lastKnownPostCount = allFeedPosts.length;
           }
         } else if (res.status === 404) {
           document.getElementById('feedStream').innerHTML = `
@@ -1118,24 +1056,35 @@
               <p style="font-size: 0.85rem; margin-top: 0.5rem;">Select a topic above to initialize real-time publishing.</p>
             </div>
           `;
+          document.getElementById('paginationBar').style.display = 'none';
         }
       } catch (err) {
         console.error('Fetch feed error:', err);
       }
     }
 
-    function renderFeed(posts) {
+    function renderPaginatedFeed() {
       const stream = document.getElementById('feedStream');
-      if (!posts || posts.length === 0) {
+      const paginationBar = document.getElementById('paginationBar');
+
+      if (!allFeedPosts || allFeedPosts.length === 0) {
         stream.innerHTML = `
           <div class="empty-feed">
             <p>No posts published yet for this topic.</p>
           </div>
         `;
+        paginationBar.style.display = 'none';
         return;
       }
 
-      stream.innerHTML = posts.map(post => {
+      const totalPages = Math.ceil(allFeedPosts.length / ITEMS_PER_PAGE);
+      if (currentPage > totalPages) currentPage = totalPages;
+      if (currentPage < 1) currentPage = 1;
+
+      const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+      const visiblePosts = allFeedPosts.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+      stream.innerHTML = visiblePosts.map(post => {
         const formattedTime = new Date(post.createdAt).toLocaleString();
         const sourcesHtml = post.sources ? post.sources.map(s => `<a href="${s}" target="_blank" rel="noopener" class="source-link">🔗 ${s}</a>`).join('') : '';
 
@@ -1181,6 +1130,33 @@
           </article>
         `;
       }).join('');
+
+      // Update Pagination Bar
+      if (totalPages > 1) {
+        paginationBar.style.display = 'flex';
+        document.getElementById('prevPageBtn').disabled = currentPage === 1;
+        document.getElementById('nextPageBtn').disabled = currentPage === totalPages;
+
+        let pageBtnsHtml = '';
+        for (let i = 1; i <= totalPages; i++) {
+          pageBtnsHtml += `<button type="button" class="page-num-pill ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+        }
+        document.getElementById('pageNumbers').innerHTML = pageBtnsHtml;
+      } else {
+        paginationBar.style.display = 'none';
+      }
+    }
+
+    function changePage(delta) {
+      currentPage += delta;
+      renderPaginatedFeed();
+      window.scrollTo({ top: 300, behavior: 'smooth' });
+    }
+
+    function goToPage(pageNum) {
+      currentPage = pageNum;
+      renderPaginatedFeed();
+      window.scrollTo({ top: 300, behavior: 'smooth' });
     }
 
     function escapeHtml(str) {
