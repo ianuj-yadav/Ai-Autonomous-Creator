@@ -1,5 +1,5 @@
 import { Request, Response, Router } from 'express';
-import { query } from '../db';
+import { query, generateDomainSeedPosts } from '../db';
 import { logger } from '../logger';
 import { deriveVoiceProfile } from '../modules/persona';
 import { agentScheduler } from '../modules/scheduler';
@@ -20,7 +20,7 @@ feedRouter.get('/', async (req: Request, res: Response): Promise<void> => {
       }
     }
 
-    let agentRows = await query(`SELECT id FROM agents WHERE id = $1`, [agentId]);
+    let agentRows = await query(`SELECT id, name, domain FROM agents WHERE id = $1`, [agentId]);
     if (agentRows.length === 0) {
       const voiceProfile = await deriveVoiceProfile('Kess', 'AI Security');
       await query(
@@ -29,16 +29,38 @@ feedRouter.get('/', async (req: Request, res: Response): Promise<void> => {
          ON CONFLICT (id) DO UPDATE SET status = 'active'`,
         [agentId, 'Kess', 'AI Security', JSON.stringify(voiceProfile)]
       );
-      agentRows = await query(`SELECT id FROM agents WHERE id = $1`, [agentId]);
+      agentRows = await query(`SELECT id, name, domain FROM agents WHERE id = $1`, [agentId]);
     }
 
-    const rows = await query(
+    const agentName = agentRows[0]?.name || 'Kess';
+    const agentDomain = agentRows[0]?.domain || 'AI Security';
+
+    let rows = await query(
       `SELECT id, text, rationale, sources, created_at as "createdAt"
        FROM posts
        WHERE agent_id = $1
        ORDER BY created_at DESC`,
       [agentId]
     );
+
+    // If 0 posts exist for this agent, generate fresh domain-specific posts immediately
+    if (rows.length === 0) {
+      const freshPosts = generateDomainSeedPosts(agentId, agentName, agentDomain);
+      for (const p of freshPosts) {
+        await query(
+          `INSERT INTO posts (id, agent_id, topic_candidate_id, text, rationale, sources, created_at)
+           VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+          [p.id, p.agent_id, p.topic_candidate_id, p.text, p.rationale, JSON.stringify(p.sources), p.created_at]
+        );
+      }
+      rows = await query(
+        `SELECT id, text, rationale, sources, created_at as "createdAt"
+         FROM posts
+         WHERE agent_id = $1
+         ORDER BY created_at DESC`,
+        [agentId]
+      );
+    }
 
     const formattedPosts = rows.map((row) => ({
       id: row.id,

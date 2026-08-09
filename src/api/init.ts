@@ -1,6 +1,6 @@
 import { Request, Response, Router } from 'express';
 import { z } from 'zod';
-import { query } from '../db';
+import { query, generateDomainSeedPosts } from '../db';
 import { logger } from '../logger';
 import { deriveVoiceProfile } from '../modules/persona';
 import { agentScheduler } from '../modules/scheduler';
@@ -34,7 +34,7 @@ initRouter.post('/', async (req: Request, res: Response): Promise<void> => {
     // Derive fresh Voice Profile for the target domain
     const voiceProfile = await deriveVoiceProfile(persona.name, persona.domain);
 
-    // Save or Update agent in PostgreSQL
+    // Save or Update agent in PostgreSQL / Store
     await query(
       `INSERT INTO agents (id, name, domain, voice_profile, status)
        VALUES ($1, $2, $3, $4, 'active')
@@ -45,6 +45,19 @@ initRouter.post('/', async (req: Request, res: Response): Promise<void> => {
            status = 'active'`,
       [agentId, persona.name, persona.domain, JSON.stringify(voiceProfile)]
     );
+
+    // Guarantee fresh domain-specific posts exist for this exact domain
+    const existingPosts = await query(`SELECT id FROM posts WHERE agent_id = $1 LIMIT 1`, [agentId]);
+    if (existingPosts.length === 0) {
+      const freshPosts = generateDomainSeedPosts(agentId, persona.name, persona.domain);
+      for (const p of freshPosts) {
+        await query(
+          `INSERT INTO posts (id, agent_id, topic_candidate_id, text, rationale, sources, created_at)
+           VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+          [p.id, p.agent_id, p.topic_candidate_id, p.text, p.rationale, JSON.stringify(p.sources), p.created_at]
+        );
+      }
+    }
 
     // Start/resume background loop
     agentScheduler.startAgentLoop(agentId);
