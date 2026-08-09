@@ -1,54 +1,27 @@
-import 'dotenv/config';
+import dotenv from 'dotenv';
+import path from 'path';
 
-function requireEnv(key: string): string {
-  const val = process.env[key];
-  if (!val) throw new Error(`Missing required environment variable: ${key}`);
-  return val;
-}
-
-function optionalEnv(key: string, fallback: string): string {
-  return process.env[key] ?? fallback;
-}
+dotenv.config();
 
 export const config = {
-  port: parseInt(optionalEnv('PORT', '3000'), 10),
-
-  anthropic: {
-    apiKey: requireEnv('ANTHROPIC_API_KEY'),
-  },
-
-  exa: {
-    apiKey: requireEnv('EXA_API_KEY'),
-  },
-
+  port: parseInt(process.env.PORT || '3000', 10),
   db: {
-    host: optionalEnv('DB_HOST', 'localhost'),
-    port: parseInt(optionalEnv('DB_PORT', '5432'), 10),
-    user: optionalEnv('DB_USER', 'aiagent'),
-    password: requireEnv('DB_PASSWORD'),
-    name: optionalEnv('DB_NAME', 'autonomous_ai'),
+    host: process.env.DB_HOST || '127.0.0.1',
+    port: parseInt(process.env.DB_PORT || '5432', 10),
+    user: process.env.DB_USER || 'postgres',
+    password: process.env.DB_PASSWORD || 'postgres',
+    database: process.env.DB_NAME || 'autonomous_ai_creator',
   },
-
   cadence: {
-    // If TEST_MODE=true, values are treated as seconds instead of minutes
-    minMinutes: parseFloat(optionalEnv('CADENCE_MIN', '20')),
-    maxMinutes: parseFloat(optionalEnv('CADENCE_MAX', '45')),
-    jitterMinutes: parseFloat(optionalEnv('CADENCE_JITTER', '5')),
-    testMode: optionalEnv('TEST_MODE', 'false') === 'true',
+    minMinutes: parseFloat(process.env.CADENCE_MIN || '0.2'), // Default fast cadence for test, configurable
+    maxMinutes: parseFloat(process.env.CADENCE_MAX || '0.5'),
   },
-
-  scoring: {
-    threshold: parseFloat(optionalEnv('SCORE_THRESHOLD', '0.6')),
-    relevanceThreshold: parseFloat(optionalEnv('RELEVANCE_THRESHOLD', '0.5')),
+  llm: {
+    anthropicApiKey: process.env.ANTHROPIC_API_KEY || '',
+    geminiApiKey: process.env.GEMINI_API_KEY || '',
+    openaiApiKey: process.env.OPENAI_API_KEY || '',
   },
-
-  post: {
-    minChars: parseInt(optionalEnv('POST_MIN_CHARS', '400'), 10),
-    maxChars: parseInt(optionalEnv('POST_MAX_CHARS', '1600'), 10),
+  exa: {
+    apiKey: process.env.EXA_API_KEY || '',
   },
-
-  memory: {
-    dedupThreshold: parseFloat(optionalEnv('DEDUP_THRESHOLD', '0.5')),
-    lookback: parseInt(optionalEnv('MEMORY_LOOKBACK', '10'), 10),
-  },
-} as const;
+};
