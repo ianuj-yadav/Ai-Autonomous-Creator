@@ -1,5 +1,7 @@
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
+import fs from 'fs';
 import { config } from './config';
 import { logger } from './logger';
 import { runMigrations } from './db/migrate';
@@ -11,7 +13,9 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static('public'));
+
+const publicPath = path.resolve(process.cwd(), 'public');
+app.use(express.static(publicPath));
 
 // Routes & Compliance Endpoint Aliases
 app.use('/api/agent/init', initRouter);
@@ -24,6 +28,16 @@ app.use('/feed', feedRouter);
 
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+// Explicit Root Route handler to serve index.html
+app.get('/', (req, res) => {
+  const indexFile = path.join(publicPath, 'index.html');
+  if (fs.existsSync(indexFile)) {
+    res.sendFile(indexFile);
+  } else {
+    res.sendFile(path.resolve(__dirname, '../public/index.html'));
+  }
 });
 
 let isInitialized = false;
