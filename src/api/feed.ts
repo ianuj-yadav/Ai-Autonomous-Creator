@@ -6,13 +6,16 @@ export const feedRouter = Router();
 
 feedRouter.get('/', async (req: Request, res: Response): Promise<void> => {
   try {
-    const agentId = req.query.agentId as string;
+    let agentId = req.query.agentId as string;
+    
+    // If agentId is not specified, default to the most recently created or active agent
     if (!agentId) {
-      res.status(400).json({
-        error: 'MISSING_QUERY_PARAMETER',
-        message: 'Query parameter "agentId" is required.',
-      });
-      return;
+      const defaultAgentRows = await query(`SELECT id FROM agents ORDER BY created_at DESC LIMIT 1`);
+      if (defaultAgentRows.length > 0) {
+        agentId = defaultAgentRows[0].id;
+      } else {
+        agentId = 'kess-security-bot';
+      }
     }
 
     const agentRows = await query(`SELECT id FROM agents WHERE id = $1`, [agentId]);
