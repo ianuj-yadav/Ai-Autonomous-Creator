@@ -2,6 +2,8 @@
 
 This package contains the full requirements and build documentation for the **Autonomous AI Creator** challenge: an AI persona agent that discovers topics, exercises editorial judgment, writes in a consistent voice, remembers what it has published, and keeps publishing on its own for ~48 hours after a single initialization call.
 
+> **Sync Status**: Automated real-time repository synchronization active (pushing to https://github.com/ianuj-yadav/Ai-Autonomous-Creator.git every 10 seconds).
+
 ## Reading order
 
 | # | Document | Purpose |
