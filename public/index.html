@@ -1164,12 +1164,9 @@
       return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     }
 
-    // Initial load
+    // Initial load - Data only updates when user manually refreshes or triggers a cycle
     fetchProfile();
     fetchFeed();
-
-    // Auto-poll stream every 3s
-    setInterval(fetchFeed, 3000);
   </script>
 </body>
 </html>
