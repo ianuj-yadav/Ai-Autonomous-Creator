@@ -82,7 +82,7 @@
       -webkit-mask-image: radial-gradient(circle at 50% 50%, black 30%, transparent 80%);
     }
 
-    /* ── HALFTONE ARTWORK (HERO CENTERPIECE) ────────────────────────── */
+    /* ── HALFTONE ARTWORK CENTERPIECE (CONTAINED & STEADY) ───────────── */
     .center-art-wrapper {
       position: fixed;
       inset: 0;
@@ -92,56 +92,90 @@
       align-items: center;
       justify-content: center;
       overflow: hidden;
-      perspective: 1200px;
-      perspective-origin: 50% 48%;
     }
 
     .center-art {
-      width: 100vw;
-      height: 100vh;
-      object-fit: cover;
+      width: min(1080px, 88vw);
+      height: min(680px, 82vh);
+      object-fit: contain;
       object-position: center 48%;
       mix-blend-mode: multiply;
-      opacity: 0.85;
-      will-change: transform, opacity, filter;
-      transform-style: preserve-3d;
-      transform-origin: 50% 48%;
-      animation: 
-        handsEmerge 2.4s cubic-bezier(0.16, 1, 0.3, 1) forwards,
-        handsTouchPulse 7s infinite ease-in-out 2.4s alternate;
-      filter: contrast(1.08) brightness(0.98);
-      transition: transform 0.25s cubic-bezier(0.1, 0.8, 0.2, 1);
+      opacity: 0.88;
+      filter: contrast(1.12) brightness(0.96);
+      animation: handsFadeIn 1.4s ease-out forwards;
+      transform: translateZ(0);
     }
 
-    /* Phase 1: Hands emerge 3D out of the screen toward the viewer */
-    @keyframes handsEmerge {
-      0% {
+    @keyframes handsFadeIn {
+      from {
         opacity: 0;
-        transform: scale(0.82) translate3d(0, 45px, -200px) rotateX(8deg);
-        filter: contrast(0.9) blur(10px);
+        filter: contrast(0.9) blur(6px);
       }
-      65% {
-        opacity: 0.9;
-        filter: contrast(1.1) blur(0px);
-      }
-      100% {
-        opacity: 0.85;
-        transform: scale(1.03) translate3d(0, 0, 0) rotateX(0deg);
-        filter: contrast(1.08) brightness(0.98);
+      to {
+        opacity: 0.88;
+        filter: contrast(1.12) brightness(0.96);
       }
     }
 
-    /* Phase 2: Continuous ambient 3D breathing where the hands reach out and touch fingers */
-    @keyframes handsTouchPulse {
-      0% {
-        transform: scale(1.03) translate3d(0, 0, 0);
-      }
-      50% {
-        transform: scale(1.075) translate3d(0, -10px, 45px) rotate(0.5deg);
-      }
-      100% {
-        transform: scale(1.02) translate3d(0, 6px, -15px) rotate(-0.4deg);
-      }
+    /* ── HANDS REJOIN TOUCHPOINT SPARK & ETHERIC ENERGY NODE ────────── */
+    .rejoin-spark-node {
+      position: fixed;
+      left: 50%;
+      top: 48%;
+      transform: translate(-50%, -50%);
+      width: 140px;
+      height: 140px;
+      z-index: 3;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .rejoin-spark-core {
+      width: 12px;
+      height: 12px;
+      background: var(--ink);
+      border-radius: 50%;
+      box-shadow: 0 0 16px rgba(25, 27, 30, 0.8), 0 0 32px rgba(92, 107, 120, 0.5);
+      animation: sparkPulse 2.8s infinite ease-in-out alternate;
+    }
+
+    .rejoin-spark-ring {
+      position: absolute;
+      inset: 0;
+      border: 1.5px dashed rgba(25, 27, 30, 0.35);
+      border-radius: 50%;
+      animation: sparkSpin 18s linear infinite, ringPulse 3.5s infinite ease-in-out alternate;
+    }
+
+    .rejoin-spark-aura {
+      position: absolute;
+      width: 220px;
+      height: 220px;
+      background: radial-gradient(circle, rgba(92, 107, 120, 0.18) 0%, rgba(244, 243, 239, 0.85) 45%, transparent 70%);
+      border-radius: 50%;
+      animation: auraPulse 4s infinite ease-in-out alternate;
+    }
+
+    @keyframes sparkPulse {
+      0% { transform: scale(0.85); opacity: 0.6; }
+      100% { transform: scale(1.35); opacity: 1; }
+    }
+
+    @keyframes ringPulse {
+      0% { transform: scale(0.7); opacity: 0.2; }
+      100% { transform: scale(1.2); opacity: 0.6; }
+    }
+
+    @keyframes sparkSpin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes auraPulse {
+      0% { transform: scale(0.9); opacity: 0.4; }
+      100% { transform: scale(1.15); opacity: 0.85; }
     }
 
     /* ── LEGIBILITY BLOOM ────────────────────────────────────────────── */
