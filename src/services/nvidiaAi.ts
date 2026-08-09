@@ -23,6 +23,9 @@ export async function callNvidiaAi(prompt: string, systemPrompt?: string): Promi
 
   logger.info('Calling NVIDIA AI API', { model: config.nvidia.model, url: config.nvidia.url });
 
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
+
   try {
     const response = await fetch(config.nvidia.url, {
       method: 'POST',
@@ -32,17 +35,22 @@ export async function callNvidiaAi(prompt: string, systemPrompt?: string): Promi
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(payload),
+      signal: controller.signal,
     });
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       const errorText = await response.text();
       logger.warn('NVIDIA API returned error status, attempting fallback model', { status: response.status, errorText });
 
-      // Fallback model call if primary model returns 404/400
       const fallbackPayload = {
         ...payload,
         model: 'meta/llama-3.1-405b-instruct',
       };
+
+      const fallbackController = new AbortController();
+      const fallbackTimeout = setTimeout(() => fallbackController.abort(), 8000);
+
       const fallbackRes = await fetch(config.nvidia.url, {
         method: 'POST',
         headers: {
@@ -51,7 +59,9 @@ export async function callNvidiaAi(prompt: string, systemPrompt?: string): Promi
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(fallbackPayload),
+        signal: fallbackController.signal,
       });
+      clearTimeout(fallbackTimeout);
 
       if (!fallbackRes.ok) {
         throw new Error(`NVIDIA API HTTP ${fallbackRes.status}: ${await fallbackRes.text()}`);
@@ -66,7 +76,8 @@ export async function callNvidiaAi(prompt: string, systemPrompt?: string): Promi
     logger.info('Successfully received response from NVIDIA AI API', { textLength: resultText.length });
     return resultText;
   } catch (err: any) {
-    logger.error('NVIDIA AI API call failed', { error: err.message });
+    clearTimeout(timeoutId);
+    logger.warn('NVIDIA AI API call timed out or failed, proceeding with fallback', { error: err.message });
     throw err;
   }
 }
