@@ -516,22 +516,36 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
       margin-top: 2rem;
-      padding: 1rem 1.2rem;
-      background: var(--card-white);
+      padding: 1.2rem 1.4rem;
+      background: var(--accent-yellow-light);
       border: 3.5px solid var(--border-black);
-      border-radius: 18px;
-      box-shadow: 5px 5px 0px var(--border-black);
+      border-radius: 20px;
+      box-shadow: 6px 6px 0px var(--border-black);
+    }
+
+    .page-info {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--text-black);
+      background: #FFF;
+      border: 2.5px solid var(--border-black);
+      padding: 0.4rem 0.9rem;
+      border-radius: 10px;
+      box-shadow: 2px 2px 0px var(--border-black);
     }
 
     .page-btn {
-      background: var(--accent-yellow);
+      background: var(--accent-orange);
       border: 3px solid var(--border-black);
-      color: var(--text-black);
-      padding: 0.65rem 1.2rem;
+      color: #FFF;
+      padding: 0.65rem 1.3rem;
       border-radius: 12px;
       font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.9rem;
+      font-size: 0.92rem;
       font-weight: 800;
       cursor: pointer;
       box-shadow: 3px 3px 0px var(--border-black);
@@ -539,6 +553,7 @@
       display: flex;
       align-items: center;
       gap: 0.5rem;
+      text-transform: uppercase;
     }
 
     .page-btn:hover:not(:disabled) {
@@ -547,44 +562,50 @@
     }
 
     .page-btn:disabled {
-      opacity: 0.4;
+      opacity: 0.45;
       cursor: not-allowed;
       box-shadow: none;
       transform: none;
+      background: #E5E7EB;
+      color: var(--text-muted);
     }
 
     .page-numbers {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.55rem;
     }
 
     .page-num-pill {
-      width: 38px;
-      height: 38px;
-      border: 2.5px solid var(--border-black);
+      min-width: 40px;
+      height: 40px;
+      padding: 0 0.5rem;
+      border: 3px solid var(--border-black);
       border-radius: 10px;
-      background: var(--bg-cream);
+      background: #FFF;
+      color: var(--text-black);
       font-family: 'Space Grotesk', sans-serif;
       font-weight: 800;
-      font-size: 0.95rem;
+      font-size: 1rem;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 2px 2px 0px var(--border-black);
+      box-shadow: 3px 3px 0px var(--border-black);
       transition: all 0.15s ease;
     }
 
     .page-num-pill:hover {
-      transform: translate(-1px, -1px);
-      box-shadow: 4px 4px 0px var(--border-black);
+      transform: translate(-2px, -2px);
+      box-shadow: 5px 5px 0px var(--border-black);
+      background: var(--accent-yellow);
     }
 
     .page-num-pill.active {
       background: var(--accent-orange);
       color: #FFF;
-      box-shadow: 3px 3px 0px var(--border-black);
+      transform: translate(-2px, -2px);
+      box-shadow: 5px 5px 0px var(--border-black);
     }
 
     .empty-feed {
@@ -810,11 +831,12 @@
           <!-- Sliding Pagination Controls (5 posts per page) -->
           <div class="pagination-bar" id="paginationBar" style="display:none;">
             <button type="button" class="page-btn" id="prevPageBtn" onclick="changePage(-1)">
-              ◄ Previous Page
+              ◄ Prev
             </button>
+            <div class="page-info" id="pageInfo">Page 1 of 1</div>
             <div class="page-numbers" id="pageNumbers"></div>
             <button type="button" class="page-btn" id="nextPageBtn" onclick="changePage(1)">
-              Next Page ►
+              Next ►
             </button>
           </div>
         </div>
@@ -1082,7 +1104,8 @@
       if (currentPage < 1) currentPage = 1;
 
       const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-      const visiblePosts = allFeedPosts.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+      const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, allFeedPosts.length);
+      const visiblePosts = allFeedPosts.slice(startIndex, endIndex);
 
       stream.innerHTML = visiblePosts.map(post => {
         const formattedTime = new Date(post.createdAt).toLocaleString();
@@ -1132,19 +1155,17 @@
       }).join('');
 
       // Update Pagination Bar
-      if (totalPages > 1) {
-        paginationBar.style.display = 'flex';
-        document.getElementById('prevPageBtn').disabled = currentPage === 1;
-        document.getElementById('nextPageBtn').disabled = currentPage === totalPages;
+      paginationBar.style.display = 'flex';
+      document.getElementById('prevPageBtn').disabled = currentPage === 1;
+      document.getElementById('nextPageBtn').disabled = currentPage === totalPages;
 
-        let pageBtnsHtml = '';
-        for (let i = 1; i <= totalPages; i++) {
-          pageBtnsHtml += `<button type="button" class="page-num-pill ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
-        }
-        document.getElementById('pageNumbers').innerHTML = pageBtnsHtml;
-      } else {
-        paginationBar.style.display = 'none';
+      document.getElementById('pageInfo').innerText = `Showing ${startIndex + 1}–${endIndex} of ${allFeedPosts.length} Posts (Page ${currentPage} of ${totalPages})`;
+
+      let pageBtnsHtml = '';
+      for (let i = 1; i <= totalPages; i++) {
+        pageBtnsHtml += `<button type="button" class="page-num-pill ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
       }
+      document.getElementById('pageNumbers').innerHTML = pageBtnsHtml;
     }
 
     function changePage(delta) {
