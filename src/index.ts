@@ -13,9 +13,14 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
-// Routes
+// Routes & Compliance Endpoint Aliases
 app.use('/api/agent/init', initRouter);
+app.use('/api/init', initRouter);
+app.use('/init', initRouter);
+
 app.use('/api/agent/feed', feedRouter);
+app.use('/api/feed', feedRouter);
+app.use('/feed', feedRouter);
 
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
