@@ -3,39 +3,43 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Autonomous AI Creator — Immersive Bento Studio</title>
+  <title>Autonomous AI Creator — Bright Neobrutalist 3D Bento Studio</title>
 
-  <!-- Google Fonts -->
+  <!-- Typography: Space Grotesk, Outfit, Inter & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800;900&family=Space+Grotesk:wght@500;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
   
-  <!-- Three.js 3D Engine -->
+  <!-- Three.js 3D WebGL Engine -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
   <style>
     :root {
-      --bg-dark: #080C16;
-      --bento-bg: rgba(17, 24, 39, 0.65);
-      --bento-bg-hover: rgba(31, 41, 55, 0.75);
-      --bento-border: rgba(255, 255, 255, 0.1);
-      --bento-border-hover: rgba(99, 102, 241, 0.4);
+      --bg-cream: #FDFBF7;
+      --card-white: #FFFFFF;
+      --border-black: #111827;
       
-      --primary: #6366F1;
-      --primary-hover: #4F46E5;
-      --primary-glow: rgba(99, 102, 241, 0.4);
-      
-      --accent-violet: #8B5CF6;
-      --accent-emerald: #10B981;
-      --accent-pink: #EC4899;
-      --accent-cyan: #06B6D4;
-      --accent-amber: #F59E0B;
+      --accent-orange: #FF5722;
+      --accent-orange-light: #FFEBE5;
+      --accent-yellow: #FFC700;
+      --accent-yellow-light: #FFF9E6;
+      --accent-green: #00E676;
+      --accent-green-light: #E6FDF0;
+      --accent-pink: #FF3366;
+      --accent-pink-light: #FFE6EC;
+      --accent-cyan: #00B0FF;
+      --accent-cyan-light: #E6F7FF;
 
-      --text-main: #F8FAFC;
-      --text-muted: #94A3B8;
-      --text-dim: #64748B;
-      
-      --glass-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+      --text-black: #111827;
+      --text-muted: #4B5563;
+      --text-dim: #6B7280;
+
+      --brutal-shadow: 6px 6px 0px #111827;
+      --brutal-shadow-lg: 10px 10px 0px #111827;
+      --brutal-shadow-orange: 8px 8px 0px #FF5722;
+      --brutal-shadow-yellow: 6px 6px 0px #FFC700;
+      --brutal-shadow-green: 6px 6px 0px #00E676;
+      --brutal-shadow-pink: 6px 6px 0px #FF3366;
     }
 
     * {
@@ -46,18 +50,14 @@
 
     body {
       font-family: 'Inter', sans-serif;
-      background-color: var(--bg-dark);
-      background-image: 
-        radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
-        radial-gradient(circle at 90% 80%, rgba(236, 72, 153, 0.12) 0%, transparent 40%),
-        radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.08) 0%, transparent 60%);
-      color: var(--text-main);
+      background-color: var(--bg-cream);
+      color: var(--text-black);
       min-height: 100vh;
       line-height: 1.6;
       overflow-x: hidden;
     }
 
-    /* 3D WebGL Canvas Background */
+    /* 3D WebGL Background Canvas */
     #canvas3d {
       position: fixed;
       top: 0;
@@ -66,6 +66,7 @@
       height: 100vh;
       z-index: 0;
       pointer-events: none;
+      opacity: 0.6;
     }
 
     .app-wrapper {
@@ -73,11 +74,10 @@
       z-index: 10;
     }
 
-    /* Header Navbar */
+    /* Neobrutalist Header */
     header {
-      background: rgba(8, 12, 22, 0.75);
-      backdrop-filter: blur(24px);
-      border-bottom: 1px solid var(--bento-border);
+      background: var(--card-white);
+      border-bottom: 3.5px solid var(--border-black);
       position: sticky;
       top: 0;
       z-index: 100;
@@ -99,124 +99,104 @@
     }
 
     .brand-logo {
-      width: 44px;
-      height: 44px;
-      background: linear-gradient(135deg, var(--primary), var(--accent-pink));
-      border-radius: 14px;
+      width: 48px;
+      height: 48px;
+      background: var(--accent-orange);
+      border: 3px solid var(--border-black);
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-family: 'Outfit', sans-serif;
-      font-weight: 900;
-      font-size: 1.35rem;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 800;
+      font-size: 1.4rem;
       color: #FFF;
-      box-shadow: 0 0 24px var(--primary-glow);
+      box-shadow: 4px 4px 0px var(--border-black);
     }
 
     .brand-title {
-      font-family: 'Outfit', sans-serif;
-      font-size: 1.5rem;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.6rem;
       font-weight: 800;
-      background: linear-gradient(135deg, #FFF 40%, var(--text-muted));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      letter-spacing: -0.02em;
+      color: var(--text-black);
+      letter-spacing: -0.03em;
     }
 
     .status-badge {
       display: flex;
       align-items: center;
       gap: 0.6rem;
-      background: rgba(16, 185, 129, 0.12);
-      border: 1px solid rgba(16, 185, 129, 0.35);
-      color: var(--accent-emerald);
-      padding: 0.45rem 1rem;
+      background: var(--accent-green-light);
+      border: 3px solid var(--border-black);
+      color: var(--text-black);
+      padding: 0.45rem 1.1rem;
       border-radius: 9999px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      box-shadow: 0 0 15px rgba(16, 185, 129, 0.15);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      box-shadow: 4px 4px 0px var(--border-black);
     }
 
     .status-dot {
-      width: 8px;
-      height: 8px;
-      background-color: var(--accent-emerald);
+      width: 10px;
+      height: 10px;
+      background-color: var(--accent-green);
+      border: 2px solid var(--border-black);
       border-radius: 50%;
-      box-shadow: 0 0 10px var(--accent-emerald);
-      animation: pulse 2s infinite;
+      animation: pulse 1.8s infinite;
     }
 
     @keyframes pulse {
       0% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.4; transform: scale(0.9); }
+      50% { opacity: 0.4; transform: scale(0.85); }
       100% { opacity: 1; transform: scale(1); }
     }
 
-    /* Bento Grid Layout */
+    /* Bento Grid Container */
     .bento-grid {
       max-width: 1440px;
       margin: 2rem auto 3rem;
       padding: 0 1.5rem;
       display: grid;
       grid-template-columns: repeat(12, 1fr);
-      gap: 1.5rem;
+      gap: 1.6rem;
     }
 
-    /* Bento Card Base */
+    /* Neobrutalist 3D Bento Card */
     .bento-card {
-      background: var(--bento-bg);
-      backdrop-filter: blur(24px);
-      border: 1px solid var(--bento-border);
-      border-radius: 24px;
+      background: var(--card-white);
+      border: 3.5px solid var(--border-black);
+      border-radius: 20px;
       padding: 1.8rem;
-      box-shadow: var(--glass-shadow);
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: var(--brutal-shadow);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
       position: relative;
-      overflow: hidden;
     }
 
     .bento-card:hover {
-      border-color: var(--bento-border-hover);
-      transform: translateY(-4px);
-      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+      transform: translate(-3px, -3px);
+      box-shadow: var(--brutal-shadow-lg);
     }
 
-    .bento-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 2px;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    }
-
-    /* Column Spans */
     .span-12 { grid-column: span 12; }
     .span-8 { grid-column: span 8; }
     .span-6 { grid-column: span 6; }
     .span-4 { grid-column: span 4; }
-    .span-3 { grid-column: span 3; }
+    .span-2 { grid-column: span 2; }
 
     @media (max-width: 1080px) {
-      .span-8, .span-6, .span-4, .span-3 { grid-column: span 12; }
+      .span-8, .span-6, .span-4, .span-2 { grid-column: span 12; }
     }
 
-    /* Card Header & Title */
     .card-title {
-      font-family: 'Outfit', sans-serif;
-      font-size: 1.25rem;
-      font-weight: 700;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--text-black);
       margin-bottom: 1.2rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
-    }
-
-    .card-title-left {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
     }
 
     /* Form Controls */
@@ -226,147 +206,171 @@
 
     label {
       display: block;
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--text-muted);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text-black);
       margin-bottom: 0.45rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
     }
 
     input, select {
       width: 100%;
-      background: rgba(11, 16, 28, 0.85);
-      border: 1px solid var(--bento-border);
-      border-radius: 14px;
+      background: #FFF;
+      border: 3px solid var(--border-black);
+      border-radius: 12px;
       padding: 0.85rem 1.1rem;
-      color: var(--text-main);
-      font-family: inherit;
-      font-size: 0.95rem;
+      color: var(--text-black);
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 0.98rem;
       outline: none;
-      transition: all 0.2s ease;
+      box-shadow: 3px 3px 0px var(--border-black);
+      transition: all 0.15s ease;
     }
 
     input:focus, select:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 20px var(--primary-glow);
+      background: var(--accent-yellow-light);
+      transform: translate(-2px, -2px);
+      box-shadow: 5px 5px 0px var(--border-black);
     }
 
-    /* Buttons */
+    /* Neobrutalist Buttons */
     .btn {
       width: 100%;
-      border: none;
+      border: 3.5px solid var(--border-black);
       border-radius: 14px;
-      padding: 0.95rem;
-      font-weight: 700;
-      font-size: 0.95rem;
+      padding: 1rem;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 800;
+      font-size: 1rem;
       cursor: pointer;
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: all 0.15s ease;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, var(--primary), var(--accent-violet));
+      background: var(--accent-orange);
       color: #FFF;
-      box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
-      margin-bottom: 0.8rem;
+      box-shadow: 5px 5px 0px var(--border-black);
+      margin-bottom: 0.9rem;
     }
 
     .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 30px rgba(99, 102, 241, 0.6);
+      transform: translate(-3px, -3px);
+      box-shadow: 8px 8px 0px var(--border-black);
+    }
+
+    .btn-primary:active {
+      transform: translate(2px, 2px);
+      box-shadow: 2px 2px 0px var(--border-black);
     }
 
     .btn-secondary {
-      background: rgba(16, 185, 129, 0.15);
-      color: var(--accent-emerald);
-      border: 1px solid rgba(16, 185, 129, 0.35);
+      background: var(--accent-yellow);
+      color: var(--text-black);
+      box-shadow: 5px 5px 0px var(--border-black);
     }
 
     .btn-secondary:hover {
-      background: rgba(16, 185, 129, 0.25);
-      transform: translateY(-1px);
+      transform: translate(-3px, -3px);
+      box-shadow: 8px 8px 0px var(--border-black);
     }
 
-    /* Profile Display Box */
+    .btn-secondary:active {
+      transform: translate(2px, 2px);
+      box-shadow: 2px 2px 0px var(--border-black);
+    }
+
+    /* Voice Profile Box */
     .profile-box {
-      margin-top: 1.2rem;
+      margin-top: 1.4rem;
       padding-top: 1.2rem;
-      border-top: 1px solid var(--bento-border);
+      border-top: 3px dashed var(--border-black);
     }
 
     .tag-container {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.45rem;
-      margin-top: 0.5rem;
+      gap: 0.5rem;
+      margin-top: 0.6rem;
     }
 
     .tag {
-      background: rgba(99, 102, 241, 0.18);
-      color: #A5B4FC;
-      border: 1px solid rgba(99, 102, 241, 0.35);
-      padding: 0.3rem 0.75rem;
+      background: var(--accent-cyan-light);
+      color: var(--text-black);
+      border: 2.5px solid var(--border-black);
+      padding: 0.35rem 0.8rem;
       border-radius: 10px;
-      font-size: 0.78rem;
-      font-weight: 600;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      box-shadow: 3px 3px 0px var(--border-black);
     }
 
     .stance-item {
-      font-size: 0.83rem;
-      color: var(--text-muted);
-      margin-top: 0.5rem;
-      padding-left: 0.9rem;
-      border-left: 3px solid var(--primary);
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: var(--text-black);
+      margin-top: 0.6rem;
+      padding: 0.6rem 0.9rem;
+      background: var(--accent-yellow-light);
+      border: 2.5px solid var(--border-black);
+      border-radius: 10px;
+      box-shadow: 3px 3px 0px var(--border-black);
     }
 
-    /* Tabs */
+    /* Neobrutalist Tabs */
     .nav-tabs {
       display: flex;
-      gap: 0.6rem;
-      margin-bottom: 1.5rem;
-      border-bottom: 1px solid var(--bento-border);
-      padding-bottom: 0.6rem;
+      gap: 0.8rem;
+      margin-bottom: 1.6rem;
     }
 
     .tab-btn {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      padding: 0.75rem 1.3rem;
-      font-family: 'Outfit', sans-serif;
-      font-size: 0.98rem;
-      font-weight: 700;
+      background: #FFF;
+      border: 3.5px solid var(--border-black);
+      color: var(--text-black);
+      padding: 0.8rem 1.4rem;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1rem;
+      font-weight: 800;
       cursor: pointer;
       border-radius: 14px;
-      transition: all 0.2s ease;
+      box-shadow: 4px 4px 0px var(--border-black);
+      transition: all 0.15s ease;
       display: flex;
       align-items: center;
       gap: 0.5rem;
     }
 
     .tab-btn:hover {
-      color: var(--text-main);
-      background: rgba(255, 255, 255, 0.06);
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0px var(--border-black);
     }
 
     .tab-btn.active {
+      background: var(--accent-orange);
       color: #FFF;
-      background: rgba(99, 102, 241, 0.25);
-      border: 1px solid var(--bento-border-hover);
-      box-shadow: 0 0 20px rgba(99, 102, 241, 0.25);
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0px var(--border-black);
     }
 
     /* Feed Stream Cards */
     .post-card {
-      background: rgba(13, 18, 32, 0.75);
-      border: 1px solid var(--bento-border);
+      background: #FFF;
+      border: 3.5px solid var(--border-black);
       border-radius: 20px;
       padding: 1.8rem;
-      margin-bottom: 1.6rem;
-      box-shadow: var(--glass-shadow);
-      animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      margin-bottom: 1.8rem;
+      box-shadow: 6px 6px 0px var(--border-black);
+      animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     @keyframes slideUp {
@@ -382,34 +386,39 @@
     }
 
     .post-time {
-      font-size: 0.82rem;
-      color: var(--text-dim);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-muted);
     }
 
     .post-id {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.78rem;
-      color: var(--accent-cyan);
-      background: rgba(6, 182, 212, 0.12);
-      border: 1px solid rgba(6, 182, 212, 0.3);
-      padding: 0.2rem 0.65rem;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-black);
+      background: var(--accent-cyan-light);
+      border: 2px solid var(--border-black);
+      padding: 0.25rem 0.65rem;
       border-radius: 8px;
+      box-shadow: 2px 2px 0px var(--border-black);
     }
 
     .post-text {
-      font-size: 1.02rem;
-      color: var(--text-main);
+      font-size: 1.05rem;
+      color: var(--text-black);
+      font-weight: 500;
       line-height: 1.75;
       margin-bottom: 1.4rem;
       white-space: pre-wrap;
     }
 
-    /* 4-Axis Score Grid */
+    /* Score Grid Pills */
     .score-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 0.6rem;
-      margin-bottom: 1.1rem;
+      gap: 0.8rem;
+      margin-bottom: 1.2rem;
     }
 
     @media (max-width: 640px) {
@@ -417,43 +426,46 @@
     }
 
     .score-pill {
-      background: rgba(8, 12, 22, 0.85);
-      border: 1px solid var(--bento-border);
+      background: var(--accent-yellow-light);
+      border: 2.5px solid var(--border-black);
       padding: 0.6rem 0.8rem;
       border-radius: 12px;
       text-align: center;
+      box-shadow: 3px 3px 0px var(--border-black);
     }
 
     .score-label {
-      font-size: 0.7rem;
-      color: var(--text-dim);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.72rem;
+      color: var(--text-black);
       text-transform: uppercase;
-      font-weight: 700;
+      font-weight: 800;
       letter-spacing: 0.05em;
     }
 
     .score-val {
       font-family: 'Outfit', sans-serif;
-      font-weight: 800;
-      font-size: 1rem;
-      color: var(--accent-emerald);
+      font-weight: 900;
+      font-size: 1.1rem;
+      color: var(--accent-orange);
     }
 
     .rationale-box {
-      background: rgba(99, 102, 241, 0.08);
-      border: 1px solid rgba(99, 102, 241, 0.3);
+      background: var(--accent-orange-light);
+      border: 3px solid var(--border-black);
       border-radius: 16px;
       padding: 1.3rem;
-      margin-top: 1rem;
+      margin-top: 1.1rem;
+      box-shadow: 4px 4px 0px var(--border-black);
     }
 
     .rationale-header {
-      font-family: 'Outfit', sans-serif;
-      font-size: 0.88rem;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.9rem;
       font-weight: 800;
-      color: #A5B4FC;
+      color: var(--text-black);
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.04em;
       margin-bottom: 0.5rem;
       display: flex;
       align-items: center;
@@ -461,105 +473,117 @@
     }
 
     .rationale-text {
-      font-size: 0.88rem;
-      color: var(--text-muted);
+      font-size: 0.9rem;
+      color: var(--text-black);
       line-height: 1.6;
+      font-weight: 500;
     }
 
     .sources-box {
       margin-top: 0.9rem;
       display: flex;
       flex-wrap: wrap;
-      gap: 0.5rem;
+      gap: 0.6rem;
     }
 
     .source-link {
-      font-size: 0.8rem;
-      color: var(--accent-emerald);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.82rem;
+      color: var(--text-black);
       text-decoration: none;
-      background: rgba(16, 185, 129, 0.14);
-      border: 1px solid rgba(16, 185, 129, 0.3);
-      padding: 0.3rem 0.75rem;
+      background: var(--accent-green-light);
+      border: 2px solid var(--border-black);
+      padding: 0.35rem 0.8rem;
       border-radius: 8px;
-      font-weight: 600;
-      transition: background 0.2s;
+      font-weight: 700;
+      box-shadow: 2px 2px 0px var(--border-black);
+      transition: all 0.15s ease;
     }
 
     .source-link:hover {
-      background: rgba(16, 185, 129, 0.25);
+      transform: translate(-1px, -1px);
+      box-shadow: 4px 4px 0px var(--border-black);
     }
 
     .copy-btn {
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid var(--bento-border);
-      color: var(--text-muted);
-      padding: 0.35rem 0.75rem;
+      background: var(--accent-yellow);
+      border: 2px solid var(--border-black);
+      color: var(--text-black);
+      padding: 0.4rem 0.85rem;
       border-radius: 8px;
-      font-size: 0.78rem;
-      font-weight: 600;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 800;
       cursor: pointer;
-      transition: all 0.2s ease;
+      box-shadow: 2px 2px 0px var(--border-black);
+      transition: all 0.15s ease;
     }
 
     .copy-btn:hover {
-      background: rgba(255, 255, 255, 0.14);
-      color: #FFF;
+      transform: translate(-1px, -1px);
+      box-shadow: 4px 4px 0px var(--border-black);
     }
 
     .empty-feed {
       text-align: center;
       padding: 4rem;
-      color: var(--text-dim);
-      border: 2px dashed var(--bento-border);
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      color: var(--text-muted);
+      background: #FFF;
+      border: 3.5px dashed var(--border-black);
       border-radius: 20px;
     }
 
-    /* Specs Table */
     .log-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.88rem;
+      font-size: 0.9rem;
     }
 
     .log-table th, .log-table td {
-      padding: 0.95rem 1.1rem;
+      padding: 1rem 1.1rem;
       text-align: left;
-      border-bottom: 1px solid var(--bento-border);
+      border-bottom: 2.5px solid var(--border-black);
     }
 
     .log-table th {
-      color: var(--text-dim);
-      font-weight: 700;
+      font-family: 'Space Grotesk', sans-serif;
+      color: var(--text-black);
+      font-weight: 800;
       text-transform: uppercase;
-      font-size: 0.75rem;
+      font-size: 0.8rem;
     }
 
     .badge-accepted {
-      background: rgba(16, 185, 129, 0.15);
-      color: var(--accent-emerald);
-      border: 1px solid rgba(16, 185, 129, 0.35);
-      padding: 0.2rem 0.65rem;
+      background: var(--accent-green-light);
+      color: var(--text-black);
+      border: 2px solid var(--border-black);
+      padding: 0.25rem 0.7rem;
       border-radius: 8px;
-      font-size: 0.75rem;
-      font-weight: 700;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 800;
+      box-shadow: 2px 2px 0px var(--border-black);
     }
 
-    /* Toast */
+    /* Toast Notification */
     .toast {
       position: fixed;
       bottom: 24px;
       right: 24px;
-      background: rgba(17, 24, 39, 0.95);
-      border: 1px solid var(--primary);
+      background: var(--accent-orange);
+      border: 3.5px solid var(--border-black);
       color: #FFF;
-      padding: 0.9rem 1.4rem;
+      padding: 1rem 1.5rem;
       border-radius: 14px;
-      font-size: 0.9rem;
-      font-weight: 500;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 800;
+      box-shadow: 6px 6px 0px var(--border-black);
       z-index: 1000;
       display: none;
-      animation: fadeIn 0.3s ease;
+      animation: fadeIn 0.25s ease;
     }
 
     @keyframes fadeIn {
@@ -568,11 +592,11 @@
     }
 
     .spinner {
-      border: 2px solid rgba(255,255,255,0.2);
+      border: 3px solid rgba(255,255,255,0.4);
       border-left-color: #FFF;
       border-radius: 50%;
-      width: 16px;
-      height: 16px;
+      width: 18px;
+      height: 18px;
       animation: spin 0.8s linear infinite;
     }
 
@@ -598,54 +622,54 @@
       </div>
     </header>
 
-    <!-- Bento Grid Container -->
+    <!-- Neobrutalist 3D Bento Grid -->
     <div class="bento-grid">
 
-      <!-- Bento 1: Persona Hero Card (Span 6) -->
-      <div class="bento-card span-6">
+      <!-- Bento 1: Hero Persona Card (Span 6) -->
+      <div class="bento-card span-6" style="box-shadow: var(--brutal-shadow-orange);">
         <div class="card-title">
-          <div class="card-title-left">
+          <div style="display:flex; align-items:center; gap:0.6rem;">
             <span>🤖</span> Active Persona Studio
           </div>
-          <span style="font-size:0.75rem; color:var(--accent-cyan);" id="statDomainBadge">AI Security</span>
+          <span style="font-size:0.8rem; background:var(--accent-yellow); border:2px solid var(--border-black); padding:0.25rem 0.75rem; border-radius:8px; box-shadow:2px 2px 0px var(--border-black);" id="statDomainBadge">AI Security</span>
         </div>
         <div style="display:flex; align-items:center; gap:1.2rem;">
-          <div style="width:60px; height:60px; border-radius:18px; background:linear-gradient(135deg, var(--primary), var(--accent-violet)); display:flex; align-items:center; justify-content:center; font-size:1.8rem; box-shadow:0 0 20px var(--primary-glow);">
+          <div style="width:64px; height:64px; border-radius:16px; background:var(--accent-orange); border:3px solid var(--border-black); display:flex; align-items:center; justify-content:center; font-size:2rem; box-shadow:4px 4px 0px var(--border-black);">
             🧠
           </div>
           <div>
-            <div style="font-family:'Outfit',sans-serif; font-size:1.4rem; font-weight:800;" id="statAgentName">Kess</div>
-            <div style="font-size:0.85rem; color:var(--text-muted);">Autonomous Editorial AI Persona Agent</div>
+            <div style="font-family:'Space Grotesk',sans-serif; font-size:1.6rem; font-weight:800;" id="statAgentName">Kess</div>
+            <div style="font-size:0.9rem; color:var(--text-muted); font-weight:600;">Autonomous Editorial AI Persona Agent</div>
           </div>
         </div>
       </div>
 
       <!-- Bento 2: Stat Card Total Posts (Span 2) -->
-      <div class="bento-card span-2" style="display:flex; flex-direction:column; justify-content:center; text-align:center;">
+      <div class="bento-card span-2" style="box-shadow: var(--brutal-shadow-yellow); text-align:center; display:flex; flex-direction:column; justify-content:center;">
         <div style="font-size:2rem; margin-bottom:0.2rem;">✨</div>
-        <div style="font-family:'Outfit',sans-serif; font-size:1.8rem; font-weight:900;" id="statCount">0</div>
-        <div style="font-size:0.75rem; color:var(--text-dim); text-transform:uppercase; font-weight:700;">Posts Published</div>
+        <div style="font-family:'Outfit',sans-serif; font-size:2.2rem; font-weight:900;" id="statCount">0</div>
+        <div style="font-family:'Space Grotesk',sans-serif; font-size:0.78rem; font-weight:800; text-transform:uppercase;">Posts Published</div>
       </div>
 
       <!-- Bento 3: Stat Card Poll Stream (Span 2) -->
-      <div class="bento-card span-2" style="display:flex; flex-direction:column; justify-content:center; text-align:center;">
+      <div class="bento-card span-2" style="box-shadow: var(--brutal-shadow-green); text-align:center; display:flex; flex-direction:column; justify-content:center;">
         <div style="font-size:2rem; margin-bottom:0.2rem;">⚡</div>
-        <div style="font-family:'Outfit',sans-serif; font-size:1.8rem; font-weight:900; color:var(--accent-emerald);">3s</div>
-        <div style="font-size:0.75rem; color:var(--text-dim); text-transform:uppercase; font-weight:700;">Live Poll Stream</div>
+        <div style="font-family:'Outfit',sans-serif; font-size:2.2rem; font-weight:900; color:var(--text-black);">3s</div>
+        <div style="font-family:'Space Grotesk',sans-serif; font-size:0.78rem; font-weight:800; text-transform:uppercase;">Live Stream</div>
       </div>
 
       <!-- Bento 4: Stat Card Git Sync (Span 2) -->
-      <div class="bento-card span-2" style="display:flex; flex-direction:column; justify-content:center; text-align:center;">
+      <div class="bento-card span-2" style="box-shadow: var(--brutal-shadow-pink); text-align:center; display:flex; flex-direction:column; justify-content:center;">
         <div style="font-size:2rem; margin-bottom:0.2rem;">📦</div>
-        <div style="font-family:'Outfit',sans-serif; font-size:1.8rem; font-weight:900; color:var(--accent-pink);">10s</div>
-        <div style="font-size:0.75rem; color:var(--text-dim); text-transform:uppercase; font-weight:700;">GitHub Auto-Sync</div>
+        <div style="font-family:'Outfit',sans-serif; font-size:2.2rem; font-weight:900; color:var(--accent-pink);">10s</div>
+        <div style="font-family:'Space Grotesk',sans-serif; font-size:0.78rem; font-weight:800; text-transform:uppercase;">GitHub Sync</div>
       </div>
 
       <!-- Bento 5: Topic & Persona Form Controller (Span 4) -->
-      <div class="bento-card span-4">
+      <div class="bento-card span-4" style="box-shadow: var(--brutal-shadow-lg);">
         <div class="card-title">
-          <div class="card-title-left">
-            <span>⚙️</span> Topic & Persona Controller
+          <div style="display:flex; align-items:center; gap:0.6rem;">
+            <span>⚙️</span> Persona Controller
           </div>
         </div>
 
@@ -684,29 +708,29 @@
         </button>
 
         <div class="profile-box" id="profileBox">
-          <div style="font-family:'Outfit',sans-serif; font-size:0.95rem; font-weight:700; margin-bottom:0.6rem;">
-            🧠 Active Voice Profile
+          <div style="font-family:'Space Grotesk',sans-serif; font-size:1rem; font-weight:800; margin-bottom:0.6rem;">
+            🧠 Derived Voice Profile
           </div>
           <div id="profileContent">
-            <p style="font-size: 0.8rem; color: var(--text-dim);">Loading profile...</p>
+            <p style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500;">Loading profile...</p>
           </div>
         </div>
 
-        <div style="margin-top:1.2rem; padding-top:1rem; border-top:1px solid var(--bento-border);">
-          <label for="sceneStyle">3D WebGL Mesh Geometry</label>
+        <div style="margin-top:1.4rem; padding-top:1.2rem; border-top:3px dashed var(--border-black);">
+          <label for="sceneStyle">3D WebGL Geometry</label>
           <select id="sceneStyle" onchange="change3DStyle(this.value)">
-            <option value="icosahedron">Neural Icosahedron Core</option>
-            <option value="torus">Quantum Torus Lattice</option>
+            <option value="icosahedron">Warm Sun Icosahedron Mesh</option>
+            <option value="torus">Quantum Torus Knot</option>
             <option value="octahedron">Cyber Octahedron Crystal</option>
           </select>
         </div>
       </div>
 
       <!-- Bento 6: Main Live Feed Stream (Span 8) -->
-      <div class="bento-card span-8">
+      <div class="bento-card span-8" style="box-shadow: var(--brutal-shadow-orange);">
         <div class="nav-tabs">
           <button class="tab-btn active" id="tabFeed" onclick="switchTab('feed')">
-            <span>🔥</span> Live AI Stream
+            <span>🔥</span> Live Content Stream
           </button>
           <button class="tab-btn" id="tabSystem" onclick="switchTab('system')">
             <span>⚙️</span> System Specs
@@ -715,12 +739,12 @@
 
         <!-- Tab 1: Feed Stream -->
         <div id="tabContentFeed">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.2rem;">
-            <div style="font-family:'Outfit',sans-serif; font-size:1.3rem; font-weight:700; display:flex; align-items:center; gap:0.6rem;">
-              <span style="display:inline-block; width:10px; height:10px; background:var(--accent-pink); border-radius:50%; box-shadow:0 0 10px var(--accent-pink); animation:pulse 1.5s infinite;"></span>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.4rem;">
+            <div style="font-family:'Space Grotesk',sans-serif; font-size:1.4rem; font-weight:800; display:flex; align-items:center; gap:0.6rem;">
+              <span style="display:inline-block; width:12px; height:12px; background:var(--accent-orange); border:2px solid var(--border-black); border-radius:50%; box-shadow:2px 2px 0px var(--border-black); animation:pulse 1.5s infinite;"></span>
               Real-Time Content Feed Stream
             </div>
-            <button type="button" class="copy-btn" id="manualRefreshBtn" onclick="handleManualRefresh(event)" style="padding:0.5rem 1rem; font-size:0.85rem;">
+            <button type="button" class="copy-btn" id="manualRefreshBtn" onclick="handleManualRefresh(event)" style="padding:0.5rem 1.1rem; font-size:0.85rem;">
               🔄 Refresh Stream
             </button>
           </div>
@@ -734,7 +758,7 @@
 
         <!-- Tab 2: System Specs -->
         <div id="tabContentSystem" style="display: none;">
-          <div style="font-family:'Outfit',sans-serif; font-size:1.2rem; font-weight:700; margin-bottom:1rem;">
+          <div style="font-family:'Space Grotesk',sans-serif; font-size:1.3rem; font-weight:800; margin-bottom:1.2rem;">
             🚀 NVIDIA AI & PostgreSQL Specs
           </div>
           <table class="log-table">
@@ -781,9 +805,9 @@
 
   <div id="toast" class="toast"></div>
 
-  <!-- Three.js 3D WebGL Scene Engine -->
+  <!-- Three.js 3D WebGL Scene Engine (Bright Warm Theme) -->
   <script>
-    let scene, camera, renderer, coreMesh, particleSystem, torusMesh;
+    let scene, camera, renderer, coreMesh, particleSystem;
 
     function init3D() {
       const canvas = document.getElementById('canvas3d');
@@ -798,9 +822,9 @@
 
       createMeshGeometry('icosahedron');
 
-      // Particle Field
+      // Warm Golden Particle Field
       const particlesGeo = new THREE.BufferGeometry();
-      const count = 500;
+      const count = 450;
       const positions = new Float32Array(count * 3);
 
       for (let i = 0; i < count * 3; i += 3) {
@@ -811,19 +835,19 @@
       particlesGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
 
       const particleMat = new THREE.PointsMaterial({
-        size: 0.3,
-        color: 0x10B981,
+        size: 0.35,
+        color: 0xFF5722,
         transparent: true,
-        opacity: 0.5
+        opacity: 0.4
       });
       particleSystem = new THREE.Points(particlesGeo, particleMat);
       scene.add(particleSystem);
 
-      // Lights
-      const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+      // Warm Lighting
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
       scene.add(ambientLight);
 
-      const pointLight = new THREE.PointLight(0xEC4899, 2, 100);
+      const pointLight = new THREE.PointLight(0xFFC700, 1.8, 100);
       pointLight.position.set(15, 15, 15);
       scene.add(pointLight);
 
@@ -846,12 +870,12 @@
       }
 
       const mat = new THREE.MeshStandardMaterial({
-        color: 0x6366F1,
+        color: 0xFF5722,
         wireframe: true,
         transparent: true,
-        opacity: 0.35,
+        opacity: 0.45,
         roughness: 0.2,
-        metalness: 0.8
+        metalness: 0.5
       });
       coreMesh = new THREE.Mesh(geo, mat);
       scene.add(coreMesh);
@@ -956,7 +980,7 @@
           }
         } else {
           document.getElementById('profileContent').innerHTML = `
-            <p style="font-size: 0.8rem; color: var(--text-dim);">Agent not initialized yet. Click "Update Domain & Switch AI Loop" above.</p>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Agent not initialized yet. Click "Update Domain & Switch AI Loop" above.</p>
           `;
         }
       } catch (err) {
@@ -1058,11 +1082,11 @@
 
       container.innerHTML = `
         <div style="margin-bottom: 0.8rem;">
-          <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">Active Domain: <strong style="color:var(--accent-cyan);">${profile.domain || ''}</strong></div>
+          <div style="font-size: 0.85rem; color: var(--text-muted); font-weight: 700; font-family:'Space Grotesk',sans-serif;">Active Domain: <strong style="color:var(--accent-orange);">${profile.domain || ''}</strong></div>
           <div class="tag-container" style="margin-top:0.4rem;">${toneTags}</div>
         </div>
         <div>
-          <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">Key Editorial Stances:</div>
+          <div style="font-size: 0.85rem; color: var(--text-muted); font-weight: 700; font-family:'Space Grotesk',sans-serif;">Key Editorial Stances:</div>
           ${stances}
         </div>
       `;
@@ -1091,7 +1115,7 @@
           document.getElementById('feedStream').innerHTML = `
             <div class="empty-feed">
               <p>Agent "${agentId}" not initialized yet.</p>
-              <p style="font-size: 0.8rem; margin-top: 0.5rem;">Select a topic above to initialize real-time publishing.</p>
+              <p style="font-size: 0.85rem; margin-top: 0.5rem;">Select a topic above to initialize real-time publishing.</p>
             </div>
           `;
         }
@@ -1138,9 +1162,9 @@
                 <div class="score-label">Persona Fit</div>
                 <div class="score-val">0.95</div>
               </div>
-              <div class="score-pill" style="border-color: var(--primary); background: rgba(99, 102, 241, 0.15);">
-                <div class="score-label" style="color:#A5B4FC;">Composite</div>
-                <div class="score-val" style="color:#A5B4FC;">0.92</div>
+              <div class="score-pill" style="background: var(--accent-orange); color: #FFF;">
+                <div class="score-label" style="color:#FFF;">Composite</div>
+                <div class="score-val" style="color:#FFF;">0.92</div>
               </div>
             </div>
 
@@ -1149,7 +1173,7 @@
             <div class="rationale-box">
               <div class="rationale-header">
                 <span>🎯 Editorial Rationale & Judgment Breakdown</span>
-                <span style="font-size:0.75rem; color:var(--accent-emerald);">ACCEPTED & VERIFIED</span>
+                <span class="badge-accepted">ACCEPTED & VERIFIED</span>
               </div>
               <div class="rationale-text">${escapeHtml(post.rationale)}</div>
               ${sourcesHtml ? `<div class="sources-box">${sourcesHtml}</div>` : ''}
