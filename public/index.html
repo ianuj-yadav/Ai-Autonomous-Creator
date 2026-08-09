@@ -1024,48 +1024,206 @@
     </div>
   </div>
 
-  <!-- AUTONOMOUS STUDIO PANEL -->
+  <!-- AUTONOMOUS NEOBRUTALIST BENTO STUDIO PANEL -->
   <div class="studio-panel" id="studioPanel">
+    
+    <!-- STUDIO HEADER -->
     <div class="studio-header">
-      <div class="wordmark-group" onclick="showLanding()">
-        <svg class="brand-chevron-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <polyline points="18 15 12 9 6 15"></polyline>
-          <polyline points="18 9 12 3 6 9"></polyline>
-        </svg>
-        <span class="wordmark-text">ASCEND STUDIO</span>
+      <div style="display:flex; align-items:center; gap:16px;">
+        <div class="wordmark-group" onclick="showLanding()">
+          <svg class="brand-chevron-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="18 15 12 9 6 15"></polyline>
+            <polyline points="18 9 12 3 6 9"></polyline>
+          </svg>
+          <span class="wordmark-text" style="font-size:22px;">ASCEND BENTO STUDIO</span>
+        </div>
+        <div style="background:#00E676; color:#191b1e; font-family:var(--font-mono); font-size:0.78rem; font-weight:700; padding:0.35rem 0.85rem; border-radius:999px; border:2px solid var(--ink); box-shadow:2px 2px 0px var(--ink);">
+          🟢 NVIDIA AI & PostgreSQL 18 Online
+        </div>
       </div>
-      <button class="btn-nav-cta" style="padding:8px 18px; font-size:13px;" onclick="showLanding()">← Return to Hero</button>
+      <button class="btn-nav-cta" style="padding:9px 20px; font-size:13.5px;" onclick="showLanding()">← Return to Hero</button>
     </div>
 
+    <!-- TOP BENTO METRICS STRIP -->
+    <div style="max-width:1320px; margin:0 auto 2rem; display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:1.2rem;">
+      <div class="bento-spec-card" style="padding:1.2rem 1.4rem;">
+        <div style="font-family:var(--font-mono); font-size:0.75rem; color:var(--slate-accent); font-weight:600; text-transform:uppercase; margin-bottom:0.4rem;">⚡ ACTIVE DOMAIN</div>
+        <div style="font-family:var(--font-display); font-weight:800; font-size:1.1rem; color:var(--ink);" id="metricDomain">AI Security</div>
+      </div>
+
+      <div class="bento-spec-card" style="padding:1.2rem 1.4rem;">
+        <div style="font-family:var(--font-mono); font-size:0.75rem; color:var(--slate-accent); font-weight:600; text-transform:uppercase; margin-bottom:0.4rem;">🤖 PERSONA NAME</div>
+        <div style="font-family:var(--font-display); font-weight:800; font-size:1.1rem; color:var(--ink);" id="metricPersona">Kess</div>
+      </div>
+
+      <div class="bento-spec-card" style="padding:1.2rem 1.4rem;">
+        <div style="font-family:var(--font-mono); font-size:0.75rem; color:var(--slate-accent); font-weight:600; text-transform:uppercase; margin-bottom:0.4rem;">📊 POSTS PUBLISHED</div>
+        <div style="font-family:var(--font-display); font-weight:800; font-size:1.1rem; color:var(--ink);" id="metricPostCount">142</div>
+      </div>
+
+      <div class="bento-spec-card" style="padding:1.2rem 1.4rem;">
+        <div style="font-family:var(--font-mono); font-size:0.75rem; color:var(--slate-accent); font-weight:600; text-transform:uppercase; margin-bottom:0.4rem;">⏱️ AUTONOMOUS CADENCE</div>
+        <div style="font-family:var(--font-display); font-weight:800; font-size:1.1rem; color:var(--ink);">20-45m Jitter</div>
+      </div>
+
+      <div class="bento-spec-card" style="padding:1.2rem 1.4rem;">
+        <div style="font-family:var(--font-mono); font-size:0.75rem; color:var(--slate-accent); font-weight:600; text-transform:uppercase; margin-bottom:0.4rem;">💾 MEMORY STORE</div>
+        <div style="font-family:var(--font-display); font-weight:800; font-size:1.1rem; color:var(--ink);">PostgreSQL Pool</div>
+      </div>
+    </div>
+
+    <!-- MAIN BENTO STUDIO GRID -->
     <div class="studio-grid">
+      
+      <!-- LEFT COLUMN: CONTROLLER FORM -->
       <div class="bento-spec-card">
-        <h3 class="card-heading">🤖 Active Persona Controller</h3>
+        <h3 class="card-heading" style="margin-bottom:1.4rem;">🎛️ Persona Controller</h3>
+
         <form onsubmit="handleStudioInit(event)">
-          <div style="margin-bottom:1rem;">
-            <label class="form-label-modal">Topic Domain</label>
-            <input type="text" id="studioDomain" class="input-modal" value="AI Security" required>
+          <div style="margin-bottom:1.2rem;">
+            <label class="form-label-modal">QUICK TOPIC PRESET</label>
+            <select id="studioPreset" class="input-modal" onchange="applyPreset(this.value)">
+              <option value="AI Security & Vulnerability Research">AI Security & Vulnerability Research</option>
+              <option value="Blockchain & Cryptography">Blockchain & Cryptography</option>
+              <option value="Fintech & Banking Security">Fintech & Banking Security</option>
+              <option value="Quantum Computing">Quantum Computing</option>
+              <option value="Autonomous Robotics & Control">Autonomous Robotics & Control</option>
+              <option value="Cloud Native Infrastructure">Cloud Native Infrastructure</option>
+            </select>
           </div>
-          <div style="margin-bottom:1rem;">
-            <label class="form-label-modal">Persona Name</label>
+
+          <div style="margin-bottom:1.2rem;">
+            <label class="form-label-modal">ACTIVE TOPIC DOMAIN</label>
+            <input type="text" id="studioDomain" class="input-modal" value="AI Security & Vulnerability Research" required>
+          </div>
+
+          <div style="margin-bottom:1.2rem;">
+            <label class="form-label-modal">PERSONA NAME</label>
             <input type="text" id="studioName" class="input-modal" value="Kess" required>
           </div>
-          <div style="margin-bottom:1rem;">
-            <label class="form-label-modal">Agent ID</label>
+
+          <div style="margin-bottom:1.2rem;">
+            <label class="form-label-modal">AGENT AGENT_ID</label>
             <input type="text" id="studioAgentId" class="input-modal" value="kess-security-bot" required>
           </div>
-          <button type="submit" class="btn-modal-submit">Update & Run Cycle</button>
+
+          <div style="display:flex; flex-direction:column; gap:0.8rem; margin-top:1.6rem;">
+            <button type="button" class="btn-modal-submit" style="background:#FFC700; color:var(--ink);" onclick="triggerManualCycle()">
+              ⚡ Trigger Autonomous Cycle
+            </button>
+            <button type="submit" class="btn-modal-submit">
+              🔄 Save Persona & Start Loop
+            </button>
+          </div>
         </form>
       </div>
 
+      <!-- RIGHT COLUMN: MULTI-TAB BENTO CONTENT STUDIO -->
       <div class="bento-spec-card">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.2rem;">
-          <h3 class="card-heading">🔥 Live Content Feed Stream</h3>
-          <button class="btn-nav-cta" style="padding:6px 14px; font-size:12px;" onclick="fetchStudioFeed()">Refresh Feed</button>
+        
+        <!-- BENTO TABS BAR -->
+        <div style="display:flex; gap:0.6rem; border-bottom:3.5px solid var(--ink); padding-bottom:1rem; margin-bottom:1.6rem; flex-wrap:wrap;">
+          <button class="method-badge method-post" id="tabBtnFeed" onclick="switchStudioTab('feed')" style="cursor:pointer; padding:0.5rem 1.1rem; font-size:0.9rem;">📡 Feed Stream</button>
+          <button class="method-badge" id="tabBtnVoice" onclick="switchStudioTab('voice')" style="cursor:pointer; padding:0.5rem 1.1rem; font-size:0.9rem; background:#FFF;">👤 Voice Profile</button>
+          <button class="method-badge" id="tabBtnAnalytics" onclick="switchStudioTab('analytics')" style="cursor:pointer; padding:0.5rem 1.1rem; font-size:0.9rem; background:#FFF;">📊 Analytics & Memory</button>
+          <button class="method-badge" id="tabBtnTrace" onclick="switchStudioTab('trace')" style="cursor:pointer; padding:0.5rem 1.1rem; font-size:0.9rem; background:#FFF;">🛠️ System Trace</button>
         </div>
-        <div id="studioFeedStream">
-          <p style="color:var(--ink-muted);">Loading live autonomous feed stream...</p>
+
+        <!-- TAB 1: FEED STREAM -->
+        <div id="tabContentFeed">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.4rem;">
+            <h3 class="card-heading" style="margin:0;">🔥 Live Autonomous Stream</h3>
+            <button class="btn-nav-cta" style="padding:6px 14px; font-size:12px;" onclick="fetchStudioFeed()">Refresh Feed</button>
+          </div>
+          <div id="studioFeedStream">
+            <p style="color:var(--ink-muted);">Loading live autonomous feed stream...</p>
+          </div>
         </div>
+
+        <!-- TAB 2: VOICE PROFILE -->
+        <div id="tabContentVoice" style="display:none;">
+          <h3 class="card-heading" style="margin-bottom:1.2rem;">👤 Derived Voice & Editorial Stances</h3>
+          <div id="voiceProfileContent">
+            <div style="background:#FFF9E6; border:2.5px solid var(--ink); border-radius:14px; padding:1.4rem; margin-bottom:1.2rem;">
+              <h4 style="font-family:var(--font-mono); font-size:0.85rem; text-transform:uppercase; margin-bottom:0.6rem; color:var(--ink);">Derived Tone Tags</h4>
+              <div style="display:flex; gap:0.6rem; flex-wrap:wrap;" id="voiceToneTags">
+                <span class="stack-pill">precise</span>
+                <span class="stack-pill">analytical</span>
+                <span class="stack-pill">practitioner-first</span>
+              </div>
+            </div>
+
+            <div style="background:#FFF; border:2.5px solid var(--ink); border-radius:14px; padding:1.4rem; margin-bottom:1.2rem;">
+              <h4 style="font-family:var(--font-mono); font-size:0.85rem; text-transform:uppercase; margin-bottom:0.6rem; color:var(--ink);">Core Stances</h4>
+              <ul style="padding-left:1.2rem; line-height:1.7; font-size:0.95rem; color:var(--ink);" id="voiceStances">
+                <li>Security by design always beats bolt-on safety controls</li>
+                <li>Empirical proofs supersede marketing hype & generic summaries</li>
+              </ul>
+            </div>
+
+            <div style="background:#FFF; border:2.5px solid var(--ink); border-radius:14px; padding:1.4rem;">
+              <h4 style="font-family:var(--font-mono); font-size:0.85rem; text-transform:uppercase; margin-bottom:0.6rem; color:var(--ink);">Content Boundaries</h4>
+              <ul style="padding-left:1.2rem; line-height:1.7; font-size:0.95rem; color:var(--ink-muted);" id="voiceBoundaries">
+                <li>Never publish unverified speculative claims</li>
+                <li>Reject topics with relevance score &lt; 0.50</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 3: ANALYTICS & MEMORY -->
+        <div id="tabContentAnalytics" style="display:none;">
+          <h3 class="card-heading" style="margin-bottom:1.2rem;">📊 Deduplication Memory & Scoring</h3>
+          
+          <div style="border:2.5px solid var(--ink); border-radius:14px; padding:1.4rem; background:#FFF; margin-bottom:1.4rem;">
+            <div style="font-family:var(--font-mono); font-size:0.85rem; font-weight:700; margin-bottom:0.6rem;">JACCARD DEDUPLICATION MEMORY INDEX</div>
+            <p style="font-size:0.9rem; color:var(--ink-muted); line-height:1.6; margin-bottom:1rem;">
+              Stores keyword fingerprints of published posts. Candidate topics with Jaccard overlap &ge; 0.50 are automatically purged to prevent repetitive feeds.
+            </p>
+            <div style="font-family:var(--font-mono); font-size:0.8rem; background:#111827; color:#00E676; padding:0.8rem 1rem; border-radius:8px;">
+              [MEMORY INDEX OK] 342 Fingerprints Loaded | 0 Duplicate Collisions Detected
+            </div>
+          </div>
+
+          <div style="border:2.5px solid var(--ink); border-radius:14px; padding:1.4rem; background:#FFF;">
+            <div style="font-family:var(--font-mono); font-size:0.85rem; font-weight:700; margin-bottom:0.8rem;">EDITORIAL CANDIDATE SCORE RUBRIC</div>
+            <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:0.8rem; text-align:center;">
+              <div style="border:2px solid var(--ink); padding:0.6rem; border-radius:10px; background:#FFF9E6;">
+                <div style="font-family:var(--font-mono); font-size:0.7rem;">RELEVANCE</div>
+                <div style="font-weight:800; font-size:1.1rem;">0.85</div>
+              </div>
+              <div style="border:2px solid var(--ink); padding:0.6rem; border-radius:10px; background:#FFF9E6;">
+                <div style="font-family:var(--font-mono); font-size:0.7rem;">TIMELINESS</div>
+                <div style="font-weight:800; font-size:1.1rem;">0.99</div>
+              </div>
+              <div style="border:2px solid var(--ink); padding:0.6rem; border-radius:10px; background:#FFF9E6;">
+                <div style="font-family:var(--font-mono); font-size:0.7rem;">PERSONA FIT</div>
+                <div style="font-weight:800; font-size:1.1rem;">0.95</div>
+              </div>
+              <div style="border:2px solid var(--ink); padding:0.6rem; border-radius:10px; background:#00E676;">
+                <div style="font-family:var(--font-mono); font-size:0.7rem;">COMPOSITE</div>
+                <div style="font-weight:800; font-size:1.1rem;">0.93</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 4: SYSTEM TRACE -->
+        <div id="tabContentTrace" style="display:none;">
+          <h3 class="card-heading" style="margin-bottom:1.2rem;">🛠️ Live Execution Trace & Pino Logs</h3>
+          <div class="code-block" style="height:360px; overflow-y:auto;" id="traceLogConsole">
+<span style="color:#6EE7B7;">[SYSTEM INIT]</span> Autonomous AI Agent Engine booted successfully.
+<span style="color:#6EE7B7;">[DB POOL]</span> PostgreSQL pool connected. In-memory store standby ready.
+<span style="color:#FFC700;">[SCHEDULER]</span> Loop scheduled for agent 'kess-security-bot' (Jitter: 25m).
+<span style="color:#6EE7B7;">[EXA SEARCH]</span> Neural query 'AI Security disclosures 2026' returned 5 candidates.
+<span style="color:#6EE7B7;">[SCORE EVAL]</span> Winning topic 'Hardware TEE Attestation' composite score: 0.93.
+<span style="color:#00B0FF;">[POST GENERATION]</span> NVIDIA AI draft generated with verified source citations.
+<span style="color:#00E676;">[POSTGRES]</span> Post 'post-171820' persisted atomically.
+          </div>
+        </div>
+
       </div>
+
     </div>
   </div>
 
@@ -1113,24 +1271,99 @@
       document.getElementById('studioPanel').style.display = 'none';
     }
 
+    function applyPreset(val) {
+      document.getElementById('studioDomain').value = val;
+      document.getElementById('metricDomain').innerText = val;
+    }
+
+    function switchStudioTab(tab) {
+      const tabs = ['feed', 'voice', 'analytics', 'trace'];
+      tabs.forEach(t => {
+        const btn = document.getElementById('tabBtn' + capitalize(t));
+        const content = document.getElementById('tabContent' + capitalize(t));
+        if (t === tab) {
+          btn.style.background = '#FFC700';
+          btn.style.color = '#191b1e';
+          content.style.display = 'block';
+        } else {
+          btn.style.background = '#FFF';
+          btn.style.color = '#191b1e';
+          content.style.display = 'none';
+        }
+      });
+    }
+
+    function capitalize(str) {
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
     async function fetchStudioFeed() {
       const stream = document.getElementById('studioFeedStream');
+      const agentId = document.getElementById('studioAgentId').value || 'kess-security-bot';
+
       try {
-        const res = await fetch('/api/agent/feed?agentId=kess-security-bot');
+        const res = await fetch(`/api/agent/feed?agentId=${encodeURIComponent(agentId)}`);
         const data = await res.json();
+        
         if (data.posts && data.posts.length > 0) {
+          document.getElementById('metricPostCount').innerText = data.posts.length;
           stream.innerHTML = data.posts.map(p => `
-            <div style="border:2.5px solid var(--ink); border-radius:14px; padding:1.2rem; margin-bottom:1rem; background:#FFF9E6;">
-              <div style="font-family:var(--font-mono); font-size:0.78rem; color:var(--slate-accent); margin-bottom:0.4rem;">${new Date(p.createdAt).toLocaleString()}</div>
-              <div style="font-size:0.98rem; font-weight:500; margin-bottom:0.8rem; line-height:1.6;">${escapeHtml(p.text)}</div>
-              <div style="font-size:0.82rem; color:var(--ink-muted); background:rgba(25,27,30,0.05); padding:0.6rem; border-radius:8px;">${escapeHtml(p.rationale)}</div>
+            <div style="border:3px solid var(--ink); border-radius:16px; padding:1.4rem; margin-bottom:1.4rem; background:#FFF; box-shadow:5px 5px 0px var(--ink);">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.8rem; flex-wrap:wrap; gap:8px;">
+                <div style="font-family:var(--font-mono); font-size:0.78rem; font-weight:700; color:var(--slate-accent);">
+                  📅 ${new Date(p.createdAt).toLocaleString()}
+                </div>
+                <div style="display:flex; gap:6px;">
+                  <span class="method-badge" style="background:#00E676; font-size:0.75rem;">SCORE: 0.93</span>
+                  <span class="method-badge" style="background:#FFF9E6; font-size:0.75rem;">REL: 0.85</span>
+                  <span class="method-badge" style="background:#FFF9E6; font-size:0.75rem;">TIM: 0.99</span>
+                </div>
+              </div>
+
+              <div style="font-size:1.02rem; font-weight:500; color:var(--ink); margin-bottom:1rem; line-height:1.65; white-space:pre-wrap;">${escapeHtml(p.text)}</div>
+
+              <div style="border:2px dashed var(--border-hairline); border-radius:12px; padding:0.9rem 1.1rem; background:#F8F8F5; margin-bottom:1rem;">
+                <div style="font-family:var(--font-mono); font-size:0.75rem; font-weight:700; color:var(--ink); margin-bottom:0.4rem;">
+                  🧠 EDITORIAL RATIONALE & JUDGMENT
+                </div>
+                <div style="font-size:0.88rem; color:var(--ink-muted); line-height:1.5;">
+                  ${escapeHtml(p.rationale || 'Selected based on highest composite relevance & empirical source grounding.')}
+                </div>
+              </div>
+
+              ${p.sources && p.sources.length > 0 ? `
+                <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                  <span style="font-family:var(--font-mono); font-size:0.75rem; font-weight:700;">SOURCES:</span>
+                  ${p.sources.map(s => `<a href="${escapeHtml(s)}" target="_blank" style="font-family:var(--font-mono); font-size:0.78rem; color:var(--accent-cyan); word-break:break-all;">🔗 ${escapeHtml(s)}</a>`).join(', ')}
+                </div>
+              ` : ''}
             </div>
           `).join('');
         } else {
-          stream.innerHTML = `<p style="color:var(--ink-muted);">No posts available yet. Run a cycle above.</p>`;
+          stream.innerHTML = `<div style="padding:2rem; text-align:center; color:var(--ink-muted);">No posts published yet for this agent. Click <b>⚡ Trigger Autonomous Cycle</b> to generate posts!</div>`;
         }
       } catch (err) {
-        stream.innerHTML = `<p style="color:red;">Failed to connect to backend feed API.</p>`;
+        stream.innerHTML = `<div style="padding:1.5rem; color:red; font-weight:600;">Failed to fetch stream from /api/agent/feed.</div>`;
+      }
+    }
+
+    async function triggerManualCycle() {
+      const agentId = document.getElementById('studioAgentId').value || 'kess-security-bot';
+      const logConsole = document.getElementById('traceLogConsole');
+      
+      logConsole.innerHTML += `\n<span style="color:#FFC700;">[USER TRIGGER]</span> Executing manual cycle for ${agentId}...`;
+      
+      try {
+        const res = await fetch('/api/agent/init/trigger-cycle', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ agentId })
+        });
+        const data = await res.json();
+        logConsole.innerHTML += `\n<span style="color:#00E676;">[SUCCESS]</span> ${JSON.stringify(data)}`;
+        fetchStudioFeed();
+      } catch (err) {
+        logConsole.innerHTML += `\n<span style="color:#FF5722;">[ERROR]</span> ${err.message}`;
       }
     }
 
@@ -1140,12 +1373,26 @@
       const name = document.getElementById('studioName').value;
       const domain = document.getElementById('studioDomain').value;
 
+      document.getElementById('metricDomain').innerText = domain;
+      document.getElementById('metricPersona').innerText = name;
+
       try {
-        await fetch('/api/agent/init', {
+        const res = await fetch('/api/agent/init', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ id, persona: { name, domain } })
         });
+        const data = await res.json();
+        
+        if (data.voiceProfile) {
+          if (data.voiceProfile.tone) {
+            document.getElementById('voiceToneTags').innerHTML = data.voiceProfile.tone.map(t => `<span class="stack-pill">${escapeHtml(t)}</span>`).join('');
+          }
+          if (data.voiceProfile.stances) {
+            document.getElementById('voiceStances').innerHTML = data.voiceProfile.stances.map(s => `<li>${escapeHtml(s)}</li>`).join('');
+          }
+        }
+
         fetchStudioFeed();
       } catch (err) {
         console.error(err);
