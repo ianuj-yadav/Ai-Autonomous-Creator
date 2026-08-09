@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Autonomous AI Creator — Dashboard</title>
+  <title>Autonomous AI Creator — Live Real-Time Dashboard</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -164,7 +164,7 @@
       margin-bottom: 0.4rem;
     }
 
-    input {
+    input, select {
       width: 100%;
       background: rgba(15, 23, 42, 0.8);
       border: 1px solid var(--border-color);
@@ -177,7 +177,7 @@
       transition: border-color 0.2s;
     }
 
-    input:focus {
+    input:focus, select:focus {
       border-color: var(--primary);
     }
 
@@ -260,6 +260,19 @@
       font-family: 'Outfit', sans-serif;
       font-size: 1.4rem;
       font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .live-pulse {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      background: var(--accent-pink);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--accent-pink);
+      animation: pulse 1.5s infinite;
     }
 
     .refresh-btn {
@@ -289,6 +302,12 @@
       padding: 1.6rem;
       margin-bottom: 1.5rem;
       box-shadow: var(--glass-shadow);
+      animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .post-meta {
@@ -422,7 +441,7 @@
       </div>
       <div class="status-badge">
         <div class="status-dot"></div>
-        Engine & PostgreSQL Live
+        Engine & NVIDIA AI Live
       </div>
     </div>
   </header>
@@ -431,29 +450,40 @@
     <aside>
       <div class="glass-card">
         <div class="card-title">
-          <span>⚡</span> Agent Initializer & Controls
+          <span>⚡</span> Topic & Persona Controls
         </div>
         <form id="initForm" onsubmit="handleInitSubmit(event)">
           <div class="form-group">
-            <label for="agentIdInput">Agent ID</label>
-            <input type="text" id="agentIdInput" value="kess-security-bot" required onchange="handleAgentIdChange()">
+            <label for="presetSelect">Quick Topic Preset</label>
+            <select id="presetSelect" onchange="handlePresetChange(this)">
+              <option value="AI Security">AI Security & Vulnerability Research</option>
+              <option value="Blockchain & Cryptography">Blockchain & Cryptography</option>
+              <option value="Fintech & Banking Security">Fintech & Banking Security</option>
+              <option value="Quantum Computing">Quantum Computing</option>
+              <option value="Autonomous Robotics">Autonomous Robotics & Control</option>
+              <option value="Cloud Native Infrastructure">Cloud Native Infrastructure</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="domainInput">Active Domain / Topic</label>
+            <input type="text" id="domainInput" value="AI Security" required onchange="handleDomainChange()">
           </div>
           <div class="form-group">
             <label for="nameInput">Persona Name</label>
             <input type="text" id="nameInput" value="Kess" required>
           </div>
           <div class="form-group">
-            <label for="domainInput">Domain</label>
-            <input type="text" id="domainInput" value="AI Security" required>
+            <label for="agentIdInput">Agent ID</label>
+            <input type="text" id="agentIdInput" value="kess-security-bot" required onchange="handleAgentIdChange()">
           </div>
 
-          <button type="submit" class="btn btn-primary" id="initBtn" onclick="handleInitSubmit(event)">
-            Initialize Autonomous Loop
+          <button type="submit" class="btn btn-primary" id="initBtn">
+            Update Domain & Switch AI Loop
           </button>
         </form>
 
         <button type="button" class="btn btn-secondary" id="triggerBtn" onclick="handleTriggerCycle(event)">
-          ⚡ Trigger Discovery Cycle Now
+          ⚡ Trigger Real-Time AI Discovery
         </button>
 
         <div class="profile-box" id="profileBox">
@@ -469,15 +499,18 @@
 
     <section>
       <div class="feed-header">
-        <div class="feed-title">Autonomous Content Feed</div>
+        <div class="feed-title">
+          <span class="live-pulse"></span>
+          Live Real-Time Feed Stream
+        </div>
         <button type="button" class="refresh-btn" id="manualRefreshBtn" onclick="handleManualRefresh(event)">
-          🔄 Refresh Feed
+          🔄 Refresh Stream
         </button>
       </div>
 
       <div id="feedStream">
         <div class="empty-feed">
-          <p>No posts published yet for this agent.</p>
+          <p>No posts published yet for this topic.</p>
         </div>
       </div>
     </section>
@@ -497,10 +530,20 @@
 
     const currentAgentId = () => document.getElementById('agentIdInput').value.trim() || 'kess-security-bot';
 
+    function handlePresetChange(selectElem) {
+      document.getElementById('domainInput').value = selectElem.value;
+      handleDomainChange();
+    }
+
+    async function handleDomainChange() {
+      // Auto trigger update when domain changes
+      await handleInitSubmit(null);
+    }
+
     async function fetchProfile() {
       const agentId = currentAgentId();
       try {
-        const res = await fetch(`/api/agent/init/profile?agentId=${encodeURIComponent(agentId)}`);
+        const res = await fetch(`/api/agent/init/profile?agentId=${encodeURIComponent(agentId)}&_t=${Date.now()}`);
         if (res.ok) {
           const data = await res.json();
           renderVoiceProfile(data.voiceProfile);
@@ -508,7 +551,7 @@
           if (data.domain) document.getElementById('domainInput').value = data.domain;
         } else {
           document.getElementById('profileContent').innerHTML = `
-            <p style="font-size: 0.8rem; color: var(--text-dim);">Agent not initialized yet. Click "Initialize Autonomous Loop" above.</p>
+            <p style="font-size: 0.8rem; color: var(--text-dim);">Agent not initialized yet. Click "Update Domain & Switch AI Loop" above.</p>
           `;
         }
       } catch (err) {
@@ -520,7 +563,7 @@
       if (e) e.preventDefault();
       const initBtn = document.getElementById('initBtn');
       initBtn.disabled = true;
-      initBtn.innerHTML = `<div class="spinner"></div> Initializing...`;
+      initBtn.innerHTML = `<div class="spinner"></div> Updating AI Persona & Discovery...`;
 
       const id = currentAgentId();
       const name = document.getElementById('nameInput').value.trim();
@@ -536,17 +579,17 @@
 
         if (res.ok) {
           renderVoiceProfile(data.voiceProfile);
-          showToast(`✅ Agent "${name}" initialized successfully! Loop started.`);
-          setTimeout(fetchFeed, 2000);
+          showToast(`✅ Topic switched to "${domain}"! Real-time AI cycle executed.`);
+          await fetchFeed();
         } else {
           showToast('❌ Error: ' + (data.message || 'Initialization failed'));
         }
       } catch (err) {
-        showToast('❌ Network error during initialization');
+        showToast('❌ Network error during update');
         console.error('Init error:', err);
       } finally {
         initBtn.disabled = false;
-        initBtn.innerHTML = `Initialize Autonomous Loop`;
+        initBtn.innerHTML = `Update Domain & Switch AI Loop`;
       }
     }
 
@@ -554,7 +597,7 @@
       if (e) e.preventDefault();
       const triggerBtn = document.getElementById('triggerBtn');
       triggerBtn.disabled = true;
-      triggerBtn.innerHTML = `<div class="spinner"></div> Running Cycle...`;
+      triggerBtn.innerHTML = `<div class="spinner"></div> Running NVIDIA AI Cycle...`;
 
       const agentId = currentAgentId();
 
@@ -567,8 +610,8 @@
         const data = await res.json();
 
         if (res.ok) {
-          showToast('⚡ Discovery & scoring cycle executed!');
-          setTimeout(fetchFeed, 1500);
+          showToast('⚡ NVIDIA AI Discovery & Scoring cycle executed!');
+          await fetchFeed();
         } else {
           showToast('⚠️ ' + (data.message || 'Trigger cycle failed'));
         }
@@ -577,13 +620,13 @@
         console.error('Trigger error:', err);
       } finally {
         triggerBtn.disabled = false;
-        triggerBtn.innerHTML = `⚡ Trigger Discovery Cycle Now`;
+        triggerBtn.innerHTML = `⚡ Trigger Real-Time AI Discovery`;
       }
     }
 
     async function handleManualRefresh(e) {
       if (e) e.preventDefault();
-      showToast('🔄 Refreshing feed...');
+      showToast('🔄 Refreshing live stream...');
       await fetchFeed();
     }
 
@@ -601,8 +644,8 @@
 
       container.innerHTML = `
         <div style="margin-bottom: 0.8rem;">
-          <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">Tone & Persona:</div>
-          <div class="tag-container">${toneTags}</div>
+          <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">Active Domain: <strong style="color:#FFF;">${profile.domain || ''}</strong></div>
+          <div class="tag-container" style="margin-top:0.4rem;">${toneTags}</div>
         </div>
         <div>
           <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">Key Editorial Stances:</div>
@@ -611,19 +654,25 @@
       `;
     }
 
+    let lastKnownPostCount = 0;
+
     async function fetchFeed() {
       const agentId = currentAgentId();
       try {
-        const res = await fetch(`/api/agent/feed?agentId=${encodeURIComponent(agentId)}`);
+        const res = await fetch(`/api/agent/feed?agentId=${encodeURIComponent(agentId)}&_t=${Date.now()}`);
         const data = await res.json();
 
         if (res.ok && data.posts) {
           renderFeed(data.posts);
+          if (data.posts.length > lastKnownPostCount) {
+            if (lastKnownPostCount > 0) showToast('✨ New AI post published live!');
+            lastKnownPostCount = data.posts.length;
+          }
         } else if (res.status === 404) {
           document.getElementById('feedStream').innerHTML = `
             <div class="empty-feed">
               <p>Agent "${agentId}" not initialized yet.</p>
-              <p style="font-size: 0.8rem; margin-top: 0.5rem;">Click "Initialize Autonomous Loop" to start publishing.</p>
+              <p style="font-size: 0.8rem; margin-top: 0.5rem;">Select a topic above to initialize real-time publishing.</p>
             </div>
           `;
         }
@@ -637,7 +686,7 @@
       if (!posts || posts.length === 0) {
         stream.innerHTML = `
           <div class="empty-feed">
-            <p>No posts published yet for this agent.</p>
+            <p>No posts published yet for this topic.</p>
           </div>
         `;
         return;
@@ -676,8 +725,8 @@
     fetchProfile();
     fetchFeed();
 
-    // Auto refresh feed every 6 seconds
-    setInterval(fetchFeed, 6000);
+    // Auto-poll feed every 3 seconds for continuous live real-time updates
+    setInterval(fetchFeed, 3000);
   </script>
 </body>
 </html>
