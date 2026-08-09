@@ -82,7 +82,7 @@
       -webkit-mask-image: radial-gradient(circle at 50% 50%, black 30%, transparent 80%);
     }
 
-    /* ── HALFTONE ARTWORK CENTERPIECE (CONTAINED & STEADY) ───────────── */
+    /* ── HALFTONE ARTWORK CENTERPIECE (PRISTINE EDITORIAL) ───────────── */
     .center-art-wrapper {
       position: fixed;
       inset: 0;
@@ -95,87 +95,26 @@
     }
 
     .center-art {
-      width: min(1080px, 88vw);
-      height: min(680px, 82vh);
-      object-fit: contain;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
       object-position: center 48%;
       mix-blend-mode: multiply;
-      opacity: 0.88;
+      opacity: 0.90;
       filter: contrast(1.12) brightness(0.96);
-      animation: handsFadeIn 1.4s ease-out forwards;
-      transform: translateZ(0);
+      animation: subtleBreath 26s infinite alternate cubic-bezier(0.4, 0, 0.2, 1),
+                 fadeInArt 1.4s ease-out forwards;
+      transform-origin: 50% 48%;
     }
 
-    @keyframes handsFadeIn {
-      from {
-        opacity: 0;
-        filter: contrast(0.9) blur(6px);
-      }
-      to {
-        opacity: 0.88;
-        filter: contrast(1.12) brightness(0.96);
-      }
+    @keyframes subtleBreath {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.025); }
     }
 
-    /* ── HANDS REJOIN TOUCHPOINT SPARK & ETHERIC ENERGY NODE ────────── */
-    .rejoin-spark-node {
-      position: fixed;
-      left: 50%;
-      top: 48%;
-      transform: translate(-50%, -50%);
-      width: 140px;
-      height: 140px;
-      z-index: 3;
-      pointer-events: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .rejoin-spark-core {
-      width: 12px;
-      height: 12px;
-      background: var(--ink);
-      border-radius: 50%;
-      box-shadow: 0 0 16px rgba(25, 27, 30, 0.8), 0 0 32px rgba(92, 107, 120, 0.5);
-      animation: sparkPulse 2.8s infinite ease-in-out alternate;
-    }
-
-    .rejoin-spark-ring {
-      position: absolute;
-      inset: 0;
-      border: 1.5px dashed rgba(25, 27, 30, 0.35);
-      border-radius: 50%;
-      animation: sparkSpin 18s linear infinite, ringPulse 3.5s infinite ease-in-out alternate;
-    }
-
-    .rejoin-spark-aura {
-      position: absolute;
-      width: 220px;
-      height: 220px;
-      background: radial-gradient(circle, rgba(92, 107, 120, 0.18) 0%, rgba(244, 243, 239, 0.85) 45%, transparent 70%);
-      border-radius: 50%;
-      animation: auraPulse 4s infinite ease-in-out alternate;
-    }
-
-    @keyframes sparkPulse {
-      0% { transform: scale(0.85); opacity: 0.6; }
-      100% { transform: scale(1.35); opacity: 1; }
-    }
-
-    @keyframes ringPulse {
-      0% { transform: scale(0.7); opacity: 0.2; }
-      100% { transform: scale(1.2); opacity: 0.6; }
-    }
-
-    @keyframes sparkSpin {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-
-    @keyframes auraPulse {
-      0% { transform: scale(0.9); opacity: 0.4; }
-      100% { transform: scale(1.15); opacity: 0.85; }
+    @keyframes fadeInArt {
+      from { opacity: 0; }
+      to { opacity: 0.90; }
     }
 
     /* ── LEGIBILITY BLOOM ────────────────────────────────────────────── */
