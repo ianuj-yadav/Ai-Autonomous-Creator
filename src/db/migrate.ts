@@ -1,24 +1,30 @@
-/**
- * One-shot migration runner.
- * Usage: tsx src/db/migrate.ts
- */
-import 'dotenv/config';
-import { readFileSync } from 'fs';
-import { join } from 'path';
+import fs from 'fs';
+import path from 'path';
 import { pool } from './index';
 import { logger } from '../logger';
 
-async function migrate(): Promise<void> {
-  const sql = readFileSync(
-    join(__dirname, 'migrations', '001_initial.sql'),
-    'utf8'
-  );
-  await pool.query(sql);
-  logger.info('Database migrations applied successfully');
-  await pool.end();
+export async function runMigrations(): Promise<void> {
+  const schemaPath = path.join(__dirname, 'schema.sql');
+  const sql = fs.readFileSync(schemaPath, 'utf8');
+
+  logger.info('Running database migrations...');
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    await client.query(sql);
+    await client.query('COMMIT');
+    logger.info('Database migrations applied successfully.');
+  } catch (err: any) {
+    await client.query('ROLLBACK');
+    logger.error('Failed to apply migrations', { error: err.message });
+    throw err;
+  } finally {
+    client.release();
+  }
 }
 
-migrate().catch((err) => {
-  logger.error({ err }, 'Migration failed');
-  process.exit(1);
-});
+if (require.main === module) {
+  runMigrations()
+    .then(() => process.exit(0))
+    .catch(() => process.exit(1));
+}
