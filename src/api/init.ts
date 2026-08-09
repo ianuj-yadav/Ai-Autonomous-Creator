@@ -49,8 +49,10 @@ initRouter.post('/', async (req: Request, res: Response): Promise<void> => {
     // Start/resume background loop
     agentScheduler.startAgentLoop(agentId);
 
-    // Immediately execute a new autonomous discovery & generation cycle for the new topic/domain
-    await agentScheduler.executeCycle(agentId);
+    // Execute autonomous discovery & generation cycle in background
+    agentScheduler.executeCycle(agentId).catch((err) => {
+      logger.warn('Initial autonomous cycle completed or deferred', { error: err.message });
+    });
 
     res.status(200).json({
       agentId: agentId,
