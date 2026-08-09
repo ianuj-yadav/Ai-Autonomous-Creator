@@ -1,152 +1,81 @@
-/**
- * Editorial Judgment Module — FR-4.1, FR-4.2, FR-4.3, FR-4.4
- *
- * Scores every topic candidate with a weighted rubric. Every decision
- * (accept and reject) is logged for post-hoc explainability.
- */
-import Anthropic from '@anthropic-ai/sdk';
-import { config } from '../config';
 import { logger } from '../logger';
-import { isOnDomain } from './persona';
-import type { Post, ScoredCandidate, TopicCandidate, VoiceProfile } from '../types';
+import { TopicCandidate } from './discovery';
+import { VoiceProfile, isOnDomain } from './persona';
 
-const client = new Anthropic({ apiKey: config.anthropic.apiKey });
-
-const SCORE_SYSTEM = `You are an editorial scoring assistant.
-Given a topic candidate, a persona voice profile, and the persona's recent posts,
-score the candidate on four dimensions (each 0.0–1.0) and explain your reasoning.
-
-Respond with ONLY valid JSON in this exact shape:
-{
-  "relevance": <0-1>,
-  "timeliness": <0-1>,
-  "nonRedundancy": <0-1>,
-  "personaFit": <0-1>,
-  "reason": "<one sentence: why this score, naming the weakest dimension if rejected>"
-}`;
-
-const WEIGHTS = {
-  relevance: 0.30,
-  timeliness: 0.25,
-  nonRedundancy: 0.25,
-  personaFit: 0.20,
-};
-
-function compositeScore(sub: ScoredCandidate['subScores']): number {
-  return (
-    sub.relevance      * WEIGHTS.relevance +
-    sub.timeliness     * WEIGHTS.timeliness +
-    sub.nonRedundancy  * WEIGHTS.nonRedundancy +
-    sub.personaFit     * WEIGHTS.personaFit
-  );
+export interface ScoreBreakdown {
+  relevance: number;
+  timeliness: number;
+  nonRedundancy: number;
+  personaFit: number;
+  composite: number;
 }
 
-export async function scoreCandidate(
+export interface JudgmentResult {
+  candidate: TopicCandidate;
+  scores: ScoreBreakdown;
+  accepted: boolean;
+  rejectionReason?: string;
+}
+
+export function scoreCandidate(
   candidate: TopicCandidate,
-  voiceProfile: VoiceProfile,
-  recentPosts: Post[]
-): Promise<ScoredCandidate> {
-  // Hard gate — isOnDomain must pass before we spend an LLM call
-  if (!isOnDomain(`${candidate.title} ${candidate.summary}`, voiceProfile)) {
-    const result: ScoredCandidate = {
-      candidate,
-      score: 0,
-      subScores: { relevance: 0, timeliness: 0, nonRedundancy: 0, personaFit: 0 },
-      decision: 'rejected',
-      reason: 'Hard gate: topic is outside persona domain boundaries',
-    };
-    logger.info({ title: candidate.title, decision: 'rejected', reason: result.reason }, 'Candidate scored');
-    return result;
-  }
+  profile: VoiceProfile,
+  recentTopicKeys: string[] = []
+): JudgmentResult {
+  // 1. Hard Domain Check
+  const domainMatch = isOnDomain(candidate.title, candidate.summary, profile);
+  const relevance = domainMatch ? 0.85 : 0.25;
 
-  const recentTitles = recentPosts
-    .slice(0, 5)
-    .map((p, i) => `${i + 1}. ${p.text.slice(0, 120)}...`)
-    .join('\n');
+  // 2. Timeliness (heuristic based on discovery time)
+  const ageInHours = (Date.now() - new Date(candidate.discoveredAt).getTime()) / (1000 * 60 * 60);
+  const timeliness = Math.max(0.3, Math.min(1.0, 1.0 - ageInHours / 48));
 
-  const prompt = `Persona voice profile:
-- Tone: ${voiceProfile.tone.join(', ')}
-- Interests: ${voiceProfile.interests.join(', ')}
-- Stances: ${voiceProfile.stances.join('; ')}
-- Out of scope: ${voiceProfile.boundaries.join(', ')}
+  // 3. Non-redundancy
+  const titleLower = candidate.title.toLowerCase();
+  const matchesRecent = recentTopicKeys.some((key) => titleLower.includes(key));
+  const nonRedundancy = matchesRecent ? 0.3 : 0.9;
 
-Candidate topic:
-Title: ${candidate.title}
-Summary: ${candidate.summary}
-Discovered: ${candidate.discoveredAt}
+  // 4. Persona Fit
+  const hasStanceMatch = profile.stances.some((stance) => {
+    const stanceWords = stance.toLowerCase().split(/\s+/).filter((w) => w.length > 4);
+    return stanceWords.some((w) => titleLower.includes(w) || candidate.summary.toLowerCase().includes(w));
+  });
+  const personaFit = hasStanceMatch ? 0.95 : 0.7;
 
-Recent posts (last 5):
-${recentTitles || '(none yet)'}
-
-Score this candidate.`;
-
-  try {
-    const response = await client.messages.create({
-      model: 'claude-sonnet-5',
-      max_tokens: 256,
-      temperature: 0.1,
-      system: SCORE_SYSTEM,
-      messages: [{ role: 'user', content: prompt }],
-    });
-
-    const raw = (response.content[0] as { type: string; text: string }).text.trim();
-    const parsed = JSON.parse(raw) as {
-      relevance: number;
-      timeliness: number;
-      nonRedundancy: number;
-      personaFit: number;
-      reason: string;
-    };
-
-    const subScores = {
-      relevance:     Math.max(0, Math.min(1, parsed.relevance)),
-      timeliness:    Math.max(0, Math.min(1, parsed.timeliness)),
-      nonRedundancy: Math.max(0, Math.min(1, parsed.nonRedundancy)),
-      personaFit:    Math.max(0, Math.min(1, parsed.personaFit)),
-    };
-
-    const score = compositeScore(subScores);
-
-    // Accept threshold: composite >= 0.6 AND relevance >= 0.5 (hard gate)
-    const accept =
-      score >= config.scoring.threshold &&
-      subScores.relevance >= config.scoring.relevanceThreshold;
-
-    const result: ScoredCandidate = {
-      candidate,
-      score,
-      subScores,
-      decision: accept ? 'accepted' : 'rejected',
-      reason: parsed.reason,
-    };
-
-    logger.info(
-      { title: candidate.title, score, subScores, decision: result.decision, reason: result.reason },
-      'Candidate scored'
-    );
-    return result;
-
-  } catch (err) {
-    // On LLM failure, reject the candidate rather than crashing
-    logger.warn({ err, title: candidate.title }, 'Judgment LLM call failed — rejecting candidate');
-    return {
-      candidate,
-      score: 0,
-      subScores: { relevance: 0, timeliness: 0, nonRedundancy: 0, personaFit: 0 },
-      decision: 'rejected',
-      reason: 'Scoring failed due to LLM error',
-    };
-  }
-}
-
-/** Score a batch and return sorted results */
-export async function scoreBatch(
-  candidates: TopicCandidate[],
-  voiceProfile: VoiceProfile,
-  recentPosts: Post[]
-): Promise<ScoredCandidate[]> {
-  const results = await Promise.all(
-    candidates.map((c) => scoreCandidate(c, voiceProfile, recentPosts))
+  // Weighted Composite Score
+  const composite = Number(
+    (relevance * 0.3 + timeliness * 0.25 + nonRedundancy * 0.25 + personaFit * 0.2).toFixed(2)
   );
-  return results.sort((a, b) => b.score - a.score);
+
+  const scores: ScoreBreakdown = {
+    relevance,
+    timeliness,
+    nonRedundancy,
+    personaFit,
+    composite,
+  };
+
+  // Hard Gate 1: Relevance < 0.5 -> Immediate rejection
+  if (relevance < 0.5) {
+    const reason = `Rejected: Failed hard domain gate (relevance score ${relevance} < 0.5). Candidate is off-topic for domain "${profile.domain}".`;
+    logger.info('Candidate REJECTED by hard domain gate', { candidate: candidate.title, scores, reason });
+    return { candidate, scores, accepted: false, rejectionReason: reason };
+  }
+
+  // Hard Gate 2: Non-redundancy check
+  if (nonRedundancy < 0.5) {
+    const reason = `Rejected: High redundancy with recent posts (non-redundancy score ${nonRedundancy} < 0.5).`;
+    logger.info('Candidate REJECTED by redundancy gate', { candidate: candidate.title, scores, reason });
+    return { candidate, scores, accepted: false, rejectionReason: reason };
+  }
+
+  // Accept Threshold: Composite >= 0.6
+  if (composite >= 0.6) {
+    logger.info('Candidate ACCEPTED by editorial judgment', { candidate: candidate.title, scores });
+    return { candidate, scores, accepted: true };
+  }
+
+  const reason = `Rejected: Composite score ${composite} fell below acceptance threshold of 0.6.`;
+  logger.info('Candidate REJECTED by composite threshold', { candidate: candidate.title, scores, reason });
+  return { candidate, scores, accepted: false, rejectionReason: reason };
 }

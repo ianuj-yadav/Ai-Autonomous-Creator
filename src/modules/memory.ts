@@ -1,177 +1,126 @@
-/**
- * Memory Module — FR-6.1, FR-6.2, FR-6.3
- *
- * Durable SQLite-backed memory of published posts.
- * Provides deduplication via Jaccard similarity on keyword sets.
- */
-import { query, queryOne } from '../db';
-import { config } from '../config';
+import { query, pool } from '../db';
 import { logger } from '../logger';
-import type { Post, TopicCandidate } from '../types';
+import { TopicCandidate } from './discovery';
+
+export interface Post {
+  id: string;
+  agentId: string;
+  candidateId?: string;
+  text: string;
+  rationale: string;
+  sources: string[];
+  groundingNotes?: string;
+  topicKey: string;
+  createdAt: Date;
+}
 
 const STOPWORDS = new Set([
-  'a','an','the','and','or','but','in','on','at','to','for','of','with',
-  'is','are','was','were','be','been','being','have','has','had','do',
-  'does','did','will','would','could','should','may','might','this',
-  'that','these','those','it','its','by','from','about','as','into',
-  'through','during','before','after','above','below','between','out',
-  'off','over','under','again','then','once','here','there','when',
-  'where','why','how','all','both','each','few','more','most','other',
-  'some','such','no','not','only','same','so','than','too','very',
-  'just','because','if','while','although','however','therefore',
+  'a', 'an', 'the', 'and', 'or', 'but', 'is', 'are', 'was', 'were', 'be', 'been',
+  'being', 'in', 'on', 'at', 'to', 'for', 'with', 'by', 'about', 'against', 'between',
+  'into', 'through', 'during', 'before', 'after', 'above', 'below', 'from', 'up',
+  'down', 'of', 'off', 'over', 'under', 'again', 'further', 'then', 'once', 'this',
+  'that', 'these', 'those', 'new', 'more', 'most', 'other', 'some', 'such', 'no',
 ]);
 
-/** Normalise text into a keyword set for comparison */
-export function computeKeywords(text: string): string[] {
-  return [
-    ...new Set(
-      text
-        .toLowerCase()
-        .replace(/[^a-z0-9\s]/g, ' ')
-        .split(/\s+/)
-        .filter((w) => w.length > 3 && !STOPWORDS.has(w))
-    ),
-  ];
+export function computeTopicKey(text: string): string {
+  const words = text
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, '')
+    .split(/\s+/)
+    .filter((w) => w.length > 2 && !STOPWORDS.has(w));
+  
+  const uniqueSorted = Array.from(new Set(words)).sort();
+  return uniqueSorted.join(' ');
 }
 
-/** Jaccard similarity between two keyword sets */
-function jaccard(a: string[], b: string[]): number {
-  const setA = new Set(a);
-  const setB = new Set(b);
-  const intersection = [...setA].filter((x) => setB.has(x)).length;
-  const union = new Set([...setA, ...setB]).size;
-  return union === 0 ? 0 : intersection / union;
+export function calculateJaccardSimilarity(keyA: string, keyB: string): number {
+  const setA = new Set(keyA.split(' '));
+  const setB = new Set(keyB.split(' '));
+
+  if (setA.size === 0 || setB.size === 0) return 0;
+
+  let intersectionSize = 0;
+  for (const item of setA) {
+    if (setB.has(item)) intersectionSize++;
+  }
+
+  const unionSize = new Set([...setA, ...setB]).size;
+  return intersectionSize / unionSize;
 }
 
-/** Normalise title + summary into a stable topic fingerprint */
-export function computeTopicKey(title: string, summary = ''): string {
-  return computeKeywords(`${title} ${summary}`)
-    .sort()
-    .slice(0, 15)
-    .join('|');
-}
-
-/** Fetch most recent N posts for an agent (newest first) */
-export async function getRecentPosts(
-  agentId: string,
-  limit = config.memory.lookback
-): Promise<Post[]> {
-  const rows = await query<{
-    id: string;
-    agent_id: string;
-    text: string;
-    rationale: string;
-    sources: string[];
-    topic_key: string;
-    created_at: string;
-  }>(
-    `SELECT id, agent_id, text, rationale, sources, topic_key, created_at
+export async function getRecentPosts(agentId: string, limit = 10): Promise<Post[]> {
+  const rows = await query(
+    `SELECT id, agent_id as "agentId", candidate_id as "candidateId", text, rationale, sources, grounding_notes as "groundingNotes", topic_key as "topicKey", created_at as "createdAt"
      FROM posts
      WHERE agent_id = $1
      ORDER BY created_at DESC
      LIMIT $2`,
     [agentId, limit]
   );
-
-  return rows.map((r) => ({
-    id: r.id,
-    agentId: r.agent_id,
-    text: r.text,
-    rationale: r.rationale,
-    sources: r.sources,
-    topicKey: r.topic_key,
-    createdAt: r.created_at,
-  }));
+  return rows;
 }
 
-/**
- * Returns true if a candidate is too similar to any recent post.
- * Defense-in-depth alongside the Judgment module's nonRedundancy score.
- */
-export function isNearDuplicate(
-  candidate: TopicCandidate,
-  recentPosts: Post[],
-  threshold = config.memory.dedupThreshold
-): boolean {
-  const candidateKw = computeKeywords(`${candidate.title} ${candidate.summary}`);
+export function isNearDuplicate(candidate: TopicCandidate, recentPosts: Post[], threshold = 0.5): { duplicate: boolean; maxSimilarity: number } {
+  const candidateKey = computeTopicKey(`${candidate.title} ${candidate.summary}`);
 
+  let maxSimilarity = 0;
   for (const post of recentPosts) {
-    const postKw = computeKeywords(post.text);
-    const sim = jaccard(candidateKw, postKw);
+    const sim = calculateJaccardSimilarity(candidateKey, post.topicKey);
+    if (sim > maxSimilarity) {
+      maxSimilarity = sim;
+    }
     if (sim >= threshold) {
-      logger.debug(
-        { candidateTitle: candidate.title, postId: post.id, sim },
-        'Near-duplicate detected'
-      );
-      return true;
+      logger.info('Near-duplicate detected by memory module', { candidateTitle: candidate.title, postText: post.text.substring(0, 50), similarity: sim });
+      return { duplicate: true, maxSimilarity };
     }
   }
-  return false;
+
+  return { duplicate: false, maxSimilarity };
 }
 
-/** Persist a new post and update the memory index — atomic transaction */
-export async function savePost(post: Omit<Post, 'agentId'> & { agentId: string }): Promise<void> {
-  const keywords = computeKeywords(post.text);
-  const topicKey = post.topicKey;
-
-  // Use a client for transaction
-  const { pool } = await import('../db');
+export async function savePostWithMemory(
+  agentId: string,
+  candidateId: string | undefined,
+  text: string,
+  rationale: string,
+  sources: string[],
+  groundingNotes: string | undefined,
+  topicKey: string
+): Promise<Post> {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
-    await client.query(
-      `INSERT INTO posts (id, agent_id, text, rationale, sources, topic_key, created_at)
-       VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-      [
-        post.id,
-        post.agentId,
-        post.text,
-        post.rationale,
-        JSON.stringify(post.sources),
-        topicKey,
-        post.createdAt,
-      ]
+
+    const postRes = await client.query(
+      `INSERT INTO posts (agent_id, candidate_id, text, rationale, sources, grounding_notes, topic_key)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
+       RETURNING id, agent_id as "agentId", candidate_id as "candidateId", text, rationale, sources, grounding_notes as "groundingNotes", topic_key as "topicKey", created_at as "createdAt"`,
+      [agentId, candidateId || null, text, rationale, JSON.stringify(sources), groundingNotes || null, topicKey]
     );
+
+    const post = postRes.rows[0];
+
     await client.query(
-      `INSERT INTO memory_index (agent_id, post_id, topic_key, keywords)
-       VALUES ($1, $2, $3, $4)`,
-      [post.agentId, post.id, topicKey, JSON.stringify(keywords)]
+      `INSERT INTO memory_index (agent_id, post_id, keyword_fingerprint)
+       VALUES ($1, $2, $3)`,
+      [agentId, post.id, topicKey]
     );
+
+    if (candidateId) {
+      await client.query(
+        `UPDATE topic_candidates SET status = 'published' WHERE id = $1`,
+        [candidateId]
+      );
+    }
+
     await client.query('COMMIT');
-  } catch (err) {
+    logger.info('Post and memory index persisted atomically', { postId: post.id, agentId });
+    return post;
+  } catch (err: any) {
     await client.query('ROLLBACK');
+    logger.error('Failed to save post and memory index', { error: err.message });
     throw err;
   } finally {
     client.release();
   }
-}
-
-/** Persist a topic candidate record for audit/explainability */
-export async function saveCandidate(params: {
-  id: string;
-  agentId: string;
-  title: string;
-  summary: string;
-  sourceUrls: string[];
-  discoveredAt: string;
-  score: number | null;
-  decision: 'accepted' | 'rejected';
-  decisionReason: string;
-}): Promise<void> {
-  await query(
-    `INSERT INTO topic_candidates
-       (id, agent_id, title, summary, source_urls, discovered_at, score, decision, decision_reason)
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)`,
-    [
-      params.id,
-      params.agentId,
-      params.title,
-      params.summary,
-      JSON.stringify(params.sourceUrls),
-      params.discoveredAt,
-      params.score,
-      params.decision,
-      params.decisionReason,
-    ]
-  );
 }
