@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ASCEND — A Daily Practice for Inner Growth & Autonomous Mind</title>
+  <title>ASCEND — A Daily Practice for Inner Growth</title>
 
-  <!-- Google Fonts: Manrope, Inter, IBM Plex Mono, Space Grotesk -->
+  <!-- Google Fonts: Manrope (400/500/600/700/800), Inter (400/500/600), IBM Plex Mono (400/500) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&family=Inter:wght@300;400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     /* ── DESIGN SYSTEM TOKENS ───────────────────────────────────────── */
@@ -16,12 +16,10 @@
       --bg-paper-top: #f4f3ef;
       --bg-paper-bottom: #eceae3;
       --ink: #191b1e;
-      --ink-muted: rgba(25, 27, 30, 0.65);
-      --ink-dim: rgba(25, 27, 30, 0.45);
-      --border-hairline: rgba(25, 27, 30, 0.14);
+      --ink-muted: rgba(25, 27, 30, 0.62);
+      --ink-dim: rgba(25, 27, 30, 0.42);
+      --border-hairline: rgba(25, 27, 30, 0.12);
       --slate-accent: #5c6b78;
-      --gold-accent: #d4af37;
-      --emerald-accent: #00e676;
       
       --font-display: 'Manrope', sans-serif;
       --font-body: 'Inter', sans-serif;
@@ -45,7 +43,7 @@
       -moz-osx-font-smoothing: grayscale;
     }
 
-    /* ── FIXED BACKDROP & GRADIENT ──────────────────────────────────── */
+    /* ── FIXED BACKDROP GRADIENT ────────────────────────────────────── */
     .fixed-backdrop {
       position: fixed;
       inset: 0;
@@ -58,39 +56,22 @@
       content: "";
       position: absolute;
       inset: 0;
-      background: 
-        radial-gradient(120% 90% at 50% 40%, rgba(92, 107, 120, 0.12), transparent 55%),
-        radial-gradient(60% 60% at 20% 80%, rgba(212, 175, 55, 0.05), transparent 70%),
-        linear-gradient(180deg, transparent 75%, rgba(25, 27, 30, 0.05) 100%);
+      background: radial-gradient(120% 90% at 50% 40%, rgba(92, 107, 120, 0.09), transparent 52%),
+                  linear-gradient(180deg, transparent 80%, rgba(25, 27, 30, 0.04) 100%);
     }
 
-    /* ── PAPER GRAIN & MESH OVERLAY ─────────────────────────────────── */
+    /* ── PAPER GRAIN TEXTURE ────────────────────────────────────────── */
     .fixed-grain {
       position: fixed;
       inset: 0;
       z-index: 1;
       pointer-events: none;
-      opacity: 0.4;
-      background-image: radial-gradient(rgba(25, 27, 30, 0.06) 1.2px, transparent 0);
-      background-size: 5px 5px;
-      mask-image: radial-gradient(circle at 50% 50%, black 20%, transparent 85%);
-      -webkit-mask-image: radial-gradient(circle at 50% 50%, black 20%, transparent 85%);
+      opacity: 0.35;
+      background-image: radial-gradient(rgba(25, 27, 30, 0.05) 1px, transparent 0);
+      background-size: 4px 4px;
+      mask-image: radial-gradient(circle at 50% 50%, black 30%, transparent 80%);
+      -webkit-mask-image: radial-gradient(circle at 50% 50%, black 30%, transparent 80%);
     }
-
-    /* ── CORNER ALIGNMENT CROSSHAIRS & GUIDES ───────────────────────── */
-    .corner-crosshair {
-      position: fixed;
-      z-index: 12;
-      pointer-events: none;
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--ink-dim);
-      opacity: 0.6;
-    }
-    .crosshair-tl { top: 16px; left: 16px; }
-    .crosshair-tr { top: 16px; right: 16px; }
-    .crosshair-bl { bottom: 16px; left: 16px; }
-    .crosshair-br { bottom: 16px; right: 16px; }
 
     /* ── FULL ASPECT HALFTONE ARTWORK ───────────────────────────────── */
     .center-art-wrapper {
@@ -110,89 +91,34 @@
       object-fit: cover;
       object-position: center 48%;
       mix-blend-mode: multiply;
-      opacity: 0.88;
-      will-change: transform, filter, opacity;
-      transform: scale(1.02);
-      animation: kenburnsFull 24s infinite alternate cubic-bezier(0.37, 0, 0.63, 1),
-                 softIn 1.8s ease-out forwards;
-      filter: contrast(1.08) brightness(0.98);
+      opacity: 0.92;
+      will-change: transform, opacity;
+      animation: kenburns 22s infinite alternate cubic-bezier(0.4, 0, 0.2, 1),
+                 softIn 1.6s ease-out forwards;
+      transform-origin: 50% 48%;
     }
 
-    @keyframes kenburnsFull {
-      0% { transform: scale(1) translate(0, 0); }
-      50% { transform: scale(1.04) translate(-0.5%, -0.5%); }
-      100% { transform: scale(1.08) translate(0.5%, 0.5%); }
+    @keyframes kenburns {
+      from { transform: scale(1); }
+      to { transform: scale(1.04); }
     }
 
     @keyframes softIn {
-      from { opacity: 0; filter: blur(10px); }
-      to { opacity: 0.88; filter: blur(0); }
+      from { opacity: 0; }
+      to { opacity: 0.92; }
     }
 
-    /* ── BREATHING MINDFULNESS PULSE RINGS ──────────────────────────── */
-    .breath-ring {
-      position: fixed;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      width: 520px;
-      height: 520px;
-      border-radius: 50%;
-      border: 1.5px solid rgba(92, 107, 120, 0.18);
-      z-index: 3;
-      pointer-events: none;
-      animation: breathPulse 8s infinite ease-in-out;
-    }
-
-    .breath-ring-outer {
-      position: fixed;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      width: 780px;
-      height: 780px;
-      border-radius: 50%;
-      border: 1px dashed rgba(25, 27, 30, 0.1);
-      z-index: 3;
-      pointer-events: none;
-      animation: breathPulse 8s infinite ease-in-out 2s;
-    }
-
-    @keyframes breathPulse {
-      0% { transform: translate(-50%, -50%) scale(0.88); opacity: 0.2; }
-      50% { transform: translate(-50%, -50%) scale(1.12); opacity: 0.6; }
-      100% { transform: translate(-50%, -50%) scale(0.88); opacity: 0.2; }
-    }
-
-    /* ── LEGIBILITY BLOOM LAYER ─────────────────────────────────────── */
+    /* ── LEGIBILITY BLOOM (LIFTS HEADLINE OFF ARTWORK) ──────────────── */
     .art-glow {
       position: fixed;
       left: 50%;
-      top: 50%;
+      top: 52%;
       transform: translate(-50%, -50%);
-      width: min(840px, 85vw);
-      height: min(580px, 75vh);
-      z-index: 4;
+      width: min(760px, 80vw);
+      aspect-ratio: 1.5;
+      z-index: 3;
       pointer-events: none;
-      background: radial-gradient(ellipse at center, rgba(244,243,239,0.96) 0%, rgba(244,243,239,0.72) 40%, transparent 75%);
-    }
-
-    /* ── AMBIENT FLOATING DUST PARTICLES ───────────────────────────── */
-    .dust-particle {
-      position: fixed;
-      z-index: 5;
-      pointer-events: none;
-      width: 3px;
-      height: 3px;
-      border-radius: 50%;
-      background: rgba(25, 27, 30, 0.2);
-      animation: floatDust 12s infinite linear;
-    }
-
-    @keyframes floatDust {
-      0% { transform: translateY(100vh) translateX(0); opacity: 0; }
-      50% { opacity: 0.5; }
-      100% { transform: translateY(-10vh) translateX(40px); opacity: 0; }
+      background: radial-gradient(ellipse at center, rgba(244,243,239,0.94) 0%, rgba(244,243,239,0.65) 34%, transparent 68%);
     }
 
     /* ── MAIN LAYOUT SHELL ───────────────────────────────────────────── */
@@ -206,23 +132,23 @@
       justify-content: space-between;
     }
 
-    /* ── ENTRANCE MOTION ────────────────────────────────────────────── */
+    /* ── STAGGERED ENTRANCE MOTION ───────────────────────────────────── */
     @keyframes blurFadeUp {
       from {
         opacity: 0;
-        filter: blur(24px);
-        transform: translateY(42px) scale(0.98);
+        filter: blur(20px);
+        transform: translateY(38px);
       }
       to {
         opacity: 1;
         filter: blur(0);
-        transform: translateY(0) scale(1);
+        transform: translateY(0);
       }
     }
 
     .rise {
       opacity: 0;
-      animation: blurFadeUp 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation: blurFadeUp 1s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
     }
 
     /* ── TOP NAVIGATION ──────────────────────────────────────────────── */
@@ -230,42 +156,31 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 32px 64px;
+      padding: 30px 56px;
       width: 100%;
     }
 
     .wordmark-group {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 11px;
       text-decoration: none;
       color: var(--ink);
       cursor: pointer;
     }
 
-    .brand-logo-badge {
-      width: 36px;
-      height: 36px;
-      background: var(--ink);
-      color: var(--bg-paper-top);
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 3px 3px 0px var(--slate-accent);
-      transition: all 0.2s ease;
-    }
-
-    .wordmark-group:hover .brand-logo-badge {
-      transform: translateY(-2px) rotate(-4deg);
-      box-shadow: 5px 5px 0px var(--ink);
+    .brand-chevron-svg {
+      width: 17px;
+      height: 17px;
+      color: var(--slate-accent);
+      flex-shrink: 0;
     }
 
     .wordmark-text {
       font-family: var(--font-display);
       font-weight: 800;
-      font-size: 21px;
-      letter-spacing: 0.06em;
+      font-size: 20px;
+      letter-spacing: 0.05em;
       color: var(--ink);
       text-transform: uppercase;
     }
@@ -273,13 +188,8 @@
     .nav-center-links {
       display: flex;
       align-items: center;
-      gap: 40px;
+      gap: 36px;
       list-style: none;
-      background: rgba(255, 255, 255, 0.4);
-      padding: 8px 24px;
-      border-radius: 9999px;
-      border: 1px solid var(--border-hairline);
-      backdrop-filter: blur(8px);
     }
 
     .nav-link {
@@ -288,9 +198,8 @@
       font-size: 14.5px;
       color: var(--ink-muted);
       text-decoration: none;
-      transition: all 0.25s ease;
+      transition: color 0.25s ease;
       cursor: pointer;
-      position: relative;
     }
 
     .nav-link:hover {
@@ -303,134 +212,43 @@
       gap: 18px;
     }
 
-    /* Ambient Audio Toggle Button */
-    .audio-toggle-btn {
-      background: rgba(255, 255, 255, 0.5);
-      border: 1.5px solid var(--ink);
-      border-radius: 9999px;
-      padding: 8px 16px;
-      font-family: var(--font-mono);
-      font-size: 12px;
-      color: var(--ink);
+    .btn-link-login {
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: 14.5px;
+      color: var(--ink-muted);
+      background: transparent;
+      border: none;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      box-shadow: 2px 2px 0px var(--ink);
-      transition: all 0.2s ease;
+      padding: 8px 12px;
+      transition: color 0.2s ease;
     }
 
-    .audio-toggle-btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 4px 4px 0px var(--ink);
-      background: #FFF;
-    }
-
-    .soundwave-bar {
-      width: 2px;
-      height: 10px;
-      background: var(--ink);
-      animation: soundWave 1.2s infinite ease-in-out alternate;
-    }
-
-    .soundwave-bar:nth-child(2) { animation-delay: 0.2s; }
-    .soundwave-bar:nth-child(3) { animation-delay: 0.4s; }
-
-    @keyframes soundWave {
-      0% { height: 4px; }
-      100% { height: 14px; }
+    .btn-link-login:hover {
+      color: var(--ink);
     }
 
     .btn-nav-cta {
       font-family: var(--font-display);
-      font-weight: 700;
+      font-weight: 600;
       font-size: 14.5px;
       color: var(--bg-paper-top);
       background: var(--ink);
-      border: 2px solid var(--ink);
-      padding: 11px 26px;
+      border: none;
+      padding: 11px 24px;
       border-radius: 9999px;
       cursor: pointer;
-      box-shadow: 4px 4px 0px var(--slate-accent);
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 10px 26px -12px rgba(25, 27, 30, 0.5);
+      transition: all 0.2s ease;
+      text-decoration: none;
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      text-decoration: none;
     }
 
     .btn-nav-cta:hover {
-      transform: translate(-2px, -2px);
-      box-shadow: 6px 6px 0px var(--ink);
-      background: #000;
-    }
-
-    /* ── FLOATING AMBIENT BADGES (DECORATIVE) ───────────────────────── */
-    .floating-badge-left {
-      position: fixed;
-      left: 64px;
-      top: 48%;
-      transform: translateY(-50%);
-      z-index: 11;
-      background: rgba(255, 255, 255, 0.65);
-      border: 1.5px solid var(--ink);
-      border-radius: 16px;
-      padding: 12px 18px;
-      box-shadow: 4px 4px 0px var(--ink);
-      backdrop-filter: blur(10px);
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      max-width: 220px;
-      animation: floatBadge 6s infinite ease-in-out alternate;
-    }
-
-    .floating-badge-right {
-      position: fixed;
-      right: 64px;
-      top: 48%;
-      transform: translateY(-50%);
-      z-index: 11;
-      background: rgba(255, 255, 255, 0.65);
-      border: 1.5px solid var(--ink);
-      border-radius: 16px;
-      padding: 12px 18px;
-      box-shadow: 4px 4px 0px var(--ink);
-      backdrop-filter: blur(10px);
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      max-width: 230px;
-      animation: floatBadge 6s infinite ease-in-out alternate 1.5s;
-    }
-
-    @keyframes floatBadge {
-      0% { transform: translateY(-50%) translateY(0px); }
-      100% { transform: translateY(-50%) translateY(-10px); }
-    }
-
-    .badge-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: var(--emerald-accent);
-      border: 1.5px solid var(--ink);
-      box-shadow: 0 0 8px var(--emerald-accent);
-    }
-
-    .badge-title {
-      font-family: var(--font-mono);
-      font-size: 10.5px;
-      font-weight: 500;
-      text-transform: uppercase;
-      color: var(--ink);
-      letter-spacing: 0.05em;
-    }
-
-    .badge-sub {
-      font-size: 11.5px;
-      color: var(--ink-muted);
-      font-weight: 600;
+      transform: translateY(-1px);
+      box-shadow: 0 14px 30px -10px rgba(25, 27, 30, 0.65);
     }
 
     /* ── CENTERED HERO SECTION ───────────────────────────────────────── */
@@ -441,49 +259,47 @@
       align-items: center;
       justify-content: center;
       text-align: center;
-      padding: 0 24px 20px;
-      max-width: 1120px;
+      padding: 0 24px 30px;
+      max-width: 1080px;
       margin: 0 auto;
-      position: relative;
-      z-index: 10;
     }
 
     .hero-kicker-group {
       display: flex;
       align-items: center;
-      gap: 16px;
-      margin-bottom: 28px;
+      gap: 14px;
+      margin-bottom: 30px;
     }
 
     .kicker-rule {
-      width: 32px;
+      width: 28px;
       height: 1px;
       background-color: var(--slate-accent);
+      opacity: 0.6;
     }
 
     .kicker-text {
       font-family: var(--font-mono);
       font-weight: 500;
-      font-size: 12.5px;
-      letter-spacing: 0.42em;
+      font-size: 12px;
+      letter-spacing: 0.4em;
       text-transform: uppercase;
       color: var(--slate-accent);
     }
 
     .hero-h1 {
       font-family: var(--font-display);
-      font-size: clamp(48px, 6.2vw, 88px);
-      line-height: 1.01;
+      font-size: clamp(46px, 6.4vw, 88px);
+      line-height: 1.0;
       letter-spacing: -0.04em;
       color: var(--ink);
-      margin-bottom: 26px;
-      text-shadow: 0 2px 20px rgba(244, 243, 239, 0.8);
+      margin-bottom: 30px;
     }
 
     .hero-h1-line1 {
       display: block;
       font-weight: 400;
-      color: rgba(25, 27, 30, 0.85);
+      color: rgba(25, 27, 30, 0.82);
     }
 
     .hero-h1-line2 {
@@ -495,75 +311,71 @@
     .hero-sub {
       font-family: var(--font-body);
       font-weight: 400;
-      font-size: clamp(16.5px, 1.4vw, 19.5px);
+      font-size: clamp(16px, 1.35vw, 19px);
       color: var(--ink-muted);
-      max-width: 520px;
-      line-height: 1.6;
-      margin-bottom: 42px;
+      max-width: 480px;
+      line-height: 1.55;
+      margin-bottom: 40px;
     }
 
-    /* Primary CTA Button with Glow */
     .btn-hero-primary {
       font-family: var(--font-display);
-      font-weight: 700;
-      font-size: 16px;
+      font-weight: 600;
+      font-size: 15.5px;
       color: var(--bg-paper-top);
       background: var(--ink);
-      border: 2px solid var(--ink);
-      padding: 17px 40px;
+      border: none;
+      padding: 16px 36px;
       border-radius: 9999px;
       cursor: pointer;
-      box-shadow: 0 16px 36px -10px rgba(25, 27, 30, 0.5), 5px 5px 0px var(--slate-accent);
+      box-shadow: 0 14px 34px -12px rgba(25, 27, 30, 0.45);
       transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
       display: inline-flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       text-decoration: none;
     }
 
     .btn-hero-primary:hover {
-      transform: translate(-3px, -3px);
-      box-shadow: 0 20px 42px -8px rgba(25, 27, 30, 0.7), 8px 8px 0px var(--ink);
+      transform: translateY(-2px);
+      box-shadow: 0 18px 40px -10px rgba(25, 27, 30, 0.65);
       background: #000;
     }
 
     .arrow-icon-svg {
-      width: 18px;
-      height: 18px;
+      width: 16px;
+      height: 16px;
       stroke-width: 2.2;
       transition: transform 0.2s ease;
     }
 
     .btn-hero-primary:hover .arrow-icon-svg {
-      transform: translateX(4px);
+      transform: translateX(3px);
     }
 
     /* ── CORNER CAPTIONS ────────────────────────────────────────────── */
     .caption-left {
       position: fixed;
-      left: 64px;
-      bottom: 34px;
+      left: 56px;
+      bottom: 30px;
       z-index: 11;
       font-family: var(--font-mono);
       font-weight: 500;
       font-size: 11.5px;
-      letter-spacing: 0.14em;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--ink-dim);
-      display: flex;
-      align-items: center;
-      gap: 8px;
     }
 
     .caption-right {
       position: fixed;
-      right: 64px;
-      bottom: 34px;
+      right: 56px;
+      bottom: 30px;
       z-index: 11;
       font-family: var(--font-mono);
       font-weight: 500;
       font-size: 11.5px;
-      letter-spacing: 0.14em;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--ink-dim);
       display: flex;
@@ -577,13 +389,13 @@
       color: var(--ink);
     }
 
-    /* ── SAAS EMAIL SIGNUP & STUDIO MODAL OVERLAY ──────────────────── */
+    /* ── SAAS EMAIL AUTH & AUTOMATION MODAL ──────────────────── */
     .modal-overlay {
       position: fixed;
       inset: 0;
       z-index: 1000;
-      background: rgba(25, 27, 30, 0.55);
-      backdrop-filter: blur(12px);
+      background: rgba(25, 27, 30, 0.45);
+      backdrop-filter: blur(10px);
       display: none;
       align-items: center;
       justify-content: center;
@@ -595,41 +407,34 @@
       background: var(--bg-paper-top);
       border: 3.5px solid var(--ink);
       border-radius: 24px;
-      padding: 2.5rem;
+      padding: 2.4rem;
       width: 100%;
-      max-width: 490px;
+      max-width: 480px;
       box-shadow: 12px 12px 0px var(--ink);
       position: relative;
     }
 
     .modal-close-btn {
       position: absolute;
-      top: 20px;
-      right: 20px;
+      top: 18px;
+      right: 18px;
       background: transparent;
       border: 2px solid var(--ink);
       border-radius: 50%;
-      width: 34px;
-      height: 34px;
+      width: 32px;
+      height: 32px;
       font-family: var(--font-mono);
       font-weight: 700;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: transform 0.15s ease;
-    }
-
-    .modal-close-btn:hover {
-      transform: rotate(90deg);
-      background: var(--ink);
-      color: #FFF;
     }
 
     .modal-title {
       font-family: var(--font-display);
       font-weight: 800;
-      font-size: 1.65rem;
+      font-size: 1.6rem;
       margin-bottom: 0.4rem;
       color: var(--ink);
     }
@@ -661,7 +466,7 @@
       background: #FFF;
       border: 3px solid var(--ink);
       border-radius: 14px;
-      padding: 0.88rem 1.1rem;
+      padding: 0.85rem 1.1rem;
       font-family: var(--font-body);
       font-size: 0.98rem;
       color: var(--ink);
@@ -681,10 +486,10 @@
       color: var(--bg-paper-top);
       border: 3px solid var(--ink);
       border-radius: 14px;
-      padding: 1rem;
+      padding: 0.95rem;
       font-family: var(--font-display);
       font-weight: 800;
-      font-size: 1.02rem;
+      font-size: 1rem;
       cursor: pointer;
       box-shadow: 4px 4px 0px var(--slate-accent);
       transition: all 0.15s ease;
@@ -698,12 +503,12 @@
 
     .automation-badge {
       margin-top: 1.2rem;
-      padding: 0.85rem;
-      background: rgba(92, 107, 120, 0.12);
+      padding: 0.8rem;
+      background: rgba(92, 107, 120, 0.1);
       border: 2px dashed var(--slate-accent);
       border-radius: 12px;
       font-family: var(--font-mono);
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       color: var(--slate-accent);
       display: flex;
       align-items: center;
@@ -718,7 +523,7 @@
       z-index: 500;
       background: var(--bg-paper-top);
       overflow-y: auto;
-      padding: 2.2rem;
+      padding: 2rem;
     }
 
     .studio-header {
@@ -727,7 +532,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 3.5px solid var(--ink);
+      border-bottom: 3px solid var(--ink);
       padding-bottom: 1.2rem;
     }
 
@@ -753,19 +558,21 @@
 
     /* ── REDUCED MOTION ──────────────────────────────────────────────── */
     @media (prefers-reduced-motion: reduce) {
-      .rise, .center-art, .breath-ring, .breath-ring-outer, .floating-badge-left, .floating-badge-right {
+      .rise {
         opacity: 1 !important;
         animation: none !important;
         filter: none !important;
         transform: none !important;
       }
+
+      .center-art {
+        animation: none !important;
+        opacity: 0.92 !important;
+        transform: scale(1) !important;
+      }
     }
 
     /* ── RESPONSIVE BREAKPOINTS ─────────────────────────────────────── */
-    @media (max-width: 1120px) {
-      .floating-badge-left, .floating-badge-right { display: none !important; }
-    }
-
     @media (max-width: 960px) {
       nav { padding: 20px 24px; }
       .nav-center-links, .caption-left, .caption-right { display: none !important; }
@@ -775,25 +582,9 @@
 </head>
 <body>
 
-  <!-- CORNER TECHNICAL CROSSHAIR GUIDES -->
-  <div class="corner-crosshair crosshair-tl">+ 50.45N / 1280x800</div>
-  <div class="corner-crosshair crosshair-tr">+ ASCEND STUDIO V2</div>
-  <div class="corner-crosshair crosshair-bl">+ SILENCE & SOUND</div>
-  <div class="corner-crosshair crosshair-br">+ 2026 EDITION</div>
-
-  <!-- DUST PARTICLES -->
-  <div class="dust-particle" style="left: 15%; animation-delay: 0s;"></div>
-  <div class="dust-particle" style="left: 45%; animation-delay: 3s;"></div>
-  <div class="dust-particle" style="left: 75%; animation-delay: 6s;"></div>
-  <div class="dust-particle" style="left: 90%; animation-delay: 9s;"></div>
-
-  <!-- FIXED BACKDROP & MESH -->
+  <!-- FIXED BACKDROP & GRAIN -->
   <div class="fixed-backdrop"></div>
   <div class="fixed-grain"></div>
-
-  <!-- MINDFULNESS BREATHING RINGS -->
-  <div class="breath-ring"></div>
-  <div class="breath-ring-outer"></div>
 
   <!-- FULL ASPECT HALFTONE ARTWORK -->
   <div class="center-art-wrapper">
@@ -808,35 +599,16 @@
   <!-- LEGIBILITY BLOOM -->
   <div class="art-glow"></div>
 
-  <!-- FLOATING AMBIENT BADGES -->
-  <div class="floating-badge-left">
-    <div class="badge-dot"></div>
-    <div>
-      <div class="badge-title">AI Persona Active</div>
-      <div class="badge-sub">99.4% Topic Alignment</div>
-    </div>
-  </div>
-
-  <div class="floating-badge-right">
-    <div style="font-size: 16px;">🧘</div>
-    <div>
-      <div class="badge-title">Mindful Pace</div>
-      <div class="badge-sub">4-7-8 Breathing Rhythm</div>
-    </div>
-  </div>
-
   <!-- MAIN APP SHELL -->
   <div class="app-shell" id="landingShell">
     
     <!-- TOP NAVIGATION -->
     <nav>
       <a class="wordmark-group rise" style="animation-delay: 0ms;" onclick="showLanding()">
-        <div class="brand-logo-badge">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="18 15 12 9 6 15"></polyline>
-            <polyline points="18 9 12 3 6 9"></polyline>
-          </svg>
-        </div>
+        <svg class="brand-chevron-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="18 15 12 9 6 15"></polyline>
+          <polyline points="18 9 12 3 6 9"></polyline>
+        </svg>
         <span class="wordmark-text">ASCEND</span>
       </a>
 
@@ -848,18 +620,9 @@
       </ul>
 
       <div class="nav-actions">
-        <!-- AMBIENT AUDIO PLAYER TOGGLE -->
-        <button class="audio-toggle-btn rise" style="animation-delay: 280ms;" onclick="toggleAudioAmbiance()" id="audioBtn">
-          <div style="display:flex; align-items:center; gap:3px;">
-            <div class="soundwave-bar"></div>
-            <div class="soundwave-bar"></div>
-            <div class="soundwave-bar"></div>
-          </div>
-          <span id="audioText">Binaural 432Hz</span>
-        </button>
-
+        <button class="btn-link-login rise" style="animation-delay: 280ms;" onclick="openAuthModal('login')">Log In</button>
         <button class="btn-nav-cta rise" style="animation-delay: 320ms;" onclick="openAuthModal('signup')">
-          Begin Practice
+          Begin
         </button>
       </div>
     </nav>
@@ -870,7 +633,7 @@
       <!-- KICKER -->
       <div class="hero-kicker-group rise" style="animation-delay: 480ms;">
         <span class="kicker-rule"></span>
-        <span class="kicker-text">INNER GROWTH & AI PERSONA</span>
+        <span class="kicker-text">INNER GROWTH</span>
         <span class="kicker-rule"></span>
       </div>
 
@@ -898,14 +661,13 @@
 
     </main>
 
-    <!-- CORNER CAPTIONS -->
+    <!-- CLEAN CORNER CAPTIONS -->
     <div class="caption-left rise" style="animation-delay: 1040ms;">
-      <span style="display:inline-block; width:7px; height:7px; background:var(--emerald-accent); border-radius:50%;"></span>
       Stillness starts within.
     </div>
 
     <div class="caption-right rise" style="animation-delay: 1040ms;" onclick="openStudioPanel()">
-      <span>Autonomous AI Operating</span>
+      <span>Scroll to discover</span>
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.7;">
         <line x1="12" y1="5" x2="12" y2="19"></line>
         <polyline points="19 12 12 19 5 12"></polyline>
@@ -945,16 +707,14 @@
     </div>
   </div>
 
-  <!-- AUTONOMOUS STUDIO PANELS -->
+  <!-- AUTONOMOUS STUDIO PANEL -->
   <div class="studio-panel" id="studioPanel">
     <div class="studio-header">
       <div class="wordmark-group" onclick="showLanding()">
-        <div class="brand-logo-badge">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8">
-            <polyline points="18 15 12 9 6 15"></polyline>
-            <polyline points="18 9 12 3 6 9"></polyline>
-          </svg>
-        </div>
+        <svg class="brand-chevron-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="18 15 12 9 6 15"></polyline>
+          <polyline points="18 9 12 3 6 9"></polyline>
+        </svg>
         <span class="wordmark-text">ASCEND STUDIO</span>
       </div>
       <div style="display:flex; gap:12px;">
@@ -998,43 +758,6 @@
 
   <!-- INLINE JAVASCRIPT LOGIC -->
   <script>
-    let audioPlaying = false;
-    let audioCtx = null;
-
-    function toggleAudioAmbiance() {
-      const audioBtn = document.getElementById('audioBtn');
-      const audioText = document.getElementById('audioText');
-
-      if (!audioPlaying) {
-        audioPlaying = true;
-        audioText.innerText = 'Playing 432Hz Calm';
-        audioBtn.style.background = 'var(--ink)';
-        audioBtn.style.color = '#FFF';
-
-        // Web Audio API Synth Tone (432Hz Calm Sine Wave)
-        try {
-          if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-          const osc = audioCtx.createOscillator();
-          const gain = audioCtx.createGain();
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(432, audioCtx.currentTime);
-          gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
-          osc.connect(gain);
-          gain.connect(audioCtx.destination);
-          osc.start();
-          window._activeOsc = osc;
-        } catch (e) { console.log('Audio init'); }
-      } else {
-        audioPlaying = false;
-        audioText.innerText = 'Binaural 432Hz';
-        audioBtn.style.background = 'rgba(255, 255, 255, 0.5)';
-        audioBtn.style.color = 'var(--ink)';
-        if (window._activeOsc) {
-          try { window._activeOsc.stop(); } catch(e){}
-        }
-      }
-    }
-
     function openAuthModal(mode) {
       const modal = document.getElementById('authModal');
       const title = document.getElementById('modalTitle');
