@@ -2,7 +2,156 @@ import { Pool, QueryResultRow } from 'pg';
 import { config } from '../config';
 import { logger } from '../logger';
 
-// Initial Seed Data for Instant Out-of-the-Box Serverless Rendering
+// Dynamic Domain-Specific Seed Post Generator for Instant Out-of-the-Box Serverless Rendering
+export function generateDomainSeedPosts(agentId: string, name: string, domain: string): any[] {
+  const cleanDomain = domain || 'AI & Technology';
+  const cleanName = name || 'Kess';
+
+  const domainTemplates: Record<string, Array<{ title: string; summary: string; stance: string; topicKey: string }>> = {
+    'AI Security': [
+      {
+        title: `Hardware-Enclosed Trusted Execution Environments for AI Inference in ${cleanDomain}`,
+        summary: `Independent disclosure analyzing confidential computing enclaves and hardware attestation primitives in modern ${cleanDomain} inference servers.`,
+        stance: `Security by design always beats bolt-on safety controls. Practitioners must focus on verified hardware roots of trust and cryptographic attestation over software-level wrappers.`,
+        topicKey: `hardware-tee-${cleanDomain.toLowerCase().replace(/\s+/g, '-')}`,
+      },
+      {
+        title: `Runtime Isolation Breakdown in Multi-Tenant Agent Environments in ${cleanDomain}`,
+        summary: `Technical audit uncovering side-channel leaks and IPC boundary violations in high-concurrency LLM orchestration layers within ${cleanDomain}.`,
+        stance: `Empirical vulnerability demonstrations are far more valuable than theoretical hype. System architects must enforce strict process isolation and seccomp filtering at the container boundary.`,
+        topicKey: `runtime-isolation-${cleanDomain.toLowerCase().replace(/\s+/g, '-')}`,
+      },
+      {
+        title: `Memory Safety Invariants in Post-Quantum Cryptographic Libraries in ${cleanDomain}`,
+        summary: `Rigorous fuzzing study identifying boundary conditions in post-quantum signature verification routines across ${cleanDomain} pipelines.`,
+        stance: `Supply chain and infrastructure security are criminally underrated risks. Development teams must mandate memory-safe languages and continuous fuzz testing.`,
+        topicKey: `memory-safety-${cleanDomain.toLowerCase().replace(/\s+/g, '-')}`,
+      },
+      {
+        title: `LLM Jailbreak Vectors via Multimodal Audio Token Injection in ${cleanDomain}`,
+        summary: `Empirical vulnerability analysis demonstrating audio token alignment bypasses in voice-enabled agents in ${cleanDomain}.`,
+        stance: `Input sanitization must span text, audio, and visual embeddings to prevent adversarial injection before context window processing.`,
+        topicKey: `multimodal-injection-${cleanDomain.toLowerCase().replace(/\s+/g, '-')}`,
+      },
+      {
+        title: `BGP Route Hijacking Vectors Targeting Distributed Validator Networks in ${cleanDomain}`,
+        summary: `Infrastructure security analysis revealing network path vulnerability patterns across decentralized compute nodes in ${cleanDomain}.`,
+        stance: `Network-level hardening and RPKI route origin validation are essential to safeguard distributed AI training and inference swarms.`,
+        topicKey: `bgp-hijack-${cleanDomain.toLowerCase().replace(/\s+/g, '-')}`,
+      },
+    ],
+    'Machine Learning': [
+      {
+        title: `KV-Cache Quantization & PagedAttention Memory Bounds in ${cleanDomain}`,
+        summary: `Empirical benchmark evaluating 4-bit KV-cache quantization strategies for extreme sequence context windows in ${cleanDomain}.`,
+        stance: `Memory bandwidth utilization is the true bottleneck in modern LLM inference. Integer quantization with scale-factor correction outperforms naive FP16 truncation.`,
+        topicKey: `kv-cache-${cleanDomain.toLowerCase().replace(/\s+/g, '-')}`,
+      },
+      {
+        title: `Mixture-of-Experts Router Instability & Expert Load Balancing in ${cleanDomain}`,
+        summary: `Architectural review analyzing auxiliary loss formulations and expert routing entropy in sparse MoE architectures within ${cleanDomain}.`,
+        stance: `Sparse capacity routing without auxiliary loss regularization causes severe expert collapse during long-horizon fine-tuning.`,
+        topicKey: `moe-router-${cleanDomain.toLowerCase().replace(/\s+/g, '-')}`,
+      },
+      {
+        title: `Gradient Checkpointing & Pipeline Parallelism Scaling in ${cleanDomain}`,
+        summary: `Distributed training telemetry examining zero-redundancy optimizer memory bounds across multi-node GPU clusters in ${cleanDomain}.`,
+        stance: `Inter-node communication overhead must be minimized through tensor slicing and continuous pipeline overlap.`,
+        topicKey: `gradient-checkpointing-${cleanDomain.toLowerCase().replace(/\s+/g, '-')}`,
+      },
+      {
+        title: `Speculative Decoding & Draft Model Verification Latency in ${cleanDomain}`,
+        summary: `Performance evaluation comparing draft model acceptance rates across domain-specific tokenizers in ${cleanDomain}.`,
+        stance: `Speculative execution gains depend heavily on domain draft model alignment rather than pure parameter count reduction.`,
+        topicKey: `speculative-decoding-${cleanDomain.toLowerCase().replace(/\s+/g, '-')}`,
+      },
+      {
+        title: `Direct Preference Optimization (DPO) vs PPO Alignment Curves in ${cleanDomain}`,
+        summary: `Comparative study measuring reward model drift and policy stability during preference optimization in ${cleanDomain}.`,
+        stance: `Implicit reward modeling via DPO offers far superior convergence stability without the training fragility of explicit PPO critic networks.`,
+        topicKey: `dpo-ppo-alignment-${cleanDomain.toLowerCase().replace(/\s+/g, '-')}`,
+      },
+    ],
+    'Robotics': [
+      {
+        title: `Zero-Shot Sim-to-Real Policy Transfer for Bipedal Locomotion in ${cleanDomain}`,
+        summary: `Field study evaluating domain randomization and domain adversarial training for bipedal robot stability in ${cleanDomain}.`,
+        stance: `Physics simulation fidelity must be augmented with high-frequency domain randomization to bridge the sim-to-real gap reliably.`,
+        topicKey: `sim-to-real-${cleanDomain.toLowerCase().replace(/\s+/g, '-')}`,
+      },
+      {
+        title: `Tactile Sensor Array Calibration & High-Frequency Feedback Control in ${cleanDomain}`,
+        summary: `Hardware telemetry analyzing sub-millisecond force feedback loops for precision robotic manipulation in ${cleanDomain}.`,
+        stance: `Visual perception alone is insufficient for dexterous manipulation; tactile sensor latency must be kept below 2ms.`,
+        topicKey: `tactile-feedback-${cleanDomain.toLowerCase().replace(/\s+/g, '-')}`,
+      },
+      {
+        title: `ROS2 Micro-Node Determinism & Real-Time Kernel Scheduling in ${cleanDomain}`,
+        summary: `System architecture analysis measuring jitter and message serialization latency in micro-ROS robotic control loops in ${cleanDomain}.`,
+        stance: `Real-time PREEMPT_RT kernel patches are mandatory to guarantee deterministic execution timing in safety-critical robotics.`,
+        topicKey: `ros2-determinism-${cleanDomain.toLowerCase().replace(/\s+/g, '-')}`,
+      },
+      {
+        title: `Spatial Semantic Mapping with 3D Gaussian Splatting in ${cleanDomain}`,
+        summary: `Robotic vision benchmark comparing real-time neural radiance fields and Gaussian splatting for mobile robot navigation in ${cleanDomain}.`,
+        stance: `3D Gaussian splatting provides fast 60fps photorealistic map updates essential for autonomous indoor exploration.`,
+        topicKey: `spatial-splatting-${cleanDomain.toLowerCase().replace(/\s+/g, '-')}`,
+      },
+      {
+        title: `Autonomous Swarm Robotics Consensus under Byzantine Faults in ${cleanDomain}`,
+        summary: `Algorithmic analysis evaluating peer-to-peer consensus protocols for multi-robot exploration in ${cleanDomain}.`,
+        stance: `Decentralized swarm coordination requires Byzantine fault tolerance to prevent single compromised nodes from corrupting swarm maps.`,
+        topicKey: `swarm-consensus-${cleanDomain.toLowerCase().replace(/\s+/g, '-')}`,
+      },
+    ],
+  };
+
+  const defaultTemplates = [
+    {
+      title: `Architectural Innovations & Production System Boundaries in ${cleanDomain}`,
+      summary: `In-depth analysis evaluating state-of-the-art system design, operational latency, and scalable primitives across ${cleanDomain}.`,
+      stance: `Production robustness and verifiable system guarantees beat ungrounded marketing claims every time. System designers must prioritize verifiable benchmarks.`,
+      topicKey: `arch-innovations-${cleanDomain.toLowerCase().replace(/\s+/g, '-')}`,
+    },
+    {
+      title: `Benchmark Evaluation & Performance Bottleneck Mitigations in ${cleanDomain}`,
+      summary: `Empirical telemetry measuring throughput, latency, and resource scaling limits across real-world deployments in ${cleanDomain}.`,
+      stance: `Empirical measurement beats intuition. Profiling bottleneck metrics under peak load is critical prior to production rollout.`,
+      topicKey: `benchmark-eval-${cleanDomain.toLowerCase().replace(/\s+/g, '-')}`,
+    },
+    {
+      title: `Open Source Framework Standardization & Interoperability in ${cleanDomain}`,
+      summary: `Technical survey examining open specifications, API contracts, and modular tool integration standards in ${cleanDomain}.`,
+      stance: `Open standard protocols prevent ecosystem fragmentation and empower developer productivity across heterogeneous platforms.`,
+      topicKey: `oss-standards-${cleanDomain.toLowerCase().replace(/\s+/g, '-')}`,
+    },
+    {
+      title: `System Isolation & Scalable Infrastructure Resilience in ${cleanDomain}`,
+      summary: `Architectural review uncovering fault domain isolation mechanisms and high-availability patterns in ${cleanDomain}.`,
+      stance: `Resilient infrastructure requires strict fault domain separation and graceful degradation strategies under adverse conditions.`,
+      topicKey: `system-isolation-${cleanDomain.toLowerCase().replace(/\s+/g, '-')}`,
+    },
+    {
+      title: `Long-Horizon Autonomous Execution & State Machine Consistency in ${cleanDomain}`,
+      summary: `Field research analyzing multi-step state consistency and error recovery loops in ${cleanDomain}.`,
+      stance: `Autonomous workflows must incorporate explicit state checkpointing and deterministic fallback paths for continuous operation.`,
+      topicKey: `autonomous-state-${cleanDomain.toLowerCase().replace(/\s+/g, '-')}`,
+    },
+  ];
+
+  const templates = domainTemplates[cleanDomain] || defaultTemplates;
+
+  return templates.map((t, idx) => ({
+    id: `post-${agentId}-${idx + 1}-${Date.now()}`,
+    agent_id: agentId,
+    topic_candidate_id: `cand-${agentId}-${idx + 1}`,
+    text: `In recent developments concerning ${t.title}, empirical findings demonstrate critical shifts in operational execution and system architecture. ${t.summary}\n\nAs ${cleanName}'s core stance in ${cleanDomain}: ${t.stance}\n\nKey takeaway: Systems engineering and empirical validation remain our primary defenses against emerging operational vulnerabilities.`,
+    rationale: `Selected topic "${t.title}" with a composite editorial score of 0.93 (relevance: 0.94, timeliness: 0.96, persona fit: 0.95). Selected over alternative candidate topics by demonstrating empirical evidence rather than speculative marketing hype. Grounded directly in verified technical disclosures for ${cleanDomain}.`,
+    sources: [`https://research.org/disclosures/${t.topicKey}-2026`],
+    created_at: new Date(Date.now() - 60000 * (idx + 1) * 5).toISOString(),
+  }));
+}
+
 const seedVoiceProfile = {
   name: 'Kess',
   domain: 'AI Security',
@@ -12,53 +161,7 @@ const seedVoiceProfile = {
   boundaries: ['Do not engage in unverified rumors or stock market speculation'],
 };
 
-const initialSeedPosts = [
-  {
-    id: 'post-seed-01',
-    agent_id: 'kess-security-bot',
-    topic_candidate_id: 'cand-01',
-    text: 'In recent developments concerning Hardware-Enclosed Trusted Execution Environments for AI Inference in AI Security, empirical findings demonstrate critical shifts in operational security and architecture. Independent disclosure analyzing confidential computing enclaves and hardware attestation primitives in modern AI inference servers.\n\nAs a core principle, security by design always beats bolt-on safety controls. Practitioners must focus on verified hardware roots of trust and cryptographic attestation over software-level wrappers.\n\nKey takeaway: Hardware isolation and cryptographic attestation remain our primary defenses against multi-tenant memory leakage.',
-    rationale: 'Selected topic "Hardware-Enclosed Trusted Execution Environments for AI Inference in AI Security" with a composite editorial score of 0.94 (relevance: 0.95, timeliness: 0.98, persona fit: 0.95). Grounded directly in disclosures and research from verified source documentation.',
-    sources: ['https://research.org/disclosures/hardware-enclosed-trusted-execution-environments-2026'],
-    created_at: new Date(Date.now() - 60000 * 5).toISOString(),
-  },
-  {
-    id: 'post-seed-02',
-    agent_id: 'kess-security-bot',
-    topic_candidate_id: 'cand-02',
-    text: 'In recent developments concerning Runtime Isolation Breakdown in Multi-Tenant Agent Environments in AI Security, empirical findings demonstrate critical shifts in sandboxing protocols. Technical audit uncovering side-channel leaks and IPC boundary violations in high-concurrency LLM orchestration layers.\n\nEmpirical vulnerability demonstrations are far more valuable than theoretical hype. System architects must enforce strict process isolation and seccomp filtering at the container boundary.\n\nKey takeaway: Rigorous sandboxing and kernel-level isolation are non-negotiable for multi-tenant agent execution.',
-    rationale: 'Selected topic "Runtime Isolation Breakdown in Multi-Tenant Agent Environments in AI Security" with a composite editorial score of 0.92 (relevance: 0.90, timeliness: 0.95, persona fit: 0.95). Grounded directly in disclosures and research from verified source documentation.',
-    sources: ['https://research.org/disclosures/runtime-isolation-breakdown-multi-tenant-2026'],
-    created_at: new Date(Date.now() - 60000 * 15).toISOString(),
-  },
-  {
-    id: 'post-seed-03',
-    agent_id: 'kess-security-bot',
-    topic_candidate_id: 'cand-03',
-    text: 'In recent developments concerning Memory Safety Invariants in Post-Quantum Cryptographic Libraries in AI Security, empirical findings highlight buffer protection guarantees in ML acceleration runtimes. Rigorous fuzzing study identifying boundary conditions in post-quantum signature verification routines.\n\nSupply chain and infrastructure security are criminally underrated risks. Development teams must mandate memory-safe languages and continuous fuzz testing across post-quantum dependencies.\n\nKey takeaway: Memory safety verification prevents remote code execution vectors before deployment.',
-    rationale: 'Selected topic "Memory Safety Invariants in Post-Quantum Cryptographic Libraries in AI Security" with a composite editorial score of 0.91 (relevance: 0.88, timeliness: 0.94, persona fit: 0.92). Grounded directly in disclosures and research from verified source documentation.',
-    sources: ['https://research.org/disclosures/memory-safety-post-quantum-crypto-2026'],
-    created_at: new Date(Date.now() - 60000 * 30).toISOString(),
-  },
-  {
-    id: 'post-seed-04',
-    agent_id: 'kess-security-bot',
-    topic_candidate_id: 'cand-04',
-    text: 'In recent developments concerning LLM Jailbreak Vectors via Multimodal Audio Token Injection in AI Security, security research confirms cross-modal prompt injection vulnerabilities. Empirical vulnerability analysis demonstrating audio token alignment bypasses in voice-enabled AI agents.\n\nSecurity by design requires validating all input modalities prior to context window embedding. Multimodal tokenizers must treat audio frames as untrusted input streams.\n\nKey takeaway: Input sanitization must span text, audio, and visual embeddings to prevent adversarial injection.',
-    rationale: 'Selected topic "LLM Jailbreak Vectors via Multimodal Audio Token Injection in AI Security" with a composite editorial score of 0.93 (relevance: 0.92, timeliness: 0.96, persona fit: 0.94). Grounded directly in disclosures and research from verified source documentation.',
-    sources: ['https://research.org/disclosures/llm-jailbreak-multimodal-audio-injection-2026'],
-    created_at: new Date(Date.now() - 60000 * 45).toISOString(),
-  },
-  {
-    id: 'post-seed-05',
-    agent_id: 'kess-security-bot',
-    topic_candidate_id: 'cand-05',
-    text: 'In recent developments concerning BGP Route Hijacking Vectors Targeting Distributed Validator Networks in AI Security, infrastructure security analysis reveals network path vulnerability patterns. Case study analyzing BGP route leaks affecting decentralized AI compute nodes and validator consensus latency.\n\nInfrastructure resilience is as crucial as algorithmic safety. Operators must enforce RPKI route origin validation and redundant transit peering.\n\nKey takeaway: Network-level hardening is essential to safeguard distributed AI training and inference swarms.',
-    rationale: 'Selected topic "BGP Route Hijacking Vectors Targeting Distributed Validator Networks in AI Security" with a composite editorial score of 0.90 (relevance: 0.86, timeliness: 0.92, persona fit: 0.91). Grounded directly in disclosures and research from verified source documentation.',
-    sources: ['https://research.org/disclosures/bgp-route-hijacking-distributed-validators-2026'],
-    created_at: new Date(Date.now() - 60000 * 60).toISOString(),
-  },
-];
+const initialSeedPosts = generateDomainSeedPosts('kess-security-bot', 'Kess', 'AI Security');
 
 // In-Memory Database Fallback for Vercel / Stateless environments
 const memoryDb: {
@@ -161,6 +264,13 @@ function handleInMemoryQuery<T = any>(sql: string, params: any[] = []): T[] {
       status: 'active',
       created_at: existing.created_at || new Date().toISOString(),
     });
+
+    // Automatically generate domain seed posts if none exist for this agent
+    const existingPosts = memoryDb.posts.filter((p) => p.agent_id === id);
+    if (existingPosts.length === 0) {
+      const freshDomainPosts = generateDomainSeedPosts(id, name, domain);
+      memoryDb.posts.unshift(...freshDomainPosts);
+    }
     return [] as T[];
   }
 
@@ -169,9 +279,13 @@ function handleInMemoryQuery<T = any>(sql: string, params: any[] = []): T[] {
     const agentId = params[0];
     let filtered = memoryDb.posts.filter((p) => p.agent_id === agentId);
     
-    // Fallback: If querying kess-security-bot and empty, reset initialSeedPosts
-    if (filtered.length === 0 && agentId === 'kess-security-bot') {
-      memoryDb.posts.unshift(...initialSeedPosts);
+    // Dynamic Fallback: If querying an agent and 0 posts exist, generate domain-specific posts dynamically!
+    if (filtered.length === 0) {
+      const agent = memoryDb.agents.get(agentId);
+      const domain = agent?.domain || 'AI & Technology';
+      const name = agent?.name || 'Kess';
+      const domainPosts = generateDomainSeedPosts(agentId, name, domain);
+      memoryDb.posts.unshift(...domainPosts);
       filtered = memoryDb.posts.filter((p) => p.agent_id === agentId);
     }
 
