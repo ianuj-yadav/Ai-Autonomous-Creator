@@ -1,59 +1,41 @@
-/**
- * Application entry point.
- * Starts Express, wires all routes, then resumes any active agent
- * loops so the system survives process restarts (NFR-4).
- */
-import 'dotenv/config';
 import express from 'express';
+import cors from 'cors';
 import { config } from './config';
 import { logger } from './logger';
-import { pool } from './db';
-import { initRouter } from './api/routes/init';
-import { feedRouter } from './api/routes/feed';
-import { errorHandler } from './api/middleware/errorHandler';
-import { resumeActiveAgents } from './modules/scheduler';
+import { runMigrations } from './db/migrate';
+import { agentScheduler } from './modules/scheduler';
+import { initRouter } from './api/init';
+import { feedRouter } from './api/feed';
 
 const app = express();
 
-// ── Middleware ──────────────────────────────────────────────────────────────
+app.use(cors());
 app.use(express.json());
-app.use((req, _res, next) => {
-  logger.debug({ method: req.method, url: req.url }, 'Incoming request');
-  next();
-});
 
-// ── Routes ──────────────────────────────────────────────────────────────────
+// Routes
 app.use('/api/agent/init', initRouter);
 app.use('/api/agent/feed', feedRouter);
 
-// Health check — useful for confirming the scheduler is alive during the 48h window
-app.get('/health', (_req, res) => {
-  res.json({ status: 'ok', ts: new Date().toISOString() });
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// ── Error handler (must be last) ─────────────────────────────────────────────
-app.use(errorHandler);
-
-// ── Start ────────────────────────────────────────────────────────────────────
-async function start(): Promise<void> {
-  // Verify DB connection
+async function main() {
   try {
-    await pool.query('SELECT 1');
-    logger.info('Database connection verified');
-  } catch (err) {
-    logger.fatal({ err }, 'Cannot connect to database — exiting');
+    // 1. Apply database migrations
+    await runMigrations();
+
+    // 2. Auto-resume active agent background loops
+    await agentScheduler.autoResumeActiveAgents();
+
+    // 3. Start HTTP server
+    app.listen(config.port, () => {
+      logger.info(`Autonomous AI Creator Server listening on port ${config.port}`);
+    });
+  } catch (err: any) {
+    logger.error('Failed to start Autonomous AI Creator Server', { error: err.message });
     process.exit(1);
   }
-
-  // Resume any loops that were running before a restart (NFR-4)
-  await resumeActiveAgents();
-
-  app.listen(config.port, () => {
-    logger.info({ port: config.port }, '🚀 Autonomous AI Creator listening');
-  });
 }
 
-start().catch((err) => {
-  logger.fatal({ err }, 'Fatal startup error');
-  process.exit(1);
-});
+main();
