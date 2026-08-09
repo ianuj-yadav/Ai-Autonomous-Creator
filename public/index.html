@@ -139,11 +139,7 @@
       border-radius: 16px;
       padding: 1.5rem;
       box-shadow: var(--glass-shadow);
-      transition: border-color 0.2s ease;
-    }
-
-    .glass-card:hover {
-      border-color: rgba(255, 255, 255, 0.15);
+      margin-bottom: 1.5rem;
     }
 
     .card-title {
@@ -168,7 +164,7 @@
       margin-bottom: 0.4rem;
     }
 
-    input, select {
+    input {
       width: 100%;
       background: rgba(15, 23, 42, 0.8);
       border: 1px solid var(--border-color);
@@ -185,17 +181,14 @@
       border-color: var(--primary);
     }
 
-    .btn-primary {
+    .btn {
       width: 100%;
-      background: linear-gradient(135deg, var(--primary), var(--primary-hover));
-      color: #FFF;
       border: none;
       border-radius: 10px;
       padding: 0.85rem;
       font-weight: 600;
       font-size: 0.95rem;
       cursor: pointer;
-      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
       transition: all 0.2s ease;
       display: flex;
       align-items: center;
@@ -203,13 +196,30 @@
       gap: 0.5rem;
     }
 
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+      color: #FFF;
+      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
+      margin-bottom: 0.8rem;
+    }
+
     .btn-primary:hover {
       transform: translateY(-1px);
       box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
     }
 
+    .btn-secondary {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--accent-emerald);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(16, 185, 129, 0.25);
+    }
+
     .profile-box {
-      margin-top: 1.5rem;
+      margin-top: 1rem;
       padding-top: 1.2rem;
       border-top: 1px solid var(--border-color);
     }
@@ -239,7 +249,6 @@
       border-left: 2px solid var(--primary);
     }
 
-    /* Feed Controls */
     .feed-header {
       display: flex;
       justify-content: space-between;
@@ -257,11 +266,15 @@
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid var(--border-color);
       color: var(--text-main);
-      padding: 0.5rem 1rem;
+      padding: 0.55rem 1.1rem;
       border-radius: 8px;
       font-size: 0.85rem;
+      font-weight: 500;
       cursor: pointer;
       transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
     }
 
     .refresh-btn:hover {
@@ -276,7 +289,6 @@
       padding: 1.6rem;
       margin-bottom: 1.5rem;
       box-shadow: var(--glass-shadow);
-      position: relative;
     }
 
     .post-meta {
@@ -365,18 +377,37 @@
       border-radius: 16px;
     }
 
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(17, 24, 39, 0.95);
+      border: 1px solid var(--primary);
+      color: #FFF;
+      padding: 0.8rem 1.2rem;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      z-index: 1000;
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     .spinner {
-      border: 2px solid rgba(255,255,255,0.1);
+      border: 2px solid rgba(255,255,255,0.2);
       border-left-color: #FFF;
       border-radius: 50%;
-      width: 16px;
-      height: 16px;
-      animation: spin 1s linear infinite;
-      display: inline-block;
+      width: 14px;
+      height: 14px;
+      animation: spin 0.8s linear infinite;
     }
 
     @keyframes spin {
-      0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
   </style>
@@ -397,16 +428,15 @@
   </header>
 
   <main>
-    <!-- Left Column: Controls & Voice Profile -->
     <aside>
       <div class="glass-card">
         <div class="card-title">
-          <span>⚡</span> Agent Initializer
+          <span>⚡</span> Agent Initializer & Controls
         </div>
-        <form id="initForm">
+        <form id="initForm" onsubmit="handleInitSubmit(event)">
           <div class="form-group">
             <label for="agentIdInput">Agent ID</label>
-            <input type="text" id="agentIdInput" value="kess-security-bot" required>
+            <input type="text" id="agentIdInput" value="kess-security-bot" required onchange="handleAgentIdChange()">
           </div>
           <div class="form-group">
             <label for="nameInput">Persona Name</label>
@@ -416,10 +446,15 @@
             <label for="domainInput">Domain</label>
             <input type="text" id="domainInput" value="AI Security" required>
           </div>
-          <button type="submit" class="btn-primary" id="initBtn">
+
+          <button type="submit" class="btn btn-primary" id="initBtn" onclick="handleInitSubmit(event)">
             Initialize Autonomous Loop
           </button>
         </form>
+
+        <button type="button" class="btn btn-secondary" id="triggerBtn" onclick="handleTriggerCycle(event)">
+          ⚡ Trigger Discovery Cycle Now
+        </button>
 
         <div class="profile-box" id="profileBox">
           <div class="card-title" style="font-size: 0.95rem;">
@@ -432,26 +467,56 @@
       </div>
     </aside>
 
-    <!-- Right Column: Live Feed Stream -->
     <section>
       <div class="feed-header">
         <div class="feed-title">Autonomous Content Feed</div>
-        <button class="refresh-btn" id="manualRefreshBtn">🔄 Refresh Feed</button>
+        <button type="button" class="refresh-btn" id="manualRefreshBtn" onclick="handleManualRefresh(event)">
+          🔄 Refresh Feed
+        </button>
       </div>
 
       <div id="feedStream">
         <div class="empty-feed">
           <p>No posts published yet for this agent.</p>
-          <p style="font-size: 0.8rem; margin-top: 0.5rem;">Click "Initialize Autonomous Loop" to trigger the first discovery & editorial cycle.</p>
         </div>
       </div>
     </section>
   </main>
 
+  <div id="toast" class="toast"></div>
+
   <script>
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.innerText = message;
+      toast.style.display = 'block';
+      setTimeout(() => {
+        toast.style.display = 'none';
+      }, 3500);
+    }
+
     const currentAgentId = () => document.getElementById('agentIdInput').value.trim() || 'kess-security-bot';
 
-    async function initAgent(e) {
+    async function fetchProfile() {
+      const agentId = currentAgentId();
+      try {
+        const res = await fetch(`/api/agent/init/profile?agentId=${encodeURIComponent(agentId)}`);
+        if (res.ok) {
+          const data = await res.json();
+          renderVoiceProfile(data.voiceProfile);
+          if (data.name) document.getElementById('nameInput').value = data.name;
+          if (data.domain) document.getElementById('domainInput').value = data.domain;
+        } else {
+          document.getElementById('profileContent').innerHTML = `
+            <p style="font-size: 0.8rem; color: var(--text-dim);">Agent not initialized yet. Click "Initialize Autonomous Loop" above.</p>
+          `;
+        }
+      } catch (err) {
+        console.error('Error fetching profile:', err);
+      }
+    }
+
+    async function handleInitSubmit(e) {
       if (e) e.preventDefault();
       const initBtn = document.getElementById('initBtn');
       initBtn.disabled = true;
@@ -468,15 +533,16 @@
           body: JSON.stringify({ id, persona: { name, domain } })
         });
         const data = await res.json();
-        
+
         if (res.ok) {
           renderVoiceProfile(data.voiceProfile);
-          // Wait 3s then poll feed
-          setTimeout(fetchFeed, 3000);
+          showToast(`✅ Agent "${name}" initialized successfully! Loop started.`);
+          setTimeout(fetchFeed, 2000);
         } else {
-          alert('Error: ' + (data.message || 'Initialization failed'));
+          showToast('❌ Error: ' + (data.message || 'Initialization failed'));
         }
       } catch (err) {
+        showToast('❌ Network error during initialization');
         console.error('Init error:', err);
       } finally {
         initBtn.disabled = false;
@@ -484,10 +550,52 @@
       }
     }
 
+    async function handleTriggerCycle(e) {
+      if (e) e.preventDefault();
+      const triggerBtn = document.getElementById('triggerBtn');
+      triggerBtn.disabled = true;
+      triggerBtn.innerHTML = `<div class="spinner"></div> Running Cycle...`;
+
+      const agentId = currentAgentId();
+
+      try {
+        const res = await fetch('/api/agent/init/trigger-cycle', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ agentId })
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+          showToast('⚡ Discovery & scoring cycle executed!');
+          setTimeout(fetchFeed, 1500);
+        } else {
+          showToast('⚠️ ' + (data.message || 'Trigger cycle failed'));
+        }
+      } catch (err) {
+        showToast('❌ Failed to trigger cycle');
+        console.error('Trigger error:', err);
+      } finally {
+        triggerBtn.disabled = false;
+        triggerBtn.innerHTML = `⚡ Trigger Discovery Cycle Now`;
+      }
+    }
+
+    async function handleManualRefresh(e) {
+      if (e) e.preventDefault();
+      showToast('🔄 Refreshing feed...');
+      await fetchFeed();
+    }
+
+    function handleAgentIdChange() {
+      fetchProfile();
+      fetchFeed();
+    }
+
     function renderVoiceProfile(profile) {
       if (!profile) return;
       const container = document.getElementById('profileContent');
-      
+
       const toneTags = profile.tone ? profile.tone.map(t => `<span class="tag">${t}</span>`).join('') : '';
       const stances = profile.stances ? profile.stances.map(s => `<div class="stance-item">${s}</div>`).join('') : '';
 
@@ -564,11 +672,10 @@
       return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     }
 
-    document.getElementById('initForm').addEventListener('submit', initAgent);
-    document.getElementById('manualRefreshBtn').addEventListener('click', fetchFeed);
-
-    // Initial load check
+    // Initial load
+    fetchProfile();
     fetchFeed();
+
     // Auto refresh feed every 6 seconds
     setInterval(fetchFeed, 6000);
   </script>
